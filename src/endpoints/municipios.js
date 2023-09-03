@@ -3,9 +3,9 @@ import { createMunicipio, deleteMunicipio, editMunicipio, getMunicipioById, getM
 export const getMunicipiosEndpoints = (app, upload) => {
 
   //GET municipios
-  app.get("/api/municipios", upload.any(), async (request, response) => {
+  app.get("/api/municipios/:idDepartamento?", upload.any(), async (request, response) => {
     try {
-      const municipios = await getMunicipiosByDepto(request.body.idDepartamento);
+      const municipios = await getMunicipiosByDepto(request.params.idDepartamento);
       response.json(municipios);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener los municipios: ' + error });

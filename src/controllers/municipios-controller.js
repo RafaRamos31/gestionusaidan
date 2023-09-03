@@ -1,8 +1,18 @@
 import Municipio from "../models/municipios.js";
 import { getDepartamentoById } from "./departamentos-controller.js";
 
-export async function getMunicipiosByDepto(idDepto){
-  return Municipio.find({departamento: {_id: idDepto}}).sort({ geocode: 1 });
+export async function getMunicipiosByDepto(idDepto=null){
+  try {
+    let filter = {}
+
+    if(idDepto){
+      filter = {departamento: {_id: idDepto}}
+    }
+
+    return Municipio.find(filter).sort({ geocode: 1 }).populate('departamento');
+  } catch (error) {
+    throw error;
+  }
 }
 
 export async function getMunicipioById(idMunicipio){
