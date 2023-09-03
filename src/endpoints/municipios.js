@@ -13,9 +13,9 @@ export const getMunicipiosEndpoints = (app, upload) => {
   })
 
   //GET municipio by Id
-  app.get("/api/municipio", upload.any(), async (request, response) => {
+  app.get("/api/municipio/:idDepartamento", upload.any(), async (request, response) => {
     try {
-      const municipio = await getMunicipioById(request.body.idMunicipio);
+      const municipio = await getMunicipioById(request.params.idMunicipio);
       if(!municipio) return response.status(404).send('Municipio no encontrado');
 
       response.json(municipio);
