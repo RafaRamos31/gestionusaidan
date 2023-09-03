@@ -2,6 +2,27 @@ import { createMunicipio, deleteMunicipio, editMunicipio, getMunicipioById, getM
 
 export const getMunicipiosEndpoints = (app, upload) => {
 
+  //GET municipios
+  app.get("/api/municipios/:idDepartamento?", upload.any(), async (request, response) => {
+    try {
+      const municipios = await getMunicipiosByDepto(request.params.idDepartamento);
+      response.json(municipios);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener los municipios: ' + error });
+    }
+  })
+
+  //GET municipio by Id
+  app.get("/api/municipio/:idMunicipio", upload.any(), async (request, response) => {
+    try {
+      const municipio = await getMunicipioById(request.params.idMunicipio);
+      if(!municipio) return response.status(404).send('Municipio no encontrado');
+
+      response.json(municipio);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener el municipio: ' + error });
+    }
+  })
 
   //POST municipio
   app.post("/api/municipios", upload.any(), async (request, response) => {
