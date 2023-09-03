@@ -1,14 +1,17 @@
 import Caserio from "../models/caserios.js";
 import { getAldeaById } from "./aldeas-controller.js";
 
-export async function getCaseriosByAldea(idAldea){
+export async function getCaseriosByAldea(idAldea=null){
   try {
     let filter = {}
 
-    if(idMunicipio){
-      filter = {municipio: {_id: idMunicipio}}
+    if(idAldea){
+      filter = {aldea: {_id: idAldea}}
     }
-    return Caserio.find({aldea: {_id: idAldea}}).sort({ geocode: 1 });
+
+    return Caserio.find(filter).sort({ geocode: 1 }).populate({path: 'aldea',
+    populate: { path: 'municipio', populate: { path: 'departamento', model: 'Departamento'}}
+  })
   } catch (error) {
     throw error;
   }
@@ -16,7 +19,9 @@ export async function getCaseriosByAldea(idAldea){
 
 export async function getCaserioById(idCaserio){
   try {
-    const caserio = await Caserio.findById(idCaserio).populate('aldea');
+    const caserio = await Caserio.findById(idCaserio).populate({path: 'aldea',
+    populate: { path: 'municipio', populate: { path: 'departamento', model: 'Departamento'}}
+    })
     return caserio;
   } catch (error) {
     throw error;

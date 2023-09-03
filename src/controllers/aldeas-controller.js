@@ -8,7 +8,8 @@ export async function getAldeasByMunicipio(idMunicipio=null){
     if(idMunicipio){
       filter = {municipio: {_id: idMunicipio}}
     }
-    return Aldea.find(filter).sort({ geocode: 1 });
+    return Aldea.find(filter).sort({ geocode: 1 }).populate('municipio')
+    .populate({path: 'municipio', populate: {path:'departamento', model: 'Departamento'}});
   } catch (error) {
     throw error;
   }
@@ -17,7 +18,8 @@ export async function getAldeasByMunicipio(idMunicipio=null){
 
 export async function getAldeaById(idAldea){
   try {
-    const aldea = await Aldea.findById(idAldea).populate('municipio');
+    const aldea = await Aldea.findById(idAldea).populate('municipio')
+    .populate({path: 'municipio', populate: {path:'departamento', model: 'Departamento'}});;
     return aldea;
   } catch (error) {
     throw error;
