@@ -2,7 +2,16 @@ import Caserio from "../models/caserios.js";
 import { getAldeaById } from "./aldeas-controller.js";
 
 export async function getCaseriosByAldea(idAldea){
-  return Caserio.find({aldea: {_id: idAldea}}).sort({ geocode: 1 });
+  try {
+    let filter = {}
+
+    if(idMunicipio){
+      filter = {municipio: {_id: idMunicipio}}
+    }
+    return Caserio.find({aldea: {_id: idAldea}}).sort({ geocode: 1 });
+  } catch (error) {
+    throw error;
+  }
 }
 
 export async function getCaserioById(idCaserio){

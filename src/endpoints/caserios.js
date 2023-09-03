@@ -3,9 +3,9 @@ import { createCaserio, deleteCaserio, editCaserio, getCaserioById, getCaseriosB
 export const getCaseriosEndpoints = (app, upload) => {
 
   //GET caserios
-  app.get("/api/caserios", upload.any(), async (request, response) => {
+  app.get("/api/caserios/:idAldea?", upload.any(), async (request, response) => {
     try {
-      const caserios = await getCaseriosByAldea(request.body.idAldea);
+      const caserios = await getCaseriosByAldea(request.params.idAldea);
       response.json(caserios);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener los caserios: ' + error });
@@ -13,9 +13,9 @@ export const getCaseriosEndpoints = (app, upload) => {
   })
 
   //GET caserio by Id
-  app.get("/api/caserio", upload.any(), async (request, response) => {
+  app.get("/api/caserio/:idCaserio", upload.any(), async (request, response) => {
     try {
-      const caserio = await getCaserioById(request.body.idCaserio);
+      const caserio = await getCaserioById(request.params.idCaserio);
       if(!caserio) return response.status(404).send('Caserio no encontrado');
 
       response.json(caserio);

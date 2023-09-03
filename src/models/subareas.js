@@ -5,16 +5,14 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  geocode: {
-    type: String,
+  area: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Area",
     required: true,
-    unique: true,
-    maxlength: 2,
-    minlength: 2
-  }
+  },
 });
 
 /**
  * Modelo de entidad de un Componente
  */
-export default mongoose.model("Departamento", schema, "Departamentos");
+export default mongoose.model("Subarea", schema, "Subareas");

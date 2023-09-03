@@ -3,9 +3,9 @@ import { createAldea, deleteAldea, editAldea, getAldeaById, getAldeasByMunicipio
 export const getAldeasEndpoints = (app, upload) => {
 
   //GET aldeas
-  app.get("/api/aldeas", upload.any(), async (request, response) => {
+  app.get("/api/aldeas/:idMunicipio?", upload.any(), async (request, response) => {
     try {
-      const aldeas = await getAldeasByMunicipio(request.body.idMunicipio);
+      const aldeas = await getAldeasByMunicipio(request.params.idMunicipio);
       response.json(aldeas);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener las aldeas: ' + error });
@@ -13,9 +13,9 @@ export const getAldeasEndpoints = (app, upload) => {
   })
 
   //GET aldea by Id
-  app.get("/api/aldea", upload.any(), async (request, response) => {
+  app.get("/api/aldea/:idAldea", upload.any(), async (request, response) => {
     try {
-      const aldea = await getAldeaById(request.body.idAldea);
+      const aldea = await getAldeaById(request.params.idAldea);
       if(!aldea) return response.status(404).send('Aldea no encontrada');
 
       response.json(aldea);

@@ -1,8 +1,18 @@
 import Aldea from "../models/aldeas.js";
 import { getMunicipioById } from '../controllers/municipios-controller.js'
 
-export async function getAldeasByMunicipio(idMunicipio){
-  return Aldea.find({municipio: {_id: idMunicipio}}).sort({ geocode: 1 });
+export async function getAldeasByMunicipio(idMunicipio=null){
+  try {
+    let filter = {}
+
+    if(idMunicipio){
+      filter = {municipio: {_id: idMunicipio}}
+    }
+    return Aldea.find(filter).sort({ geocode: 1 });
+  } catch (error) {
+    throw error;
+  }
+  
 }
 
 export async function getAldeaById(idAldea){

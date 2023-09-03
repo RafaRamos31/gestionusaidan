@@ -8,7 +8,9 @@ const schema = new mongoose.Schema({
   geocode: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    maxlength: 4,
+    minlength: 4
   },
   departamento: {
     type: mongoose.Schema.Types.ObjectId,

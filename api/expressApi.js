@@ -9,6 +9,8 @@ import { getCaseriosEndpoints } from "../src/endpoints/caserios.js";
 import { getOrganizacionesEndpoints } from "../src/endpoints/organizaciones.js";
 import { getCargosEndpoints } from "../src/endpoints/cargos.js";
 import { getUsuariosEndpoints } from "../src/endpoints/usuarios.js";
+import { getAreasEndpoints } from "../src/endpoints/areas.js";
+import { getSubareasEndpoints } from "../src/endpoints/subareas.js";
 
 /**
  * Separa la logica de definicion de rutas y su respuesta a peticiones REST
@@ -30,6 +32,8 @@ export function addRestDirections(app) {
   app = getOrganizacionesEndpoints(app, upload);
   app = getCargosEndpoints(app, upload);
   app = getUsuariosEndpoints(app, upload);
+  app = getAreasEndpoints(app, upload);
+  app = getSubareasEndpoints(app, upload);
 
   return app;
 }
