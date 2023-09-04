@@ -15,7 +15,7 @@ export const getAreasEndpoints = (app, upload) => {
   //GET area by Id
   app.get("/api/area/:idArea", upload.any(), async (request, response) => {
     try {
-      const area = await getAreaById(request.params.idDepartamento);
+      const area = await getAreaById(request.params.idArea);
       if(!area) return response.status(404).send('Área temática no encontrada');
 
       response.json(area);

@@ -13,9 +13,9 @@ export const getDepartamentosEndpoints = (app, upload) => {
   })
 
   //GET departamento by Id
-  app.get("/api/departamento", upload.any(), async (request, response) => {
+  app.get("/api/departamento/:idDepartamento", upload.any(), async (request, response) => {
     try {
-      const departamento = await getDepartamentoById(request.body.idDepartamento);
+      const departamento = await getDepartamentoById(request.params.idDepartamento);
       if(!departamento) return response.status(404).send('Departamento no encontrado');
 
       response.json(departamento);

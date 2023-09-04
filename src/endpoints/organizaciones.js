@@ -2,8 +2,8 @@ import { createOrganizacion, deleteOrganizacion, editOrganizacion, getOrganizaci
 
 export const getOrganizacionesEndpoints = (app, upload) => {
 
-  //GET organizaciones
-  app.get("/api/organizaciones", upload.any(), async (request, response) => {
+  //GET/POST organizaciones
+  app.post("/api/getorganizaciones", upload.any(), async (request, response) => {
     try {
       const organizaciones = await getOrganizaciones(
         request.body.tipoOrganizacion,
@@ -20,9 +20,9 @@ export const getOrganizacionesEndpoints = (app, upload) => {
   })
 
   //GET Organizacion by Id
-  app.get("/api/organizacion", upload.any(), async (request, response) => {
+  app.get("/api/organizacion/:idOrganizacion", upload.any(), async (request, response) => {
     try {
-      const organizacion = await getOrganizacionById(request.body.idOrganizacion);
+      const organizacion = await getOrganizacionById(request.params.idOrganizacion);
       if(!organizacion) return response.status(404).send('Organizacion no encontrada');
 
       response.json(organizacion);

@@ -3,7 +3,7 @@ import { createUsuario, deleteUsuario, editUsuario, getUsuarioById, getUsuarios 
 export const getUsuariosEndpoints = (app, upload) => {
 
   //GET usuarios
-  app.get("/api/usuarios", upload.any(), async (request, response) => {
+  app.post("/api/getusuarios", upload.any(), async (request, response) => {
     try {
       const usuarios = await getUsuarios(
         request.body.idOrganizacion,
@@ -18,9 +18,9 @@ export const getUsuariosEndpoints = (app, upload) => {
   })
 
   //GET Usuario by Id
-  app.get("/api/usuario", upload.any(), async (request, response) => {
+  app.get("/api/usuario/:idUsuario", upload.any(), async (request, response) => {
     try {
-      const usuario = await getUsuarioById(request.body.idUsuario);
+      const usuario = await getUsuarioById(request.params.idUsuario);
       if(!usuario) return response.status(404).send('Usuario no encontrado');
 
       response.json(usuario);

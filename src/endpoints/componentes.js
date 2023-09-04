@@ -13,9 +13,9 @@ export const getComponentesEndpoints = (app, upload) => {
   })
 
   //GET componente by Id
-  app.get("/api/componente", upload.any(), async (request, response) => {
+  app.get("/api/componente/:idComponente", upload.any(), async (request, response) => {
     try {
-      const componente = await getComponentById(request.body.idComponente);
+      const componente = await getComponentById(request.params.idComponente);
       if(!componente) return response.status(404).send('Componente no encontrado');
 
       response.json(componente);

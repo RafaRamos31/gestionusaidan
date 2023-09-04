@@ -13,9 +13,9 @@ export const getOrgTypesEndpoints = (app, upload) => {
   })
 
   //GET tipo de organizacion by Id
-  app.get("/api/orgtype", upload.any(), async (request, response) => {
+  app.get("/api/orgtype/:idOrgtype", upload.any(), async (request, response) => {
     try {
-      const orgtype = await getOrgTypeById(request.body.idOrgtype);
+      const orgtype = await getOrgTypeById(request.params.idOrgtype);
       if(!orgtype) return response.status(404).send('Tipo de Organizacion no encontrado');
 
       response.json(orgtype);
