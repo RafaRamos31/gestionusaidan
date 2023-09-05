@@ -3,12 +3,12 @@ import { getOrganizacionById } from "./organizaciones-controller.js";
 
 
 export async function getCargosByOrg(idOrganizacion){
-  return Cargo.find({organizacion: {_id: idOrganizacion}});
+  return Cargo.find({organizacion: {_id: idOrganizacion}}).populate('organizacion');
 }
 
 export async function getCargoById(idCargo){
   try {
-    const cargo = await Cargo.findById(idCargo);
+    const cargo = await Cargo.findById(idCargo).populate('organizacion');
     return cargo;
   } catch (error) {
     throw error;
