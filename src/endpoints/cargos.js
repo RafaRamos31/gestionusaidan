@@ -3,9 +3,9 @@ import { createCargo, deleteCargo, editCargo, getCargoById, getCargosByOrg } fro
 export const getCargosEndpoints = (app, upload) => {
 
   //GET cargos
-  app.get("/api/cargos", upload.any(), async (request, response) => {
+  app.get("/api/cargos/:idOrganizacion?", upload.any(), async (request, response) => {
     try {
-      const cargos = await getCargosByOrg(request.body.idOrganizacion);
+      const cargos = await getCargosByOrg(request.params.idOrganizacion);
       response.json(cargos);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener los cargos: ' + error });
@@ -13,9 +13,9 @@ export const getCargosEndpoints = (app, upload) => {
   })
 
   //GET cargo by Id
-  app.get("/api/cargo", upload.any(), async (request, response) => {
+  app.get("/api/cargo/:idCargo", upload.any(), async (request, response) => {
     try {
-      const cargo = await getCargoById(request.body.idCargo);
+      const cargo = await getCargoById(request.params.idCargo);
       if(!cargo) return response.status(404).send('Cargo no encontrado');
 
       response.json(cargo);
