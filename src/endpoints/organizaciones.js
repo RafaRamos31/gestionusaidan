@@ -1,4 +1,4 @@
-import { createOrganizacion, deleteOrganizacion, editOrganizacion, getOrganizacionById, getOrganizaciones } from "../controllers/organizaciones-controller.js";
+import { createOrganizacion, deleteOrganizacion, editOrganizacion, getOrganizacionById, getOrganizaciones, getOrganizacionesList } from "../controllers/organizaciones-controller.js";
 
 export const getOrganizacionesEndpoints = (app, upload) => {
 
@@ -13,6 +13,16 @@ export const getOrganizacionesEndpoints = (app, upload) => {
         request.body.idAldea,
         request.body.idCaserio,
       );
+      response.json(organizaciones);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener las organizaciones: ' + error });
+    }
+  })
+
+  //Get Organizacion List
+  app.get("/api/organizacioneslist", upload.any(), async (request, response) => {
+    try {
+      const organizaciones = await getOrganizacionesList();
       response.json(organizaciones);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener las organizaciones: ' + error });

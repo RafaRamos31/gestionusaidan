@@ -15,6 +15,15 @@ export async function getOrganizacionById(idOrganizacion){
   }
 }
 
+export async function getOrganizacionesList(){
+  try {
+    const organizaciones = await Organizacion.find({}, '_id nombre').sort({ nombre: 1 });
+    return organizaciones;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export async function getOrganizaciones(tipo=null, nivel=null, departamento=null, municipio=null, aldea=null, caserio=null){
   try {
 
