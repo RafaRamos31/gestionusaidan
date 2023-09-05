@@ -1,9 +1,17 @@
 import Cargo from "../models/cargos.js";
 import { getOrganizacionById } from "./organizaciones-controller.js";
 
+export async function getCargosByOrg(idOrganizacion = null){
+  try {
+    let filter = {}
 
-export async function getCargosByOrg(idOrganizacion){
-  return Cargo.find({organizacion: {_id: idOrganizacion}}).populate('organizacion');
+    if(idOrganizacion){
+      filter = {organizacion: {_id: idOrganizacion}}
+    }
+    return Cargo.find(filter).populate('organizacion');
+  } catch (error) {
+    throw error;
+  }
 }
 
 export async function getCargoById(idCargo){
