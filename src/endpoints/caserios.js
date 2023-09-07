@@ -31,6 +31,7 @@ export const getCaseriosEndpoints = (app, upload) => {
         request.body.nombre,
         request.body.geocode,
         request.body.idAldea,
+        request.body.idUsuario
       );
       response.json(caserio);
     } catch (error) {
@@ -46,6 +47,7 @@ export const getCaseriosEndpoints = (app, upload) => {
         request.body.nombre,
         request.body.geocode,
         request.body.idAldea,
+        request.body.idUsuario
       );
   
       if(!caserio) return response.status(404).send('Caserio no encontrado');

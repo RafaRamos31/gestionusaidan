@@ -31,6 +31,7 @@ export const getMunicipiosEndpoints = (app, upload) => {
         request.body.nombre,
         request.body.geocode,
         request.body.idDepartamento,
+        request.body.idUsuario
       );
       response.json(municipio);
     } catch (error) {
@@ -46,6 +47,7 @@ export const getMunicipiosEndpoints = (app, upload) => {
         request.body.nombre,
         request.body.geocode,
         request.body.idDepartamento,
+        request.body.idUsuario
       );
   
       if(!municipio) return response.status(404).send('Municipio no encontrado');

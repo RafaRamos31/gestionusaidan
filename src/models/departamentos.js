@@ -11,7 +11,14 @@ const schema = new mongoose.Schema({
     unique: true,
     maxlength: 2,
     minlength: 2
-  }
+  },
+  ultimaEdicion: {
+    type: Date
+  },
+  editor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+  },
 });
 
 /**

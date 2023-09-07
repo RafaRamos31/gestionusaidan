@@ -31,6 +31,7 @@ export const getAldeasEndpoints = (app, upload) => {
         request.body.nombre,
         request.body.geocode,
         request.body.idMunicipio,
+        request.body.idUsuario
       );
       response.json(aldea);
     } catch (error) {
@@ -46,6 +47,7 @@ export const getAldeasEndpoints = (app, upload) => {
         request.body.nombre,
         request.body.geocode,
         request.body.idMunicipio,
+        request.body.idUsuario
       );
   
       if(!aldea) return response.status(404).send('Aldea no encontrada');

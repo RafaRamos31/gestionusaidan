@@ -1,4 +1,5 @@
 import Area from "../models/areas.js";
+import { getUsuarioById } from "./usuarios-controller.js";
 
 export async function getAllAreas(){
   return Area.find();
@@ -13,19 +14,26 @@ export async function getAreaById(idArea){
   }
 }
 
-export async function createArea(nombre){
+export async function createArea(nombre, idUsuario=null){
+  const editor = await getUsuarioById(idUsuario);
   const area = new Area({
-    nombre
+    nombre,
+    ultimaEdicion: new Date(),
+    editor
   })
 
   return area.save();
 }
 
-export async function editArea(idArea, nombre){
+export async function editArea(idArea, nombre, idUsuario=null){
   const area = await getAreaById(idArea);
   if(!area) return null;
 
+  const editor = await getUsuarioById(idUsuario);
+
   area.nombre = nombre;
+  area.ultimaEdicion = new Date();
+  area.editor = editor;
 
   return area.save();
 }

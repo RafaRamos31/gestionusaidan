@@ -56,7 +56,8 @@ export const getOrganizacionesEndpoints = (app, upload) => {
         request.body.telefonoOrganizacion,
         request.body.nombreContacto,
         request.body.telefonoContacto,
-        request.body.correoContacto
+        request.body.correoContacto,
+        request.body.idUsuario
       );
       response.json(organizacion);
     } catch (error) {
@@ -81,7 +82,8 @@ export const getOrganizacionesEndpoints = (app, upload) => {
         request.body.telefonoOrganizacion,
         request.body.nombreContacto,
         request.body.telefonoContacto,
-        request.body.correoContacto
+        request.body.correoContacto,
+        request.body.idUsuario
       );
 
       if(!organizacion) return response.status(404).send('Organizacion no encontrada');

@@ -30,6 +30,7 @@ export const getCargosEndpoints = (app, upload) => {
       const cargo = await createCargo(
         request.body.nombre,
         request.body.idOrganizacion,
+        request.body.idUsuario
       );
       response.json(cargo);
     } catch (error) {
@@ -44,6 +45,7 @@ export const getCargosEndpoints = (app, upload) => {
         request.body.idCargo,
         request.body.nombre,
         request.body.idOrganizacion,
+        request.body.idUsuario
       );
   
       if(!cargo) return response.status(404).send('Cargo no encontrado');

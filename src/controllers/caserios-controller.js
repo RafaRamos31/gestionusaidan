@@ -1,5 +1,6 @@
 import Caserio from "../models/caserios.js";
 import { getAldeaById } from "./aldeas-controller.js";
+import { getUsuarioById } from "./usuarios-controller.js";
 
 export async function getCaseriosByAldea(idAldea=null){
   try {
@@ -37,25 +38,33 @@ export async function getCaserioByIdSimple(idCaserio){
   }
 }
 
-export async function createCaserio(nombre, geocode, idAldea){
+export async function createCaserio(nombre, geocode, idAldea, idUsuario=null){
   const aldea = await getAldeaById(idAldea)
+  const editor = await getUsuarioById(idUsuario);
+
   const caserio = new Caserio({
     nombre,
     geocode,
-    aldea
+    aldea,
+    ultimaEdicion: new Date(),
+    editor
   })
 
   return caserio.save();
 }
 
-export async function editCaserio(idCaserio, nombre, geocode, idAldea){
+export async function editCaserio(idCaserio, nombre, geocode, idAldea, idUsuario=null){
   const caserio = await getCaserioById(idCaserio);
   if(!caserio) return null;
+
+  const editor = await getUsuarioById(idUsuario);
 
   const aldea = await getAldeaById(idAldea);
   caserio.nombre = nombre;
   caserio.geocode = geocode;
   caserio.aldea = aldea;
+  caserio.ultimaEdicion = new Date();
+  caserio.editor = editor;
 
   return caserio.save();
 }

@@ -1,4 +1,5 @@
 import TipoOrganizacion from "../models/tiposOrganizaciones.js";
+import { getUsuarioById } from "./usuarios-controller.js";
 
 export async function getAllOrgTypes(){
   return TipoOrganizacion.find();
@@ -13,19 +14,28 @@ export async function getOrgTypeById(idOrgType){
   }
 }
 
-export async function createOrgType(nombre){
+export async function createOrgType(nombre, idUsuario=null){
+  const editor = await getUsuarioById(idUsuario);
+
   const orgType = new TipoOrganizacion({
-    nombre
+    nombre,
+    ultimaEdicion: new Date,
+    editor
   })
 
   return orgType.save();
 }
 
-export async function editOrgType(idOrgtype, nombre){
+export async function editOrgType(idOrgtype, nombre, idUsuario=null){
   const orgtype = await getOrgTypeById(idOrgtype);
   if(!orgtype) return null;
 
+  const editor = await getUsuarioById(idUsuario);
+
   orgtype.nombre = nombre;
+  orgtype.ultimaEdicion = new Date();
+  orgtype.editor = editor;
+
   return orgtype.save();
 }
 

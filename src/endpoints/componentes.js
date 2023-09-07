@@ -27,7 +27,10 @@ export const getComponentesEndpoints = (app, upload) => {
   //POST componentes
   app.post("/api/componentes", upload.any(), async (request, response) => {
     try {
-      const componentes = await createComponente(request.body.nombre);
+      const componentes = await createComponente(
+        request.body.nombre,
+        request.body.idUsuario
+      );
       response.json(componentes);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al registrar el componente: ' + error });
@@ -40,6 +43,7 @@ export const getComponentesEndpoints = (app, upload) => {
       const componente = await editComponente(
         request.body.idComponente,
         request.body.nombre,
+        request.body.idUsuario
       );
   
       if(!componente) return response.status(404).send('Componente no encontrado');

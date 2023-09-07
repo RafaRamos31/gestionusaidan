@@ -1,5 +1,6 @@
 import Aldea from "../models/aldeas.js";
 import { getMunicipioById } from '../controllers/municipios-controller.js'
+import { getUsuarioById } from "./usuarios-controller.js";
 
 export async function getAldeasByMunicipio(idMunicipio=null){
   try {
@@ -35,25 +36,32 @@ export async function getAldeaByIdSimple(idAldea){
   }
 }
 
-export async function createAldea(nombre, geocode, idMunicipio){
+export async function createAldea(nombre, geocode, idMunicipio, idUsuario=null){
   const municipio = await getMunicipioById(idMunicipio)
+  const editor = await getUsuarioById(idUsuario)
   const aldea = new Aldea({
     nombre,
     geocode,
-    municipio
+    municipio,
+    ultimaEdicion: new Date(),
+    editor,
   })
 
   return aldea.save();
 }
 
-export async function editAldea(idAldea, nombre, geocode, idMunicipio){
+export async function editAldea(idAldea, nombre, geocode, idMunicipio, idUsuario=null){
   const aldea = await getAldeaById(idAldea);
   if(!aldea) return null;
+
+  const editor = await getUsuarioById(idUsuario);
 
   const municipio = await getMunicipioById(idMunicipio);
   aldea.nombre = nombre;
   aldea.geocode = geocode;
   aldea.municipio = municipio;
+  aldea.ultimaEdicion = new Date();
+  aldea.editor = editor;
 
   return aldea.save();
 }

@@ -4,6 +4,7 @@ import { getCaserioByIdSimple } from "./caserios-controller.js";
 import { getDepartamentoById } from "./departamentos-controller.js";
 import { getMunicipioByIdSimple } from "./municipios-controller.js";
 import { getOrgTypeById } from "./tiposOrganizaciones-controller.js";
+import { getUsuarioById } from "./usuarios-controller.js";
 
 export async function getOrganizacionById(idOrganizacion){
   try {
@@ -62,14 +63,15 @@ export async function getOrganizaciones(tipo=null, nivel=null, departamento=null
 }
 
 export async function createOrganizacion(codigo, idOrgtype, nivel, nombre, idDepartamento, idMunicipio,
-  idAldea, idCaserio, telefonoOrganizacion, nombreContacto, telefonoContacto, correoContacto){
+  idAldea, idCaserio, telefonoOrganizacion, nombreContacto, telefonoContacto, correoContacto, idUsuario=null){
 
   const promises = await Promise.all([
     getOrgTypeById(idOrgtype),
     getDepartamentoById(idDepartamento),
     getMunicipioByIdSimple(idMunicipio),
     getAldeaByIdSimple(idAldea),
-    getCaserioByIdSimple(idCaserio)
+    getCaserioByIdSimple(idCaserio),
+    getUsuarioById(idUsuario)
   ])
 
   const organizacion = new Organizacion({
@@ -84,7 +86,9 @@ export async function createOrganizacion(codigo, idOrgtype, nivel, nombre, idDep
     telefonoOrganizacion,
     nombreContacto,
     telefonoContacto,
-    correoContacto
+    correoContacto,
+    ultimaEdicion: new Date(),
+    editor: promises[5]
   })
 
   return organizacion.save();
@@ -92,7 +96,7 @@ export async function createOrganizacion(codigo, idOrgtype, nivel, nombre, idDep
 
 
 export async function editOrganizacion(idOrganizacion, codigo, idOrgtype, nivel, nombre, idDepartamento, idMunicipio,
-  idAldea, idCaserio, telefonoOrganizacion, nombreContacto, telefonoContacto, correoContacto){
+  idAldea, idCaserio, telefonoOrganizacion, nombreContacto, telefonoContacto, correoContacto, idUsuario=null){
 
   const organizacion = await getOrganizacionById(idOrganizacion);
   if(!organizacion) return null;
@@ -102,7 +106,8 @@ export async function editOrganizacion(idOrganizacion, codigo, idOrgtype, nivel,
     getDepartamentoById(idDepartamento),
     getMunicipioByIdSimple(idMunicipio),
     getAldeaByIdSimple(idAldea),
-    getCaserioByIdSimple(idCaserio)
+    getCaserioByIdSimple(idCaserio),
+    getUsuarioById(idUsuario)
   ])
 
   organizacion.codigoOrganizacion = codigo;
@@ -117,6 +122,8 @@ export async function editOrganizacion(idOrganizacion, codigo, idOrgtype, nivel,
   organizacion.nombreContacto = nombreContacto;
   organizacion.telefonoContacto = telefonoContacto;
   organizacion.correoContacto = correoContacto;
+  organizacion.ultimaEdicion = new Date();
+  organizacion.editor = editor;
 
   return organizacion.save();
 }

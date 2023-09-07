@@ -17,6 +17,13 @@ const schema = new mongoose.Schema({
     ref: "Municipio",
     required: true,
   },
+  ultimaEdicion: {
+    type: Date
+  },
+  editor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+  },
 });
 
 /**

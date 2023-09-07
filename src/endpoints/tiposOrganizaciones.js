@@ -27,7 +27,10 @@ export const getOrgTypesEndpoints = (app, upload) => {
   //POST tipo de organizacion
   app.post("/api/orgtypes", upload.any(), async (request, response) => {
     try {
-      const orgtype = await createOrgType(request.body.nombre);
+      const orgtype = await createOrgType(
+        request.body.nombre,
+        request.body.idUsuario
+      );
       response.json(orgtype);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al registrar el tipo de organizacion: ' + error });
@@ -40,6 +43,7 @@ export const getOrgTypesEndpoints = (app, upload) => {
       const orgtype = await editOrgType(
         request.body.idOrgtype,
         request.body.nombre,
+        request.body.idUsuario
       );
   
       if(!orgtype) return response.status(404).send('Tipo de Organizacion no encontrado');

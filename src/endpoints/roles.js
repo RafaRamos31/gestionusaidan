@@ -26,7 +26,10 @@ export const getRolesEndpoints = (app, upload) => {
   //POST roles
   app.post("/api/roles", upload.any(), async (request, response) => {
     try {
-      const roles = await createRol(request.body.nombre);
+      const roles = await createRol(
+        request.body.nombre,
+        request.body.idUsuario
+      );
       response.json(roles);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al registrar el rol: ' + error });
@@ -39,6 +42,7 @@ export const getRolesEndpoints = (app, upload) => {
       const rol = await editRol(
         request.body.idRol,
         request.body.nombre,
+        request.body.idUsuario
       );
   
       if(!rol) return response.status(404).send('Rol no encontrado');

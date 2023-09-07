@@ -30,6 +30,7 @@ export const getSubareasEndpoints = (app, upload) => {
       const subarea = await createSubarea(
         request.body.nombre,
         request.body.idArea,
+        request.body.idUsuario
       );
       response.json(subarea);
     } catch (error) {
@@ -44,6 +45,7 @@ export const getSubareasEndpoints = (app, upload) => {
         request.body.idSubarea,
         request.body.nombre,
         request.body.idArea,
+        request.body.idUsuario
       );
   
       if(!subarea) return response.status(404).send('Sub Area Tematica no encontrada');

@@ -28,7 +28,8 @@ export const getAreasEndpoints = (app, upload) => {
   app.post("/api/areas", upload.any(), async (request, response) => {
     try {
       const area = await createArea(
-        request.body.nombre
+        request.body.nombre,
+        request.body.idUsuario
       );
       response.json(area);
     } catch (error) {
@@ -41,7 +42,8 @@ export const getAreasEndpoints = (app, upload) => {
     try {
       const area = await editArea(
         request.body.idArea,
-        request.body.nombre
+        request.body.nombre,
+        request.body.idUsuario
       );
   
       if(!area) return response.status(404).send('Área Temática no encontrada');

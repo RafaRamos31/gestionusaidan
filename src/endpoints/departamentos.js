@@ -29,7 +29,8 @@ export const getDepartamentosEndpoints = (app, upload) => {
     try {
       const departamento = await createDepartamento(
         request.body.nombre,
-        request.body.geocode
+        request.body.geocode,
+        request.body.idUsuario
       );
       response.json(departamento);
     } catch (error) {
@@ -44,6 +45,7 @@ export const getDepartamentosEndpoints = (app, upload) => {
         request.body.idDepartamento,
         request.body.nombre,
         request.body.geocode,
+        request.body.idUsuario
       );
   
       if(!departamento) return response.status(404).send('Departamento no encontrado');

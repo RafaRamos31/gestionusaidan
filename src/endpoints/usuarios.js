@@ -40,7 +40,8 @@ export const getUsuariosEndpoints = (app, upload) => {
         request.body.idComponente,
         request.body.idRol,
         request.body.correo,
-        request.body.password
+        request.body.password,
+        request.body.idEditor
       );
       response.json(usuario);
     } catch (error) {
@@ -60,7 +61,8 @@ export const getUsuariosEndpoints = (app, upload) => {
         request.body.idCargo,
         request.body.idComponente,
         request.body.idRol,
-        request.body.correo
+        request.body.correo,
+        request.body.idEditor
       );
 
       if(!usuario) return response.status(404).send('Usuario no encontrado');

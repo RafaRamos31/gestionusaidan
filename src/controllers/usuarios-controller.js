@@ -36,6 +36,9 @@ export async function getUsuarios(organizacion=null, cargo=null, componente=null
 
 export async function getUsuarioById(idUsuario){
   try {
+    if(idUsuario === null){
+      return null;
+    }
     const usuario = await Usuario.findById(idUsuario, '-password').populate(['organizacion', 
     'cargo', 'componente', 'rol']);
     return usuario;
@@ -45,13 +48,14 @@ export async function getUsuarioById(idUsuario){
 }
 
 export async function createUsuario(nombre, sexo, idOrganizacion, idCargo, idComponente, idRol,
-  correo, password){
+  correo, password, idEditor=null){
 
   const promises = await Promise.all([
     getOrganizacionById(idOrganizacion),
     getCargoById(idCargo),
     getComponentById(idComponente),
-    getRolById(idRol)
+    getRolById(idRol),
+    getUsuarioById(idEditor)
   ])
 
   const usuario = new Usuario({
@@ -62,7 +66,9 @@ export async function createUsuario(nombre, sexo, idOrganizacion, idCargo, idCom
     componente: promises[2],
     rol: promises[3],
     correo,
-    password: hashPassword(password)
+    password: hashPassword(password),
+    ultimaEdicion: new Date(),
+    editor: promises[4]
   })
 
   return usuario.save();
@@ -70,7 +76,7 @@ export async function createUsuario(nombre, sexo, idOrganizacion, idCargo, idCom
 
 
 export async function editUsuario(idUsuario, nombre, sexo, idOrganizacion, idCargo, idComponente, idRol,
-  correo){
+  correo, idEditor=null){
 
   const usuario = await getUsuarioById(idUsuario);
   if(!usuario) return null;
@@ -79,7 +85,8 @@ export async function editUsuario(idUsuario, nombre, sexo, idOrganizacion, idCar
     getOrganizacionById(idOrganizacion),
     getCargoById(idCargo),
     getComponentById(idComponente),
-    getRolById(idRol)
+    getRolById(idRol),
+    getUsuarioById(idEditor)
   ])
 
   usuario.nombre = nombre;
@@ -89,6 +96,8 @@ export async function editUsuario(idUsuario, nombre, sexo, idOrganizacion, idCar
   usuario.componente = promises[2];
   usuario.rol = promises[3];
   usuario.correo = correo;
+  usuario.ultimaEdicion = new Date();
+  usuario.editor = promises[4];
 
   return usuario.save();
 }
