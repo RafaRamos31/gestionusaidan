@@ -123,7 +123,7 @@ export async function editOrganizacion(idOrganizacion, codigo, idOrgtype, nivel,
   organizacion.telefonoContacto = telefonoContacto;
   organizacion.correoContacto = correoContacto;
   organizacion.ultimaEdicion = new Date();
-  organizacion.editor = editor;
+  organizacion.editor = promises[5];
 
   return organizacion.save();
 }
