@@ -63,7 +63,7 @@ export async function getOrganizaciones(tipo=null, nivel=null, departamento=null
 }
 
 export async function createOrganizacion(codigo, idOrgtype, nivel, nombre, idDepartamento, idMunicipio,
-  idAldea, idCaserio, telefonoOrganizacion, nombreContacto, telefonoContacto, correoContacto, idUsuario=null){
+  idAldea, idCaserio, telefonoOrganizacion, nombreContacto, telefonoContacto, correoContacto, geolocacion, idUsuario=null){
 
   const promises = await Promise.all([
     getOrgTypeById(idOrgtype),
@@ -87,6 +87,7 @@ export async function createOrganizacion(codigo, idOrgtype, nivel, nombre, idDep
     nombreContacto,
     telefonoContacto,
     correoContacto,
+    geolocacion,
     ultimaEdicion: new Date(),
     editor: promises[5]
   })
@@ -96,7 +97,7 @@ export async function createOrganizacion(codigo, idOrgtype, nivel, nombre, idDep
 
 
 export async function editOrganizacion(idOrganizacion, codigo, idOrgtype, nivel, nombre, idDepartamento, idMunicipio,
-  idAldea, idCaserio, telefonoOrganizacion, nombreContacto, telefonoContacto, correoContacto, idUsuario=null){
+  idAldea, idCaserio, telefonoOrganizacion, nombreContacto, telefonoContacto, correoContacto, geolocacion, idUsuario=null){
 
   const organizacion = await getOrganizacionById(idOrganizacion);
   if(!organizacion) return null;
@@ -122,6 +123,7 @@ export async function editOrganizacion(idOrganizacion, codigo, idOrgtype, nivel,
   organizacion.nombreContacto = nombreContacto;
   organizacion.telefonoContacto = telefonoContacto;
   organizacion.correoContacto = correoContacto;
+  organizacion.geolocacion = geolocacion;
   organizacion.ultimaEdicion = new Date();
   organizacion.editor = promises[5];
 

@@ -55,6 +55,9 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  geolocacion: {
+    type: String
+  },
   ultimaEdicion: {
     type: Date
   },

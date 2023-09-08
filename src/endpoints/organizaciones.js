@@ -57,6 +57,7 @@ export const getOrganizacionesEndpoints = (app, upload) => {
         request.body.nombreContacto,
         request.body.telefonoContacto,
         request.body.correoContacto,
+        request.body.geolocacion,
         request.body.idUsuario
       );
       response.json(organizacion);
@@ -83,6 +84,7 @@ export const getOrganizacionesEndpoints = (app, upload) => {
         request.body.nombreContacto,
         request.body.telefonoContacto,
         request.body.correoContacto,
+        request.body.geolocacion,
         request.body.idUsuario
       );
 
