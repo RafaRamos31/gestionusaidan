@@ -20,7 +20,7 @@ export const getBeneficiariosEndpoints = (app, upload) => {
   })
 
   //GET Beneficiario by Id
-  app.get("/api/beneficiarios/:idBeneficiario", upload.any(), async (request, response) => {
+  app.get("/api/beneficiario/:idBeneficiario", upload.any(), async (request, response) => {
     try {
       const beneficiario = await getBeneficiarioById(request.params.idBeneficiario);
       if(!beneficiario) return response.status(404).send('Beneficiario no encontrado');
