@@ -15,7 +15,7 @@ const schema = new mongoose.Schema({
     required: true,
   },
   fechaNacimiento: {
-    type: Date
+    type: String
   },
   departamento: {
     type: mongoose.Schema.Types.ObjectId,
