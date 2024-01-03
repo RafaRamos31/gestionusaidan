@@ -13,6 +13,8 @@ import { getAreasEndpoints } from "../src/endpoints/areas.js";
 import { getSubareasEndpoints } from "../src/endpoints/subareas.js";
 import { getBeneficiariosEndpoints } from "../src/endpoints/beneficiarios.js";
 import { getResultadosEndpoints } from "../src/endpoints/resultados.js";
+import { getAreasInvEndpoints } from "../src/endpoints/areasInv.js";
+import { getInversionesEndpoints } from "../src/endpoints/inversiones.js";
 
 /**
  * Separa la logica de definicion de rutas y su respuesta a peticiones REST
@@ -38,6 +40,8 @@ export function addRestDirections(app) {
   app = getSubareasEndpoints(app, upload);
   app = getBeneficiariosEndpoints(app, upload);
   app = getResultadosEndpoints(app, upload);
+  app = getAreasInvEndpoints(app, upload);
+  app = getInversionesEndpoints(app, upload);
 
   return app;
 }
