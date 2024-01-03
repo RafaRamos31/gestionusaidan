@@ -53,7 +53,7 @@ export async function createInversion(nombre, sector, idArea, idDepartamento, id
   idAldea, idCaserio, fecha, monto, idUsuario=null){
 
   const promises = await Promise.all([
-    getAreaInvById(idOrganizacion),
+    getAreaInvById(idArea),
     getDepartamentoById(idDepartamento),
     getMunicipioByIdSimple(idMunicipio),
     getAldeaByIdSimple(idAldea),
