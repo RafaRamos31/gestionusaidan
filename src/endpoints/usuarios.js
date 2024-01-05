@@ -93,7 +93,7 @@ export const getUsuariosEndpoints = (app, upload) => {
         request.body.email, 
         request.body.password
       );
-      if(!usuario) return response.status(404).send('Los datos ingresados no son válidos.');
+      if(!usuario) return response.status(404).json({ error: 'Los datos ingresados no son válidos.' });
 
       response.json(usuario);
     } catch (error) {
