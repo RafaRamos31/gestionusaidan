@@ -113,3 +113,14 @@ export async function deleteUsuario(idUsuario){
 function hashPassword(password) {
   return createHash("sha256").update(password).digest("hex");
 }
+
+//Login y Registro
+export async function loginUser(email, password){
+  try{
+    const usuario = await Usuario.findOne({correo: email, password: hashPassword(password)}).populate(['organizacion', 
+    'cargo', 'componente', 'rol']);
+    return usuario;
+  } catch (error) {
+    throw error;
+  }
+}

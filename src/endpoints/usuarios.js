@@ -1,4 +1,4 @@
-import { createUsuario, deleteUsuario, editUsuario, getUsuarioById, getUsuarios } from "../controllers/usuarios-controller.js";
+import { createUsuario, deleteUsuario, editUsuario, getUsuarioById, getUsuarios, loginUser } from "../controllers/usuarios-controller.js";
 
 export const getUsuariosEndpoints = (app, upload) => {
 
@@ -82,6 +82,22 @@ export const getUsuariosEndpoints = (app, upload) => {
       response.json(usuario);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al eliminar el usuario: ' + error });
+    }
+  })
+
+
+  //Login
+  app.post("/api/login", upload.any(), async (request, response) => {
+    try {
+      const usuario = await loginUser(
+        request.body.email, 
+        request.body.password
+      );
+      if(!usuario) return response.status(404).send('Los datos ingresados no son válidos.');
+
+      response.json(usuario);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al hacer el login: ' + error });
     }
   })
 
