@@ -9,11 +9,15 @@
  */
 
 import express from "express";
+import cors from "cors";
 import { addRestDirections } from "./expressApi.js";
 import "./db.js";
 
 //Se inicializa un servidor Express para la navegacion entre rutas al acceder a la API
 let app = express();
+
+// Habilitar CORS
+app.use(cors());
 
 //Se agregan las diferentes rutas /GET y /POST para la manipulacion de datos almacenados en MongoDB
 app = addRestDirections(app);
