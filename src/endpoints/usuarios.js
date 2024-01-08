@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken'
 import { createUsuario, deleteUsuario, editUsuario, getUsuarioById, getUsuarios, loginUser } from "../controllers/usuarios-controller.js";
 
 export const getUsuariosEndpoints = (app, upload) => {
@@ -94,10 +95,49 @@ export const getUsuariosEndpoints = (app, upload) => {
         request.body.password
       );
       if(!usuario) return response.status(404).json({ error: 'Los datos ingresados no son válidos.' });
+      
+      const tokenUser = {
+        userId: usuario._id,
+        userName: usuario.nombre,
+        userRol: usuario.rol
+      }
+      const token = jwt.sign(tokenUser, 'algo', { expiresIn: '2m' });
 
-      response.json(usuario);
+      response.json({token});
+
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al hacer el login: ' + error });
+    }
+  })
+
+  //Verificar auth
+  app.post("/api/verify", upload.any(), async (request, response) => {
+    try {
+      var decoded = jwt.verify(request.body.token, request.body.secret);
+      response.json({user: decoded});
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al verificar el login: ' + error });
+    }
+  })
+
+  //Refresh auth
+  app.post("/api/refresh", upload.any(), async (request, response) => {
+    try {
+      var decoded = jwt.verify(request.body.token, request.body.secret);
+
+      const tokenUser = {
+        userId: decoded.userId,
+        userName: decoded.userName,
+        userRol: decoded.userRol
+      }
+
+      const token = jwt.sign(tokenUser, 'algo', { expiresIn: '2m' });
+
+      response.json({token});
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al refrescar el token: ' + error });
     }
   })
 

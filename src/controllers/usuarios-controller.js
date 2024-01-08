@@ -117,8 +117,7 @@ function hashPassword(password) {
 //Login y Registro
 export async function loginUser(email, password){
   try{
-    const usuario = await Usuario.findOne({correo: email, password: hashPassword(password)}).populate(['organizacion', 
-    'cargo', 'componente', 'rol']);
+    const usuario = await Usuario.findOne({correo: email, password: hashPassword(password)});
     return usuario;
   } catch (error) {
     throw error;
