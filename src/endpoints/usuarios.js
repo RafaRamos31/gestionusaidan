@@ -113,7 +113,15 @@ export const getUsuariosEndpoints = (app, upload) => {
   //Verificar auth
   app.post("/api/verify", upload.any(), async (request, response) => {
     try {
-      var decoded = jwt.verify(request.body.token, request.body.secret);
+      const authorizationHeader = request.headers['authorization'];
+  
+      if (!authorizationHeader) {
+        return response.status(401).json({ message: 'Token de autorización no proporcionado' });
+      }
+
+      const token = authorizationHeader.split(' ')[1]; // Ignorar "Bearer" y obtener el token
+
+      var decoded = jwt.verify(token, 'algo');
       response.json({user: decoded});
 
     } catch (error) {
