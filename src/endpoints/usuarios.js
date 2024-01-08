@@ -101,7 +101,7 @@ export const getUsuariosEndpoints = (app, upload) => {
         userName: usuario.nombre,
         userRol: usuario.rol
       }
-      const token = jwt.sign(tokenUser, 'algo', { expiresIn: '2m' });
+      const token = jwt.sign(tokenUser, 'algo', { expiresIn: '30m' });
 
       response.json({token});
 
@@ -111,7 +111,7 @@ export const getUsuariosEndpoints = (app, upload) => {
   })
 
   //Verificar auth
-  app.post("/api/verify", upload.any(), async (request, response) => {
+  app.get("/api/verify", async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
   
@@ -130,9 +130,17 @@ export const getUsuariosEndpoints = (app, upload) => {
   })
 
   //Refresh auth
-  app.post("/api/refresh", upload.any(), async (request, response) => {
+  app.get("/api/refresh", async (request, response) => {
     try {
-      var decoded = jwt.verify(request.body.token, request.body.secret);
+      const authorizationHeader = request.headers['authorization'];
+  
+      if (!authorizationHeader) {
+        return response.status(401).json({ message: 'Token de autorización no proporcionado' });
+      }
+
+      const token = authorizationHeader.split(' ')[1]; // Ignorar "Bearer" y obtener el token
+
+      var decoded = jwt.verify(token, 'algo');
 
       const tokenUser = {
         userId: decoded.userId,
@@ -140,9 +148,9 @@ export const getUsuariosEndpoints = (app, upload) => {
         userRol: decoded.userRol
       }
 
-      const token = jwt.sign(tokenUser, 'algo', { expiresIn: '2m' });
+      const newToken = jwt.sign(tokenUser, 'algo', { expiresIn: '30m' });
 
-      response.json({token});
+      response.json({token: newToken});
 
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al refrescar el token: ' + error });
