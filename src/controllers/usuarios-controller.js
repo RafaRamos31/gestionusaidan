@@ -47,33 +47,44 @@ export async function getUsuarioById(idUsuario){
   }
 }
 
-export async function createUsuario(nombre, sexo, idOrganizacion, idCargo, idComponente, idRol,
-  correo, password, idEditor=null){
+export async function createUsuario(nombre, dni, sexo, fechaNacimiento, idDepartamento, idMunicipio,
+  idAldea, idCaserio, telefono, idOrganizacion, idCargo, geolocacion, idComponente, correo, password, idUsuario=null){
 
   const promises = await Promise.all([
+    getDepartamentoById(idDepartamento),
+    getMunicipioByIdSimple(idMunicipio),
+    getAldeaByIdSimple(idAldea),
+    getCaserioByIdSimple(idCaserio),
     getOrganizacionById(idOrganizacion),
     getCargoById(idCargo),
     getComponentById(idComponente),
-    getRolById(idRol),
-    getUsuarioById(idEditor)
+    getUsuarioById(idUsuario)
   ])
 
   const usuario = new Usuario({
     nombre,
+    dni,
     sexo,
-    organizacion: promises[0],
-    cargo: promises[1],
-    componente: promises[2],
-    rol: promises[3],
+    fechaNacimiento,
+    departamento: promises[0],
+    municipio: promises[1],
+    aldea: promises[2],
+    caserio: promises[3],
+    telefono,
+    organizacion: promises[4],
+    cargo: promises[5],
+    geolocacion,
+    componente: promises[6],
     correo,
     password: hashPassword(password),
+    estado: 'Revision',
+    rol: null,
     ultimaEdicion: new Date(),
-    editor: promises[4]
+    editor: promises[7]
   })
 
   return usuario.save();
 }
-
 
 export async function editUsuario(idUsuario, nombre, sexo, idOrganizacion, idCargo, idComponente, idRol,
   correo, idEditor=null){
