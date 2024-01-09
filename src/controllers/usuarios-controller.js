@@ -4,6 +4,10 @@ import { getCargoById } from "./cargos-controller.js";
 import { getComponentById } from "./componentes-controller.js";
 import { getOrganizacionById } from "./organizaciones-controller.js";
 import { getRolById } from "./roles-controller.js";
+import { getDepartamentoById } from './departamentos-controller.js';
+import { getMunicipioByIdSimple } from './municipios-controller.js';
+import { getAldeaByIdSimple } from './aldeas-controller.js';
+import { getCaserioByIdSimple } from './caserios-controller.js';
 
 export async function getUsuarios(organizacion=null, cargo=null, componente=null, rol=null){
   try {
