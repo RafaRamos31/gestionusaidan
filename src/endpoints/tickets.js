@@ -1,5 +1,4 @@
-import { createArea, deleteArea, editArea, getAllAreas, getAreaById } from "../controllers/areas-controller.js";
-import { crearTicket, deleteTicket, getAllTickets, getTicketById } from "../controllers/tickets-controller.js";
+import { crearTicket, deleteTicket, getAllTickets } from "../controllers/tickets-controller.js";
 
 export const getTicketsEndpoints = (app, upload) => {
 
