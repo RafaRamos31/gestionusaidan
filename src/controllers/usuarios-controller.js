@@ -19,7 +19,7 @@ export async function getUsuarios(organizacion=null, cargo=null, componente=null
     }
 
     if(cargo){
-      filter = {...filter, cargo: cargo}
+      filter = {...filter, cargo: {_id: cargo}}
     }
 
     if(componente){
@@ -30,7 +30,7 @@ export async function getUsuarios(organizacion=null, cargo=null, componente=null
       filter = {...filter, rol: {_id: rol}}
     }
 
-    const usuarios = await Usuario.find(filter, '-password').populate(['organizacion', 
+    const usuarios = await Usuario.find(filter, '_id nombre rol componente organizacion cargo telefono correo ultimaEdicion editor estado').populate(['organizacion', 
     'cargo', 'componente', 'rol']);
     return usuarios;
   } catch (error) {
@@ -43,7 +43,7 @@ export async function getUsuarioById(idUsuario){
     if(idUsuario === null){
       return null;
     }
-    const usuario = await Usuario.findById(idUsuario, '-password').populate(['organizacion', 
+    const usuario = await Usuario.findById(idUsuario).populate(['organizacion', 
     'cargo', 'componente', 'rol']);
     return usuario;
   } catch (error) {
@@ -90,13 +90,17 @@ export async function createUsuario(nombre, dni, sexo, fechaNacimiento, idDepart
   return usuario.save();
 }
 
-export async function editUsuario(idUsuario, nombre, sexo, idOrganizacion, idCargo, idComponente, idRol,
-  correo, idEditor=null){
+export async function editUsuario(idUsuario, nombre, dni, sexo, fechaNacimiento, idDepartamento, idMunicipio,
+  idAldea, idCaserio, telefono, idOrganizacion, idCargo, geolocacion, idComponente, idRol, idEditor=null){
 
   const usuario = await getUsuarioById(idUsuario);
   if(!usuario) return null;
 
   const promises = await Promise.all([
+    getDepartamentoById(idDepartamento),
+    getMunicipioByIdSimple(idMunicipio),
+    getAldeaByIdSimple(idAldea),
+    getCaserioByIdSimple(idCaserio),
     getOrganizacionById(idOrganizacion),
     getCargoById(idCargo),
     getComponentById(idComponente),
@@ -105,14 +109,21 @@ export async function editUsuario(idUsuario, nombre, sexo, idOrganizacion, idCar
   ])
 
   usuario.nombre = nombre;
+  usuario.dni = dni;
   usuario.sexo = sexo;
-  usuario.organizacion = promises[0];
-  usuario.cargo = promises[1];
-  usuario.componente = promises[2];
-  usuario.rol = promises[3];
-  usuario.correo = correo;
+  usuario.fechaNacimiento = fechaNacimiento;
+  usuario.departamento = promises[0];
+  usuario.municipio = promises[1];
+  usuario.aldea = promises[2];
+  usuario.caserio = promises[3];
+  usuario.telefono = telefono;
+  usuario.organizacion = promises[4];
+  usuario.cargo = promises[5];
+  usuario.componente = promises[6];
+  usuario.rol = promises[7];
+  usuario.geolocacion = geolocacion;
   usuario.ultimaEdicion = new Date();
-  usuario.editor = promises[4];
+  usuario.editor = promises[8];
 
   return usuario.save();
 }

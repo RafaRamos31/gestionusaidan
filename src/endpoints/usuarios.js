@@ -64,12 +64,19 @@ export const getUsuariosEndpoints = (app, upload) => {
       const usuario = await editUsuario(
         request.body.idUsuario,
         request.body.nombre,
+        request.body.dni,
         request.body.sexo,
+        request.body.fechaNacimiento,
+        request.body.idDepartamento,
+        request.body.idMunicipio,
+        request.body.idAldea,
+        request.body.idCaserio,
+        request.body.telefono,
         request.body.idOrganizacion,
         request.body.idCargo,
+        request.body.geolocacion,
         request.body.idComponente,
         request.body.idRol,
-        request.body.correo,
         request.body.idEditor
       );
 
