@@ -1,4 +1,4 @@
-import { crearTicket, deleteTicket, getAllTickets } from "../controllers/tickets-controller.js";
+import { crearTicket, deleteTicket, getAllTickets, getTicketById } from "../controllers/tickets-controller.js";
 
 export const getTicketsEndpoints = (app, upload) => {
 
@@ -12,8 +12,22 @@ export const getTicketsEndpoints = (app, upload) => {
     }
   })
 
+  //Get Ticket by Id
+  app.get("/api/ticket", upload.any(), async (request, response) => {
+    try {
+      const ticket = await getTicketById(
+        request.body.idTicket
+      );
 
-  //POST areas
+      if(!ticket) return response.status(404).send('Ticket no encontrado.');
+
+      response.status(200).json({ticket});
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al canjear el ticket: ' + error });
+    }
+  })
+
+  //POST ticket
   app.post("/api/tickets", upload.any(), async (request, response) => {
     try {
       const ticket = await crearTicket();
