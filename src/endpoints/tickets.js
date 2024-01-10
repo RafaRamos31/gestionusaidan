@@ -13,10 +13,10 @@ export const getTicketsEndpoints = (app, upload) => {
   })
 
   //Get Ticket by Id
-  app.get("/api/ticket", upload.any(), async (request, response) => {
+  app.get("/api/ticket/:idTicket", upload.any(), async (request, response) => {
     try {
       const ticket = await getTicketById(
-        request.body.idTicket
+        request.params.idTicket
       );
 
       if(!ticket) return response.status(404).send('Ticket no encontrado.');
