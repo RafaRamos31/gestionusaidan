@@ -128,3 +128,138 @@ export async function deleteBeneficiario(idBeneficiario){
 
   return beneficiario.delete();
 }
+
+
+export async function getStatsBeneficiarios(departamento=null, municipio=null, aldea=null, caserio=null, organizacion=null, cargo=null){
+  try {
+
+    let filter = {}
+
+    if(departamento){
+      filter = {...filter, departamento: {_id: departamento}}
+    }
+
+    if(municipio){
+      filter = {...filter, municipio: {_id: municipio}}
+    }
+
+    if(aldea){
+      filter = {...filter, aldea: {_id: aldea}}
+    }
+
+    if(caserio){
+      filter = {...filter, caserio: {_id: caserio}}
+    }
+
+    if(organizacion){
+      filter = {...filter, organizacion: {_id: organizacion}}
+    }
+
+    if(cargo){
+      filter = {...filter, cargo: {_id: cargo}}
+    }
+
+    const conteoPorSexo = await getStatsSexo(filter);
+    const conteoPorEdad = await getStatsEdad(filter);
+    const conteoPorCargo = await getStatsCargo(filter);
+
+    return {
+      sexo: conteoPorSexo,
+      edad: conteoPorEdad,
+      cargo: conteoPorCargo
+    };
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getStatsSexo(filter){
+  try {
+
+    const stats = await Beneficiario.aggregate([
+      {
+        $match: filter
+      },
+      {
+        $group: {
+          _id: "$sexo",
+          count: { $sum: 1 }
+        }
+      }
+    ]).exec();
+
+    return stats;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getStatsEdad(filter){
+  try {
+
+    const stats = await Beneficiario.aggregate([
+      {
+        $match: filter
+      },
+      {
+        $addFields: {
+          fecha: {
+            $toDate: "$fechaNacimiento"
+          }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            $subtract: [
+              { $year: new Date() },
+              { $year: "$fecha" }
+            ]
+          },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $bucket: {
+          groupBy: "$_id",
+          boundaries: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+          default: "Otros",
+          output: {
+            count: { $sum: "$count" }
+          }
+        }
+      }
+    ]).exec();
+
+    return stats;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getStatsCargo(filter){
+  try {
+
+    const stats = await Beneficiario.aggregate([
+      {
+        $match: filter
+      },
+      {
+        $group: {
+          _id: {
+            Organizacion: '$organizacion',
+            Cargo: '$cargo'
+          },
+          count: { $sum: 1 }
+        }
+      }
+    ]).exec();
+
+    return stats;
+
+  } catch (error) {
+    throw error;
+  }
+}

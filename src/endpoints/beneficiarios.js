@@ -1,4 +1,4 @@
-import { createBeneficiario, deleteBeneficiario, editBeneficiario, getBeneficiarioById, getBeneficiarios } from "../controllers/beneficiarios-controller.js";
+import { createBeneficiario, deleteBeneficiario, editBeneficiario, getBeneficiarioById, getBeneficiarios, getStatsBeneficiarios } from "../controllers/beneficiarios-controller.js";
 
 export const getBeneficiariosEndpoints = (app, upload) => {
 
@@ -93,6 +93,23 @@ export const getBeneficiariosEndpoints = (app, upload) => {
       response.json(beneficiario);
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al eliminar el beneficiario: ' + error });
+    }
+  })
+
+  //GET/POST stats beneficiarios
+  app.post("/api/getstatsbeneficiarios", upload.any(), async (request, response) => {
+    try {
+      const beneficiarios = await getStatsBeneficiarios(
+        request.body.idDepartamento,
+        request.body.idMunicipio,
+        request.body.idAldea,
+        request.body.idCaserio,
+        request.body.idOrganizacion,
+        request.body.idCargo
+      );
+      response.json(beneficiarios);
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener los beneficiarios: ' + error });
     }
   })
 
