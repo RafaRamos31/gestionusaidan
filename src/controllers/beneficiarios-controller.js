@@ -159,37 +159,13 @@ export async function getStatsBeneficiarios(departamento=null, municipio=null, a
       filter = {...filter, cargo: {_id: cargo}}
     }
 
-    const conteoPorSexo = await getStatsSexo(filter);
-    const conteoPorEdad = await getStatsEdad(filter);
+    const conteoPorEdadSexo = await getStatsEdad(filter);
     const conteoPorCargo = await getStatsCargo(filter);
 
     return {
-      sexo: conteoPorSexo,
-      edad: conteoPorEdad,
+      sexo: conteoPorEdadSexo,
       cargo: conteoPorCargo
     };
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function getStatsSexo(filter){
-  try {
-
-    const stats = await Beneficiario.aggregate([
-      {
-        $match: filter
-      },
-      {
-        $group: {
-          _id: "$sexo",
-          count: { $sum: 1 }
-        }
-      }
-    ]).exec();
-
-    return stats;
-
   } catch (error) {
     throw error;
   }
@@ -212,27 +188,91 @@ async function getStatsEdad(filter){
       {
         $group: {
           _id: {
-            $subtract: [
-              { $year: new Date() },
-              { $year: "$fecha" }
-            ]
+            sexo: '$sexo',
+            edad: {
+              $subtract: [
+                { $year: new Date() },
+                { $year: "$fecha" }
+              ]
+            },
           },
           count: { $sum: 1 }
-        }
-      },
-      {
-        $bucket: {
-          groupBy: "$_id",
-          boundaries: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-          default: "Otros",
-          output: {
-            count: { $sum: "$count" }
-          }
         }
       }
     ]).exec();
 
-    return stats;
+    let format = [
+      {
+        name: '0-9',
+        m: 0,
+        f: 0
+      },
+      {
+        name: '10-19',
+        m: 0,
+        f: 0
+      },
+      {
+        name: '20-29',
+        m: 0,
+        f: 0
+      },
+      {
+        name: '30-39',
+        m: 0,
+        f: 0
+      },
+      {
+        name: '40-49',
+        m: 0,
+        f: 0
+      },
+      {
+        name: '50-59',
+        m: 0,
+        f: 0
+      },
+      {
+        name: '60+',
+        m: 0,
+        f: 0
+      },
+    ]
+    
+    const formmated = stats.reduce((acum, item) => {
+      if(item._id.edad <=9){
+        item._id.sexo === 1 ? acum[0].m = acum[0].m + 1 : acum[0].f = acum[0].f + 1
+        return acum;
+      }
+      if(item._id.edad >=10 && item._id.edad <=19){
+        item._id.sexo === 1 ? acum[1].m = acum[1].m + 1 : acum[1].f = acum[1].f + 1
+        return acum;
+      }
+      if(item._id.edad >=20 && item._id.edad <=29){
+        item._id.sexo === 1 ? acum[2].m = acum[2].m + 1 : acum[2].f = acum[2].f + 1
+        return acum;
+      }
+      if(item._id.edad >=30 && item._id.edad <=39){
+        item._id.sexo === 1 ? acum[3].m = acum[3].m + 1 : acum[3].f = acum[3].f + 1
+        return acum;
+      }
+      if(item._id.edad >=40 && item._id.edad <=49){
+        item._id.sexo === 1 ? acum[4].m = acum[4].m + 1 : acum[4].f = acum[4].f + 1
+        return acum;
+      }
+      if(item._id.edad >=50 && item._id.edad <=59){
+        item._id.sexo === 1 ? acum[5].m = acum[5].m + 1 : acum[5].f = acum[5].f + 1
+        return acum;
+      }
+      else{
+        item._id.sexo === 1 ? acum[6].m = acum[6].m + 1 : acum[6].f = acum[6].f + 1
+      }
+
+      return acum;
+
+    }, format)
+
+    return formmated;
 
   } catch (error) {
     throw error;
@@ -249,14 +289,15 @@ async function getStatsCargo(filter){
       {
         $group: {
           _id: {
-            Organizacion: '$organizacion',
-            Cargo: '$cargo'
+            organizacion: '$organizacion',
+            cargo: '$cargo'
           },
           count: { $sum: 1 }
         }
       }
     ]).exec();
 
+    
     return stats;
 
   } catch (error) {
