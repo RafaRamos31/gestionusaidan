@@ -113,6 +113,7 @@ export const getUsuariosEndpoints = (app, upload) => {
       const tokenUser = {
         userId: usuario._id,
         userName: usuario.nombre,
+        userEmail: usuario.correo,
         userRol: usuario.rol
       }
       const token = jwt.sign(tokenUser, 'algo', { expiresIn: '30m' });
@@ -128,7 +129,7 @@ export const getUsuariosEndpoints = (app, upload) => {
   app.get("/api/verify", async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
-  
+
       if (!authorizationHeader) {
         return response.status(401).json({ message: 'Token de autorización no proporcionado' });
       }
@@ -159,6 +160,7 @@ export const getUsuariosEndpoints = (app, upload) => {
       const tokenUser = {
         userId: decoded.userId,
         userName: decoded.userName,
+        userEmail: decoded.userEmail,
         userRol: decoded.userRol
       }
 

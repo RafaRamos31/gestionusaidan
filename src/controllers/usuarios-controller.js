@@ -51,6 +51,18 @@ export async function getUsuarioById(idUsuario){
   }
 }
 
+export async function getUsuarioByIdSimple(idUsuario){
+  try {
+    if(idUsuario === null){
+      return null;
+    }
+    const usuario = await Usuario.findById(idUsuario, 'nombre');
+    return usuario;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export async function createUsuario(nombre, dni, sexo, fechaNacimiento, idDepartamento, idMunicipio,
   idAldea, idCaserio, telefono, idOrganizacion, idCargo, geolocacion, idComponente, correo, password, idUsuario=null){
 
