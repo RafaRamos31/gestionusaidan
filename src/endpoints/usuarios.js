@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { createUsuario, deleteUsuario, editUsuario, getUsuarioById, getUsuarios, loginUser } from "../controllers/usuarios-controller.js";
+import { decodeToken } from '../utilities/jwtDecoder.js';
 
 export const getUsuariosEndpoints = (app, upload) => {
 
@@ -129,43 +130,32 @@ export const getUsuariosEndpoints = (app, upload) => {
   app.get("/api/verify", async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
+      const auth = decodeToken(authorizationHeader);
+      if(auth.code !== 200) return response.status(auth.code).json({ error: 'Ocurrió un error al verificar el login: ' + auth.payload });
 
-      if (!authorizationHeader) {
-        return response.status(401).json({ message: 'Token de autorización no proporcionado' });
-      }
-
-      const token = authorizationHeader.split(' ')[1]; // Ignorar "Bearer" y obtener el token
-
-      var decoded = jwt.verify(token, 'algo');
-      response.json({user: decoded});
+      response.json({user: auth.payload});
 
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al verificar el login: ' + error });
     }
   })
 
+
   //Refresh auth
   app.get("/api/refresh", async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
-  
-      if (!authorizationHeader) {
-        return response.status(401).json({ message: 'Token de autorización no proporcionado' });
-      }
-
-      const token = authorizationHeader.split(' ')[1]; // Ignorar "Bearer" y obtener el token
-
-      var decoded = jwt.verify(token, 'algo');
+      const auth = decodeToken(authorizationHeader);
+      if(auth.code !== 200) return response.status(auth.code).json({ error: 'Ocurrió un error al verificar el login: ' + auth.payload });
 
       const tokenUser = {
-        userId: decoded.userId,
-        userName: decoded.userName,
-        userEmail: decoded.userEmail,
-        userRol: decoded.userRol
+        userId: auth.payload.userId,
+        userName: auth.payload.userName,
+        userEmail: auth.payload.userEmail,
+        userRol: auth.payload.userRol
       }
 
       const newToken = jwt.sign(tokenUser, 'algo', { expiresIn: '30m' });
-
       response.json({token: newToken});
 
     } catch (error) {

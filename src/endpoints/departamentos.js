@@ -5,8 +5,10 @@ export const getDepartamentosEndpoints = (app, upload) => {
   //GET departamentos
   app.get("/api/departamentos", async (request, response) => {
     try {
-      const departamentos = await getAllDepartamentos();
-      response.json(departamentos);
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getAllDepartamentos(authorizationHeader, response);
+
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener los departamentos: ' + error });
     }
@@ -15,10 +17,14 @@ export const getDepartamentosEndpoints = (app, upload) => {
   //GET departamento by Id
   app.get("/api/departamento/:idDepartamento", upload.any(), async (request, response) => {
     try {
-      const departamento = await getDepartamentoById(request.params.idDepartamento);
-      if(!departamento) return response.status(404).send('Departamento no encontrado');
+      const authorizationHeader = request.headers['authorization'];
 
-      response.json(departamento);
+      response = await getDepartamentoById(
+        authorizationHeader,
+        response,
+        request.params.idDepartamento
+      );
+
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener el departamento: ' + error });
     }
@@ -27,8 +33,10 @@ export const getDepartamentosEndpoints = (app, upload) => {
   //GET all revisiones departamentos
   app.get("/api/departamentos/revisiones", async (request, response) => {
     try {
-      const revisiones = await getAllRevisionesDepartamentos();
-      response.json(revisiones);
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getAllRevisionesDepartamentos(authorizationHeader, response);
+
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener las revisiones: ' + error });
     }
@@ -37,10 +45,14 @@ export const getDepartamentosEndpoints = (app, upload) => {
   //GET revisiones departamento
   app.get("/api/departamento/revision/:idDepartamento", upload.any(), async (request, response) => {
     try {
-      const revisiones = await getRevisionesDepartamento(request.params.idDepartamento);
-      if(!revisiones) return response.status(404).send('Departamento no encontrado');
+      const authorizationHeader = request.headers['authorization'];
 
-      response.json(revisiones);
+      response = await getRevisionesDepartamento(
+        authorizationHeader,
+        response,
+        request.params.idDepartamento
+      );
+
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener las revisiones del departamento: ' + error });
     }
@@ -49,11 +61,13 @@ export const getDepartamentosEndpoints = (app, upload) => {
   //POST departamento
   app.post("/api/departamentos", upload.any(), async (request, response) => {
     try {
-        response = await createDepartamento(
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await createDepartamento(
+        authorizationHeader,
         response,
         request.body.nombre,
         request.body.geocode,
-        request.body.idUsuario,
         JSON.parse(request.body.aprobar)
       );
       
@@ -65,12 +79,14 @@ export const getDepartamentosEndpoints = (app, upload) => {
   //PUT modificar departamento
   app.put("/api/departamentos", upload.any(), async (request, response) => {
     try {
+      const authorizationHeader = request.headers['authorization'];
+
       response = await editDepartamento(
+        authorizationHeader,
         response,
         request.body.idDepartamento,
         request.body.nombre,
         request.body.geocode,
-        request.body.idUsuario,
         JSON.parse(request.body.aprobar)
       );
 
@@ -82,10 +98,12 @@ export const getDepartamentosEndpoints = (app, upload) => {
    //PUT modificar departamento
   app.put("/api/departamentos/revisar", upload.any(), async (request, response) => {
     try {
+      const authorizationHeader = request.headers['authorization'];
+
       response = await revisarUpdateDepartamento(
+        authorizationHeader,
         response,
         request.body.idDepartamento,
-        request.body.idUsuario,
         JSON.parse(request.body.aprobado),
         request.body.observaciones,
       );
@@ -99,10 +117,12 @@ export const getDepartamentosEndpoints = (app, upload) => {
   //DELETE eliminar departamento
   app.delete("/api/departamentos", upload.any(), async (request, response) => {
     try {
+      const authorizationHeader = request.headers['authorization'];
+
       response = await deleteDepartamento(
+        authorizationHeader,
         response,
         request.body.idDepartamento,
-        request.body.idEliminador,
         request.body.observaciones,
       );
 

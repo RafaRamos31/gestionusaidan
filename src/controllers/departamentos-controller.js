@@ -1,4 +1,5 @@
 import Departamento from "../models/departamentos.js";
+import { decodeToken } from "../utilities/jwtDecoder.js";
 import { updateVersion } from "../utilities/versionHelper.js";
 import { getUsuarioById, getUsuarioByIdSimple } from "./usuarios-controller.js";
 
@@ -16,34 +17,68 @@ async function validateUniquesDepartamento({id=null, geocode = null}){
   return Departamento.exists(filter);
 }
 
-export async function getAllDepartamentos(){
-  return Departamento.find({estado: 'Publicado'}).sort({ geocode: 1 });
+export async function getAllDepartamentos(header, response){
+  try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Departamentos. ' + auth.payload });
+    
+    const departamentos = await Departamento.find({estado: 'Publicado'}).sort({ geocode: 1 })
+
+    response.json(departamentos);
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+  
 }
 
-export async function getDepartamentoById(idDepartamento){
+export async function getDepartamentoById(header, response, idDepartamento){
   try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Departamento. ' + auth.payload });
+    
     const departamento = await Departamento.findById(idDepartamento);
-    return departamento;
+
+    response.json(departamento);
+    return response;
+
   } catch (error) {
     throw error;
   }
 }
 
-export async function getAllRevisionesDepartamentos(){
-  return Departamento.find({estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({ fechaEdicion: -1 });
+export async function getAllRevisionesDepartamentos(header, response){
+  const auth = decodeToken(header);
+  if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Departamentos. ' + auth.payload });
+  
+  const revisiones = await Departamento.find({estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({ fechaEdicion: -1 });
+
+  response.json(revisiones);
+  return response; 
 }
 
-export async function getRevisionesDepartamento(idDepartamento){
+export async function getRevisionesDepartamento(header, response, idDepartamento){
   try {
-    return Departamento.find({original: {_id: idDepartamento}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1});
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Departamento. ' + auth.payload });
+    
+    const revisiones = await Departamento.find({original: {_id: idDepartamento}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1});
+
+    response.json(revisiones);
+    return response; 
+
   } catch (error) {
     throw error;
   }
 }
 
-export async function createDepartamento(response, nombre, geocode, idUsuario, aprobar=false){
+export async function createDepartamento(header, response, nombre, geocode, aprobar=false){
   try {
-    const editor = await getUsuarioByIdSimple(idUsuario);
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el departamento. ' + auth.payload });
+
+    const editor = await getUsuarioByIdSimple(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al crear el departamento. Usuario no encontrado' });
 
     const existentGeocode = await validateUniquesDepartamento({geocode})
@@ -108,16 +143,19 @@ export async function createDepartamento(response, nombre, geocode, idUsuario, a
   }
 }
 
-export async function editDepartamento(response, idDepartamento, nombre, geocode, idUsuario=null, aprobar=false){
+export async function editDepartamento(header, response, idDepartamento, nombre, geocode, aprobar=false){
   try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar el departamento. ' + auth.payload });
+
     const departamento = await getDepartamentoById(idDepartamento);
     if(!departamento) return response.status(404).json({ error: 'Error al editar el departamento. Departamento no encontrado' });
-  
-    const editor = await getUsuarioByIdSimple(idUsuario);
+
+    const editor = await getUsuarioByIdSimple(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al editar el departamento. Usuario no encontrado' });
   
     const existentGeocode = await validateUniquesDepartamento({geocode, id: idDepartamento})
-    if(existentGeocode) return response.status(400).json({ error: `Error al crear el departamento. El geocode ${geocode} ya está en uso.` });
+    if(existentGeocode) return response.status(400).json({ error: `Error al editar el departamento. El geocode ${geocode} ya está en uso.` });
   
     //Crear objeto de actualizacion
     const updateDepartamento = new Departamento({
@@ -168,15 +206,18 @@ export async function editDepartamento(response, idDepartamento, nombre, geocode
   }
 }
 
-export async function revisarUpdateDepartamento(response, idDepartamento, idRevisor, aprobado, observaciones){
+export async function revisarUpdateDepartamento(header, response, idDepartamento, idRevisor, aprobado, observaciones){
   try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el departamento. ' + auth.payload });
+
     const updateDepartamento = await getDepartamentoById(idDepartamento);
     if(!updateDepartamento) return response.status(404).json({ error: 'Error al revisar el departamento. Revisión no encontrada.' });
 
     const original = await getDepartamentoById(updateDepartamento.original);
     if(!original && updateDepartamento.version !== '0.1') return response.status(404).json({ error: 'Error al revisar el departamento. Departamento no encontrado.' });
 
-    const revisor = await getUsuarioByIdSimple(idRevisor);
+    const revisor = await getUsuarioByIdSimple(auth.payload.userId);
     if(!revisor) return response.status(404).json({ error: 'Error al revisar el departamento. Usuario no encontrado' });
 
     if(aprobado){
@@ -262,11 +303,14 @@ export async function revisarUpdateDepartamento(response, idDepartamento, idRevi
   }
 }
 
-export async function deleteDepartamento(response, idDepartamento, idEliminador, observaciones=null){
+export async function deleteDepartamento(header, response, idDepartamento, observaciones=null){
+  const auth = decodeToken(header);
+  if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el departamento. ' + auth.payload });
+
   const departamento = await getDepartamentoById(idDepartamento);
   if(!departamento) return response.status(404).json({ error: 'Error al eliminar el departamento. Departamento no encontrado.' });
 
-  const eliminador = await getUsuarioByIdSimple(idEliminador);
+  const eliminador = await getUsuarioByIdSimple(auth.payload.userId);
   if(!eliminador) return response.status(404).json({ error: 'Error al eliminar el departamento. Usuario no encontrado.' });
 
   departamento.estado = 'Eliminado'
