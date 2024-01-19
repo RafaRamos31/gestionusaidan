@@ -48,6 +48,14 @@ export async function getDepartamentoById(header, response, idDepartamento){
   }
 }
 
+async function privateGetDepartamentoById(idDepartamento){
+  try {
+    return Departamento.findById(idDepartamento);
+  } catch (error) {
+    throw error;
+  }
+}
+
 export async function getAllRevisionesDepartamentos(header, response){
   const auth = decodeToken(header);
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Departamentos. ' + auth.payload });
@@ -148,15 +156,15 @@ export async function editDepartamento(header, response, idDepartamento, nombre,
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar el departamento. ' + auth.payload });
 
-    const departamento = await getDepartamentoById(idDepartamento);
+    const departamento = await privateGetDepartamentoById(idDepartamento);
     if(!departamento) return response.status(404).json({ error: 'Error al editar el departamento. Departamento no encontrado' });
 
     const editor = await getUsuarioByIdSimple(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al editar el departamento. Usuario no encontrado' });
-  
+
     const existentGeocode = await validateUniquesDepartamento({geocode, id: idDepartamento})
     if(existentGeocode) return response.status(400).json({ error: `Error al editar el departamento. El geocode ${geocode} ya está en uso.` });
-  
+
     //Crear objeto de actualizacion
     const updateDepartamento = new Departamento({
       //Propiedades de objeto
@@ -211,10 +219,10 @@ export async function revisarUpdateDepartamento(header, response, idDepartamento
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el departamento. ' + auth.payload });
 
-    const updateDepartamento = await getDepartamentoById(idDepartamento);
+    const updateDepartamento = await privateGetDepartamentoById(idDepartamento);
     if(!updateDepartamento) return response.status(404).json({ error: 'Error al revisar el departamento. Revisión no encontrada.' });
 
-    const original = await getDepartamentoById(updateDepartamento.original);
+    const original = await privateGetDepartamentoById(updateDepartamento.original);
     if(!original && updateDepartamento.version !== '0.1') return response.status(404).json({ error: 'Error al revisar el departamento. Departamento no encontrado.' });
 
     const revisor = await getUsuarioByIdSimple(auth.payload.userId);
@@ -307,7 +315,7 @@ export async function deleteDepartamento(header, response, idDepartamento, obser
   const auth = decodeToken(header);
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el departamento. ' + auth.payload });
 
-  const departamento = await getDepartamentoById(idDepartamento);
+  const departamento = await privateGetDepartamentoById(idDepartamento);
   if(!departamento) return response.status(404).json({ error: 'Error al eliminar el departamento. Departamento no encontrado.' });
 
   const eliminador = await getUsuarioByIdSimple(auth.payload.userId);
