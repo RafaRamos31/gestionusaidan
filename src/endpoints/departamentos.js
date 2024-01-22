@@ -1,4 +1,4 @@
-import { createDepartamento, deleteDepartamento, editDepartamento, getAllDepartamentos, getAllRevisionesDepartamentos, getDepartamentoById, getRevisionesDepartamento, revisarUpdateDepartamento } from "../controllers/departamentos-controller.js";
+import { createDepartamento, deleteDepartamento, editDepartamento, getAllDepartamentos, getAllRevisionesDepartamentos, getDepartamentoById, getDepartamentosPublic, getRevisionesDepartamento, revisarUpdateDepartamento } from "../controllers/departamentos-controller.js";
 
 export const getDepartamentosEndpoints = (app, upload) => {
 
@@ -9,6 +9,16 @@ export const getDepartamentosEndpoints = (app, upload) => {
 
       response = await getAllDepartamentos(authorizationHeader, response);
 
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener los departamentos: ' + error });
+    }
+  })
+
+  //GET departamentos public
+  app.get("/api/public/departamentos", async (request, response) => {
+    try {
+      const departamentos  = await getDepartamentosPublic();
+      response.json(departamentos)
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener los departamentos: ' + error });
     }

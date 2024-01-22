@@ -36,6 +36,16 @@ export async function getAllDepartamentos(header, response){
   
 }
 
+export async function getDepartamentosPublic(){
+  try {
+    return  Departamento.find({estado: 'Publicado'}, '_id nombre').sort({ geocode: 1 })
+
+  } catch (error) {
+    throw error;
+  }
+  
+}
+
 export async function getDepartamentoById(header, response, idDepartamento){
   try {
     const auth = decodeToken(header);
