@@ -1,7 +1,7 @@
 import Departamento from "../models/departamentos.js";
 import { decodeToken } from "../utilities/jwtDecoder.js";
 import { updateVersion } from "../utilities/versionHelper.js";
-import { getUsuarioById, getUsuarioByIdSimple } from "./usuarios-controller.js";
+import { getUsuarioByIdSimple } from "./usuarios-controller.js";
 
 async function validateUniquesDepartamento({id=null, geocode = null}){
   let filter = {estado: 'Publicado'}
@@ -22,7 +22,10 @@ export async function getAllDepartamentos(header, response){
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Departamentos. ' + auth.payload });
     
-    const departamentos = await Departamento.find({estado: 'Publicado'}).sort({ geocode: 1 })
+    const departamentos = await Departamento.find({estado: 'Publicado'}).sort({ geocode: 1 }).populate([{
+      path: 'editor revisor',
+      select: '_id nombre',
+    }]);
 
     response.json(departamentos);
     return response;
@@ -38,7 +41,10 @@ export async function getDepartamentoById(header, response, idDepartamento){
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Departamento. ' + auth.payload });
     
-    const departamento = await Departamento.findById(idDepartamento);
+    const departamento = await Departamento.findById(idDepartamento).populate([{
+      path: 'editor revisor eliminador',
+      select: '_id nombre',
+    }]);;
 
     response.json(departamento);
     return response;
@@ -60,7 +66,10 @@ export async function getAllRevisionesDepartamentos(header, response){
   const auth = decodeToken(header);
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Departamentos. ' + auth.payload });
   
-  const revisiones = await Departamento.find({estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({ fechaEdicion: -1 });
+  const revisiones = await Departamento.find({estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({ fechaEdicion: -1 }).populate([{
+    path: 'editor revisor',
+    select: '_id nombre',
+  }]);
 
   response.json(revisiones);
   return response; 
@@ -71,7 +80,10 @@ export async function getRevisionesDepartamento(header, response, idDepartamento
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Departamento. ' + auth.payload });
     
-    const revisiones = await Departamento.find({original: {_id: idDepartamento}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1});
+    const revisiones = await Departamento.find({original: {_id: idDepartamento}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
+      path: 'editor revisor',
+      select: '_id nombre',
+    }]);
 
     response.json(revisiones);
     return response; 
