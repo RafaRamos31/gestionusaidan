@@ -236,7 +236,7 @@ export async function editDepartamento(header, response, idDepartamento, nombre,
   }
 }
 
-export async function revisarUpdateDepartamento(header, response, idDepartamento, idRevisor, aprobado, observaciones){
+export async function revisarUpdateDepartamento(header, response, idDepartamento, aprobado, observaciones){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el departamento. ' + auth.payload });
