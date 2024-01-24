@@ -1,4 +1,4 @@
-import { createDepartamento, deleteDepartamento, editDepartamento, getAllDepartamentos, getAllRevisionesDepartamentos, getCountDepartamentos, getDepartamentoById, getDepartamentosPublic, getPagedDepartamentos, getRevisionesDepartamento, revisarUpdateDepartamento } from "../controllers/departamentos-controller.js";
+import { createDepartamento, deleteDepartamento, editDepartamento, getAllDepartamentos, getAllRevisionesDepartamentos, getCountDepartamentos, getDepartamentoById, getDepartamentosPublic, getPagedDepartamentos, getPagedRevisionesDepartamento, getRevisionesDepartamento, revisarUpdateDepartamento } from "../controllers/departamentos-controller.js";
 
 export const getDepartamentosEndpoints = (app, upload) => {
 
@@ -102,7 +102,7 @@ export const getDepartamentosEndpoints = (app, upload) => {
     try {
       const authorizationHeader = request.headers['authorization'];
 
-      response = await getPagedDepartamentos(
+      response = await getPagedRevisionesDepartamento(
         authorizationHeader,
         response,
         request.body.page,
