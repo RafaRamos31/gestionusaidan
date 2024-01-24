@@ -17,6 +17,28 @@ async function validateUniquesDepartamento({id=null, geocode = null}){
   return Departamento.exists(filter);
 }
 
+export async function getCountDepartamentos(header, response, type){
+  try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Departamentos. ' + auth.payload });
+
+    let count;
+    if(type === '1'){
+      count = await Departamento.count({estado: { $in: ['Publicado']}})
+    }
+    else{
+      count = await Departamento.count({estado: { $in: ['En revisión', 'Validado', 'Rechazado']}})
+    }
+
+    response.json({count: count});
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+  
+}
+
 export async function getAllDepartamentos(header, response){
   try {
     const auth = decodeToken(header);
@@ -33,7 +55,26 @@ export async function getAllDepartamentos(header, response){
   } catch (error) {
     throw error;
   }
-  
+}
+
+export async function getPagedDepartamentos(header, response, page, pageSize){
+  try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Departamentos. ' + auth.payload });
+
+    const skip = (page) * pageSize
+    
+    const departamentos = await Departamento.find({estado: 'Publicado'}).sort({ geocode: 1 }).skip(skip).limit(pageSize).populate([{
+      path: 'editor revisor',
+      select: '_id nombre',
+    }]);
+
+    response.json(departamentos);
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
 }
 
 export async function getDepartamentosPublic(){
@@ -77,6 +118,22 @@ export async function getAllRevisionesDepartamentos(header, response){
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Departamentos. ' + auth.payload });
   
   const revisiones = await Departamento.find({estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({ fechaEdicion: -1 }).populate([{
+    path: 'editor revisor',
+    select: '_id nombre',
+  }]);
+
+  response.json(revisiones);
+  return response; 
+}
+
+
+export async function getPagedRevisionesDepartamento(header, response){
+  const auth = decodeToken(header);
+  if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Departamentos. ' + auth.payload });
+  
+  const skip = (page) * pageSize
+  
+  const revisiones = await Departamento.find({estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({ fechaEdicion: -1 }).skip(skip).limit(pageSize).populate([{
     path: 'editor revisor',
     select: '_id nombre',
   }]);

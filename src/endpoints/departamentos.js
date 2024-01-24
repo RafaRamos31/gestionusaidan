@@ -1,6 +1,18 @@
-import { createDepartamento, deleteDepartamento, editDepartamento, getAllDepartamentos, getAllRevisionesDepartamentos, getDepartamentoById, getDepartamentosPublic, getRevisionesDepartamento, revisarUpdateDepartamento } from "../controllers/departamentos-controller.js";
+import { createDepartamento, deleteDepartamento, editDepartamento, getAllDepartamentos, getAllRevisionesDepartamentos, getCountDepartamentos, getDepartamentoById, getDepartamentosPublic, getPagedDepartamentos, getRevisionesDepartamento, revisarUpdateDepartamento } from "../controllers/departamentos-controller.js";
 
 export const getDepartamentosEndpoints = (app, upload) => {
+
+   //GET count departamentos
+  app.get("/api/count/departamentos/:type", async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getCountDepartamentos(authorizationHeader, response, request.params.type);
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener los departamentos: ' + error });
+    }
+  })
 
   //GET departamentos
   app.get("/api/departamentos", async (request, response) => {
@@ -41,7 +53,7 @@ export const getDepartamentosEndpoints = (app, upload) => {
   })
   
   //GET all revisiones departamentos
-  app.get("/api/departamentos/revisiones", async (request, response) => {
+  app.get("/api/revisiones/departamentos", async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
 
@@ -53,7 +65,7 @@ export const getDepartamentosEndpoints = (app, upload) => {
   })
 
   //GET revisiones departamento
-  app.get("/api/departamento/revision/:idDepartamento", upload.any(), async (request, response) => {
+  app.get("/api/revisiones/departamento/:idDepartamento", upload.any(), async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
 
@@ -67,6 +79,41 @@ export const getDepartamentosEndpoints = (app, upload) => {
       response.status(500).json({ error: 'Ocurrió un error al obtener las revisiones del departamento: ' + error });
     }
   })
+
+  //POST Get PAGED departamentos
+  app.post("/api/paged/departamentos", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getPagedDepartamentos(
+        authorizationHeader,
+        response,
+        request.body.page,
+        request.body.pageSize,
+      );
+      
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener los departamentos: ' + error });
+    }
+  })
+
+  //POST Get PAGED departamentos Revisiones
+  app.post("/api/paged/revisiones/departamentos", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getPagedDepartamentos(
+        authorizationHeader,
+        response,
+        request.body.page,
+        request.body.pageSize,
+      );
+      
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener las revisiones de los departamentos: ' + error });
+    }
+  })
+
 
   //POST departamento
   app.post("/api/departamentos", upload.any(), async (request, response) => {
@@ -106,7 +153,7 @@ export const getDepartamentosEndpoints = (app, upload) => {
   })
 
    //PUT modificar departamento
-  app.put("/api/departamentos/revisar", upload.any(), async (request, response) => {
+  app.put("/api/revisiones/departamentos", upload.any(), async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
 
