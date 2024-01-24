@@ -127,7 +127,7 @@ export async function getAllRevisionesDepartamentos(header, response){
 }
 
 
-export async function getPagedRevisionesDepartamento(header, response){
+export async function getPagedRevisionesDepartamento(header, response, page, pageSize){
   const auth = decodeToken(header);
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Departamentos. ' + auth.payload });
   
