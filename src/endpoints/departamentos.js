@@ -81,7 +81,7 @@ export const getDepartamentosEndpoints = (app, upload) => {
   })
 
   //POST Get PAGED departamentos
-  app.post("/api/paged/departamentos", upload.any(), async (request, response) => {
+  app.post("/api/paged/departamentos/:type", upload.any(), async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
 
@@ -90,6 +90,7 @@ export const getDepartamentosEndpoints = (app, upload) => {
         response,
         request.body.page,
         request.body.pageSize,
+        request.params.type
       );
       
     } catch (error) {

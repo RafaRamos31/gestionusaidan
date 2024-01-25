@@ -69,17 +69,26 @@ export async function getAllDepartamentos(header, response, type){
   }
 }
 
-export async function getPagedDepartamentos(header, response, page, pageSize){
+export async function getPagedDepartamentos(header, response, page, pageSize, type){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Departamentos. ' + auth.payload });
 
     const skip = (page) * pageSize
-    
-    const departamentos = await Departamento.find({estado: 'Publicado'}).sort({ geocode: 1 }).skip(skip).limit(pageSize).populate([{
-      path: 'editor revisor',
-      select: '_id nombre',
-    }]);
+
+    let departamentos;
+    if(type === '1'){
+      departamentos = await Departamento.find({estado: 'Publicado'}).sort({ geocode: 1 }).skip(skip).limit(pageSize).populate([{
+        path: 'editor revisor eliminador',
+        select: '_id nombre',
+      }]);
+    }
+    if(type === '2'){
+      departamentos = await Departamento.find({estado: { $in: ['Publicado', 'Eliminado']}}).sort({ geocode: 1 }).skip(skip).limit(pageSize).populate([{
+        path: 'editor revisor eliminador',
+        select: '_id nombre',
+      }]);
+    }
 
     response.json(departamentos);
     return response;
