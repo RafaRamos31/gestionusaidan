@@ -179,7 +179,7 @@ export const getDepartamentosEndpoints = (app, upload) => {
       response = await deleteDepartamento(
         authorizationHeader,
         response,
-        request.body.idDepartamento,
+        request.body.id,
         request.body.observaciones,
       );
 
