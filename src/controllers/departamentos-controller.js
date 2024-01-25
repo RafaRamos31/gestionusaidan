@@ -26,6 +26,9 @@ export async function getCountDepartamentos(header, response, type){
     if(type === '1'){
       count = await Departamento.count({estado: { $in: ['Publicado']}})
     }
+    if(type === '2'){
+      count = await Departamento.count({estado: { $in: ['Publicado', 'Eliminado']}})
+    }
     else{
       count = await Departamento.count({estado: { $in: ['En revisión', 'Validado', 'Rechazado']}})
     }
@@ -39,15 +42,24 @@ export async function getCountDepartamentos(header, response, type){
   
 }
 
-export async function getAllDepartamentos(header, response){
+export async function getAllDepartamentos(header, response, type){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Departamentos. ' + auth.payload });
     
-    const departamentos = await Departamento.find({estado: 'Publicado'}).sort({ geocode: 1 }).populate([{
-      path: 'editor revisor',
-      select: '_id nombre',
-    }]);
+    let departamentos;
+    if(type === '1'){
+      departamentos = await Departamento.find({estado: 'Publicado'}).sort({ geocode: 1 }).populate([{
+        path: 'editor revisor eliminador',
+        select: '_id nombre',
+      }]);
+    }
+    if(type === '2'){
+      departamentos = await Departamento.find({estado: { $in: ['Publicado', 'Eliminado']}}).sort({ geocode: 1 }).populate([{
+        path: 'editor revisor eliminador',
+        select: '_id nombre',
+      }]);
+    }
 
     response.json(departamentos);
     return response;
@@ -392,7 +404,7 @@ export async function revisarUpdateDepartamento(header, response, idDepartamento
 
 export async function deleteDepartamento(header, response, idDepartamento, observaciones=null){
   const auth = decodeToken(header);
-  if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el departamento. ' + auth.payload });
+  if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al eliminar el departamento. ' + auth.payload });
 
   const departamento = await privateGetDepartamentoById(idDepartamento);
   if(!departamento) return response.status(404).json({ error: 'Error al eliminar el departamento. Departamento no encontrado.' });

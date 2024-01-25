@@ -15,11 +15,11 @@ export const getDepartamentosEndpoints = (app, upload) => {
   })
 
   //GET departamentos
-  app.get("/api/departamentos", async (request, response) => {
+  app.get("/api/departamentos/:type", async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
 
-      response = await getAllDepartamentos(authorizationHeader, response);
+      response = await getAllDepartamentos(authorizationHeader, response, request.params.type);
 
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener los departamentos: ' + error });
