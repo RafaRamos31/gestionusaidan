@@ -400,10 +400,20 @@ export async function deleteDepartamento(header, response, idDepartamento, obser
   const eliminador = await getUsuarioByIdSimple(auth.payload.userId);
   if(!eliminador) return response.status(404).json({ error: 'Error al eliminar el departamento. Usuario no encontrado.' });
 
-  departamento.estado = 'Eliminado'
-  departamento.fechaEliminacion = new Date();
-  departamento.eliminador = eliminador;
-  departamento.observaciones = observaciones;
+  if(departamento.estado !== 'Eliminado'){
+    departamento.estado = 'Eliminado'
+    departamento.fechaEliminacion = new Date();
+    departamento.eliminador = eliminador;
+    departamento.observaciones = observaciones;
+  }
+
+  else{
+    departamento.estado = 'Publicado'
+    departamento.fechaEliminacion = null;
+    departamento.eliminador = null;
+    departamento.observaciones = null;
+  }
+  
 
   await departamento.save();
 
