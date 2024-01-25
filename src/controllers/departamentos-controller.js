@@ -26,7 +26,7 @@ export async function getCountDepartamentos(header, response, type){
     if(type === '1'){
       count = await Departamento.count({estado: { $in: ['Publicado']}})
     }
-    if(type === '2'){
+    else if(type === '2'){
       count = await Departamento.count({estado: { $in: ['Publicado', 'Eliminado']}})
     }
     else{
