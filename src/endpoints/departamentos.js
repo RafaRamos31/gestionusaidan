@@ -108,6 +108,8 @@ export const getDepartamentosEndpoints = (app, upload) => {
         response,
         request.body.page,
         request.body.pageSize,
+        JSON.parse(request.body.filter),
+        JSON.parse(request.body.sort)
       );
       
     } catch (error) {

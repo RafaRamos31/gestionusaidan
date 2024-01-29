@@ -69,12 +69,17 @@ export async function getAllDepartamentos(header, response, type){
   }
 }
 
-export async function getPagedDepartamentos(header, response, page, pageSize, type){
+export async function getPagedDepartamentos(header, response, page, pageSize, type, sort, filter){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Departamentos. ' + auth.payload });
 
     const skip = (page) * pageSize
+
+    const jsonSort = JSON.parse(sort);
+
+    
+
 
     let departamentos;
     if(type === '1'){
@@ -148,13 +153,30 @@ export async function getAllRevisionesDepartamentos(header, response){
 }
 
 
-export async function getPagedRevisionesDepartamento(header, response, page, pageSize){
+export async function getPagedRevisionesDepartamento(header, response, page, pageSize, filter, sort){
   const auth = decodeToken(header);
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Departamentos. ' + auth.payload });
   
   const skip = (page) * pageSize
+
+  //Sorting
+  let sortQuery = {}
+  if(sort.field){
+    sortQuery[sort.field] = sort.sort === 'desc' ? -1 : 1
+  }
+  else{
+    sortQuery = { fechaEdicion: -1 }
+  }
+
+  //Filter
+  let filterQuery = {estado: { $nin: ['Publicado', 'Eliminado'] }}
+  if(filter.value){
+    if(filter.operator === 'contains'){
+      filterQuery[filter.field] = { $regex: new RegExp(filter.value, 'i')}
+    }
+  }
   
-  const revisiones = await Departamento.find({estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({ fechaEdicion: -1 }).skip(skip).limit(pageSize).populate([{
+  const revisiones = await Departamento.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate([{
     path: 'editor revisor',
     select: '_id nombre',
   }]);
