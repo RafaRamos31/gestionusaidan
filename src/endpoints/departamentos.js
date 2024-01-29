@@ -1,40 +1,46 @@
-import { createDepartamento, deleteDepartamento, editDepartamento, getAllDepartamentos, getAllRevisionesDepartamentos, getCountDepartamentos, getDepartamentoById, getDepartamentosPublic, getPagedDepartamentos, getPagedRevisionesDepartamento, getRevisionesDepartamento, revisarUpdateDepartamento } from "../controllers/departamentos-controller.js";
+import { createDepartamento, deleteDepartamento, editDepartamento, getCountDepartamentos, getDepartamentoById, getPagedDepartamentos, getRevisionesDepartamento, revisarUpdateDepartamento } from "../controllers/departamentos-controller.js";
 
 export const getDepartamentosEndpoints = (app, upload) => {
 
    //GET count departamentos
-  app.get("/api/count/departamentos/:type", async (request, response) => {
+  app.post("/api/count/departamentos", upload.any(), async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
 
-      response = await getCountDepartamentos(authorizationHeader, response, request.params.type);
+      response = await getCountDepartamentos({
+        header: authorizationHeader,
+        response,
+        filterParams: JSON.parse(request.body.filter),
+        reviews: JSON.parse(request.body.reviews),
+        deleteds: JSON.parse(request.body.deleteds)
+      });
 
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener los departamentos: ' + error });
     }
   })
 
-  //GET departamentos
-  app.get("/api/departamentos/:type", async (request, response) => {
+   //POST Get PAGED departamentos
+  app.post("/api/paged/departamentos", upload.any(), async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
 
-      response = await getAllDepartamentos(authorizationHeader, response, request.params.type);
-
+      response = await getPagedDepartamentos({
+        header: authorizationHeader,
+        response,
+        page: request.body.page,
+        pageSize: request.body.pageSize,
+        filter: JSON.parse(request.body.filter),
+        sort: JSON.parse(request.body.sort),
+        reviews: JSON.parse(request.body.reviews),
+        deleteds: JSON.parse(request.body.deleteds)
+      });
+      
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener los departamentos: ' + error });
     }
   })
 
-  //GET departamentos public
-  app.get("/api/public/departamentos", async (request, response) => {
-    try {
-      const departamentos  = await getDepartamentosPublic();
-      response.json(departamentos)
-    } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al obtener los departamentos: ' + error });
-    }
-  })
 
   //GET departamento by Id
   app.get("/api/departamento/:idDepartamento", upload.any(), async (request, response) => {
@@ -52,17 +58,6 @@ export const getDepartamentosEndpoints = (app, upload) => {
     }
   })
   
-  //GET all revisiones departamentos
-  app.get("/api/revisiones/departamentos", async (request, response) => {
-    try {
-      const authorizationHeader = request.headers['authorization'];
-
-      response = await getAllRevisionesDepartamentos(authorizationHeader, response);
-
-    } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al obtener las revisiones: ' + error });
-    }
-  })
 
   //GET revisiones departamento
   app.get("/api/revisiones/departamento/:idDepartamento", upload.any(), async (request, response) => {
@@ -77,43 +72,6 @@ export const getDepartamentosEndpoints = (app, upload) => {
 
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener las revisiones del departamento: ' + error });
-    }
-  })
-
-  //POST Get PAGED departamentos
-  app.post("/api/paged/departamentos/:type", upload.any(), async (request, response) => {
-    try {
-      const authorizationHeader = request.headers['authorization'];
-
-      response = await getPagedDepartamentos(
-        authorizationHeader,
-        response,
-        request.body.page,
-        request.body.pageSize,
-        request.params.type
-      );
-      
-    } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al obtener los departamentos: ' + error });
-    }
-  })
-
-  //POST Get PAGED departamentos Revisiones
-  app.post("/api/paged/revisiones/departamentos", upload.any(), async (request, response) => {
-    try {
-      const authorizationHeader = request.headers['authorization'];
-
-      response = await getPagedRevisionesDepartamento(
-        authorizationHeader,
-        response,
-        request.body.page,
-        request.body.pageSize,
-        JSON.parse(request.body.filter),
-        JSON.parse(request.body.sort)
-      );
-      
-    } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al obtener las revisiones de los departamentos: ' + error });
     }
   })
 
@@ -155,7 +113,7 @@ export const getDepartamentosEndpoints = (app, upload) => {
     }
   })
 
-   //PUT modificar departamento
+   //PUT revisar departamento
   app.put("/api/revisiones/departamentos", upload.any(), async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];

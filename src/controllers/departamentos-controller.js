@@ -1,8 +1,10 @@
 import Departamento from "../models/departamentos.js";
 import { decodeToken } from "../utilities/jwtDecoder.js";
+import { getFilter, getSorting } from "../utilities/queryConstructor.js";
 import { updateVersion } from "../utilities/versionHelper.js";
 import { getUsuarioByIdSimple } from "./usuarios-controller.js";
 
+//Internos para validacion de claves unicas
 async function validateUniquesDepartamento({id=null, geocode = null}){
   let filter = {estado: 'Publicado'}
 
@@ -17,51 +19,27 @@ async function validateUniquesDepartamento({id=null, geocode = null}){
   return Departamento.exists(filter);
 }
 
-export async function getCountDepartamentos(header, response, type){
+//Get internal
+async function privateGetDepartamentoById(idDepartamento){
   try {
-    const auth = decodeToken(header);
-    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Departamentos. ' + auth.payload });
-
-    let count;
-    if(type === '1'){
-      count = await Departamento.count({estado: { $in: ['Publicado']}})
-    }
-    else if(type === '2'){
-      count = await Departamento.count({estado: { $in: ['Publicado', 'Eliminado']}})
-    }
-    else{
-      count = await Departamento.count({estado: { $in: ['En revisión', 'Validado', 'Rechazado']}})
-    }
-
-    response.json({count: count});
-    return response;
-
+    return Departamento.findById(idDepartamento);
   } catch (error) {
     throw error;
   }
-  
 }
 
-export async function getAllDepartamentos(header, response, type){
+
+//Get Count
+export async function getCountDepartamentos({header, response, filterParams, reviews=false, deleteds=false}){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Departamentos. ' + auth.payload });
-    
-    let departamentos;
-    if(type === '1'){
-      departamentos = await Departamento.find({estado: 'Publicado'}).sort({ geocode: 1 }).populate([{
-        path: 'editor revisor eliminador',
-        select: '_id nombre',
-      }]);
-    }
-    if(type === '2'){
-      departamentos = await Departamento.find({estado: { $in: ['Publicado', 'Eliminado']}}).sort({ geocode: 1 }).populate([{
-        path: 'editor revisor eliminador',
-        select: '_id nombre',
-      }]);
-    }
 
-    response.json(departamentos);
+    const filter = getFilter({filterParams, reviews, deleteds})
+
+    const count = await Departamento.count(filter);
+
+    response.json({ count });
     return response;
 
   } catch (error) {
@@ -69,31 +47,25 @@ export async function getAllDepartamentos(header, response, type){
   }
 }
 
-export async function getPagedDepartamentos(header, response, page, pageSize, type, sort, filter){
+//Get Info Paged
+export async function getPagedDepartamentos({header, response, page, pageSize, sort, filter, reviews=false, deleteds=false}){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Departamentos. ' + auth.payload });
 
+    //Paginacion
     const skip = (page) * pageSize
 
-    const jsonSort = JSON.parse(sort);
+    //Sort
+    const sortQuery = getSorting({sort, reviews, defaultSort: { geocode: 1 }})
 
-    
+    //Filter
+    const filterQuery = getFilter({filterParams: filter, reviews, deleteds})
 
-
-    let departamentos;
-    if(type === '1'){
-      departamentos = await Departamento.find({estado: 'Publicado'}).sort({ geocode: 1 }).skip(skip).limit(pageSize).populate([{
-        path: 'editor revisor eliminador',
-        select: '_id nombre',
-      }]);
-    }
-    if(type === '2'){
-      departamentos = await Departamento.find({estado: { $in: ['Publicado', 'Eliminado']}}).sort({ geocode: 1 }).skip(skip).limit(pageSize).populate([{
-        path: 'editor revisor eliminador',
-        select: '_id nombre',
-      }]);
-    }
+    const departamentos = await Departamento.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate([{
+      path: 'editor revisor eliminador',
+      select: '_id nombre',
+    }]);
 
     response.json(departamentos);
     return response;
@@ -103,16 +75,7 @@ export async function getPagedDepartamentos(header, response, page, pageSize, ty
   }
 }
 
-export async function getDepartamentosPublic(){
-  try {
-    return  Departamento.find({estado: 'Publicado'}, '_id nombre').sort({ geocode: 1 })
-
-  } catch (error) {
-    throw error;
-  }
-  
-}
-
+//Get individual 
 export async function getDepartamentoById(header, response, idDepartamento){
   try {
     const auth = decodeToken(header);
@@ -121,7 +84,7 @@ export async function getDepartamentoById(header, response, idDepartamento){
     const departamento = await Departamento.findById(idDepartamento).populate([{
       path: 'editor revisor eliminador',
       select: '_id nombre',
-    }]);;
+    }]);
 
     response.json(departamento);
     return response;
@@ -131,60 +94,7 @@ export async function getDepartamentoById(header, response, idDepartamento){
   }
 }
 
-async function privateGetDepartamentoById(idDepartamento){
-  try {
-    return Departamento.findById(idDepartamento);
-  } catch (error) {
-    throw error;
-  }
-}
-
-export async function getAllRevisionesDepartamentos(header, response){
-  const auth = decodeToken(header);
-  if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Departamentos. ' + auth.payload });
-  
-  const revisiones = await Departamento.find({estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({ fechaEdicion: -1 }).populate([{
-    path: 'editor revisor',
-    select: '_id nombre',
-  }]);
-
-  response.json(revisiones);
-  return response; 
-}
-
-
-export async function getPagedRevisionesDepartamento(header, response, page, pageSize, filter, sort){
-  const auth = decodeToken(header);
-  if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Departamentos. ' + auth.payload });
-  
-  const skip = (page) * pageSize
-
-  //Sorting
-  let sortQuery = {}
-  if(sort.field){
-    sortQuery[sort.field] = sort.sort === 'desc' ? -1 : 1
-  }
-  else{
-    sortQuery = { fechaEdicion: -1 }
-  }
-
-  //Filter
-  let filterQuery = {estado: { $nin: ['Publicado', 'Eliminado'] }}
-  if(filter.value){
-    if(filter.operator === 'contains'){
-      filterQuery[filter.field] = { $regex: new RegExp(filter.value, 'i')}
-    }
-  }
-  
-  const revisiones = await Departamento.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate([{
-    path: 'editor revisor',
-    select: '_id nombre',
-  }]);
-
-  response.json(revisiones);
-  return response; 
-}
-
+//Get revisiones depto
 export async function getRevisionesDepartamento(header, response, idDepartamento){
   try {
     const auth = decodeToken(header);
@@ -203,6 +113,7 @@ export async function getRevisionesDepartamento(header, response, idDepartamento
   }
 }
 
+//Crear depto
 export async function createDepartamento(header, response, nombre, geocode, aprobar=false){
   try {
     const auth = decodeToken(header);
@@ -273,6 +184,7 @@ export async function createDepartamento(header, response, nombre, geocode, apro
   }
 }
 
+//Edit info
 export async function editDepartamento(header, response, idDepartamento, nombre, geocode, aprobar=false){
   try {
     const auth = decodeToken(header);
@@ -336,6 +248,8 @@ export async function editDepartamento(header, response, idDepartamento, nombre,
   }
 }
 
+
+//Review
 export async function revisarUpdateDepartamento(header, response, idDepartamento, aprobado, observaciones){
   try {
     const auth = decodeToken(header);
@@ -433,6 +347,8 @@ export async function revisarUpdateDepartamento(header, response, idDepartamento
   }
 }
 
+
+//Delete undelete
 export async function deleteDepartamento(header, response, idDepartamento, observaciones=null){
   const auth = decodeToken(header);
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al eliminar el departamento. ' + auth.payload });
