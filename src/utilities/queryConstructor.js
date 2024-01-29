@@ -16,7 +16,7 @@ export const getFilter = ({filterParams, reviews=false, deleteds=false}) => {
     if(filterParams.operator === 'contains'){
       filter[filterParams.field] = { $regex: new RegExp(filterParams.value, 'i')}
     }
-    if(filterParams.operator === 'in'){
+    if(filterParams.operator === 'is'){
       filter[filterParams.field] = { $regex: new RegExp(filterParams.value, 'i')}
     }
   }
