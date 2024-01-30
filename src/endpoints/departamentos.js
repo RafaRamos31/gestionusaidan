@@ -1,8 +1,8 @@
-import { createDepartamento, deleteDepartamento, editDepartamento, getCountDepartamentos, getDepartamentoById, getPagedDepartamentos, getRevisionesDepartamento, revisarUpdateDepartamento } from "../controllers/departamentos-controller.js";
+import { createDepartamento, deleteDepartamento, editDepartamento, getCountDepartamentos, getDepartamentoById, getListDepartamentos, getPagedDepartamentos, getRevisionesDepartamento, revisarUpdateDepartamento } from "../controllers/departamentos-controller.js";
 
 export const getDepartamentosEndpoints = (app, upload) => {
 
-   //GET count departamentos
+  //GET count departamentos
   app.post("/api/count/departamentos", upload.any(), async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
@@ -20,7 +20,7 @@ export const getDepartamentosEndpoints = (app, upload) => {
     }
   })
 
-   //POST Get PAGED departamentos
+  //POST Get PAGED departamentos
   app.post("/api/paged/departamentos", upload.any(), async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
@@ -34,6 +34,24 @@ export const getDepartamentosEndpoints = (app, upload) => {
         sort: JSON.parse(request.body.sort),
         reviews: JSON.parse(request.body.reviews),
         deleteds: JSON.parse(request.body.deleteds)
+      });
+      
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener los departamentos: ' + error });
+    }
+  })
+
+
+  //POST Get List departamentos
+  app.post("/api/list/departamentos", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getListDepartamentos({
+        header: authorizationHeader,
+        response,
+        filter: JSON.parse(request.body.filter),
+        sort: JSON.parse(request.body.sort),
       });
       
     } catch (error) {
@@ -113,7 +131,7 @@ export const getDepartamentosEndpoints = (app, upload) => {
     }
   })
 
-   //PUT revisar departamento
+  //PUT revisar departamento
   app.put("/api/revisiones/departamentos", upload.any(), async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];

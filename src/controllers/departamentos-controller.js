@@ -20,7 +20,7 @@ async function validateUniquesDepartamento({id=null, geocode = null}){
 }
 
 //Get internal
-async function privateGetDepartamentoById(idDepartamento){
+export async function privateGetDepartamentoById(idDepartamento){
   try {
     return Departamento.findById(idDepartamento);
   } catch (error) {
@@ -75,6 +75,30 @@ export async function getPagedDepartamentos({header, response, page, pageSize, s
   }
 }
 
+
+//Get Info List
+export async function getListDepartamentos({header, response, sort, filter}){
+  try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Departamentos. ' + auth.payload });
+
+    //Sort
+    const sortQuery = getSorting({sort, defaultSort: { geocode: 1 }})
+
+    //Filter
+    const filterQuery = getFilter({filterParams: filter})
+
+    const departamentos = await Departamento.find(filterQuery, '_id nombre geocode').sort(sortQuery);
+
+    response.json(departamentos);
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+
 //Get individual 
 export async function getDepartamentoById(header, response, idDepartamento){
   try {
@@ -120,7 +144,7 @@ export async function createDepartamento(header, response, nombre, geocode, apro
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el departamento. ' + auth.payload });
 
     const editor = await getUsuarioByIdSimple(auth.payload.userId);
-    if(!editor) return response.status(404).json({ error: 'Error al crear el departamento. Usuario no encontrado' });
+    if(!editor) return response.status(404).json({ error: 'Error al crear el departamento. Usuario no encontrado.' });
 
     const existentGeocode = await validateUniquesDepartamento({geocode})
     if(existentGeocode) return response.status(400).json({ error: `Error al crear el departamento. El geocode ${geocode} ya está en uso.` });

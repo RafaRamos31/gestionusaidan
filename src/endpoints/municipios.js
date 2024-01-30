@@ -1,76 +1,173 @@
-import { createMunicipio, deleteMunicipio, editMunicipio, getMunicipioById, getMunicipiosByDepto } from "../controllers/municipios-controller.js";
+import { createMunicipio, deleteMunicipio, editMunicipio, getCountMunicipios, getListMunicipios, getMunicipioById, getPagedMunicipios, getRevisionesMunicipio, revisarUpdateMunicipio } from "../controllers/municipios-controller.js";
 
 export const getMunicipiosEndpoints = (app, upload) => {
 
-  //GET municipios
-  app.get("/api/municipios/:idDepartamento?", upload.any(), async (request, response) => {
+  //GET count municipios
+  app.post("/api/count/municipios", upload.any(), async (request, response) => {
     try {
-      const municipios = await getMunicipiosByDepto(request.params.idDepartamento);
-      response.json(municipios);
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getCountMunicipios({
+        header: authorizationHeader,
+        response,
+        filterParams: JSON.parse(request.body.filter),
+        reviews: JSON.parse(request.body.reviews),
+        deleteds: JSON.parse(request.body.deleteds)
+      });
+
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener los municipios: ' + error });
     }
   })
 
+  //POST Get PAGED municipios
+  app.post("/api/paged/municipios", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getPagedMunicipios({
+        header: authorizationHeader,
+        response,
+        page: request.body.page,
+        pageSize: request.body.pageSize,
+        filter: JSON.parse(request.body.filter),
+        sort: JSON.parse(request.body.sort),
+        reviews: JSON.parse(request.body.reviews),
+        deleteds: JSON.parse(request.body.deleteds)
+      });
+      
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener los municipios: ' + error });
+    }
+  })
+
+
+  //POST Get List municipios
+  app.post("/api/list/municipios", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getListMunicipios({
+        header: authorizationHeader,
+        response,
+        filter: JSON.parse(request.body.filter),
+        sort: JSON.parse(request.body.sort),
+      });
+      
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener los municipios: ' + error });
+    }
+  })
+
+
   //GET municipio by Id
   app.get("/api/municipio/:idMunicipio", upload.any(), async (request, response) => {
     try {
-      const municipio = await getMunicipioById(request.params.idMunicipio);
-      if(!municipio) return response.status(404).send('Municipio no encontrado');
+      const authorizationHeader = request.headers['authorization'];
 
-      response.json(municipio);
+      response = await getMunicipioById(
+        authorizationHeader,
+        response,
+        request.params.idMunicipio
+      );
+
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener el municipio: ' + error });
     }
   })
 
+
+  //GET revisiones municipio
+  app.get("/api/revisiones/municipio/:idMunicipio", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getRevisionesMunicipio(
+        authorizationHeader,
+        response,
+        request.params.idMunicipio
+      );
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener las revisiones del municipio: ' + error });
+    }
+  })
+
+
   //POST municipio
   app.post("/api/municipios", upload.any(), async (request, response) => {
     try {
-      const municipio = await createMunicipio(
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await createMunicipio(
+        authorizationHeader,
+        response,
         request.body.nombre,
         request.body.geocode,
         request.body.idDepartamento,
-        request.body.idUsuario
+        JSON.parse(request.body.aprobar)
       );
-      response.json(municipio);
+      
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al registrar el municipio: ' + error });
     }
   })
 
-  //PUT modificar municipio
+
+  //PUT modificar municipios
   app.put("/api/municipios", upload.any(), async (request, response) => {
     try {
-      const municipio = await editMunicipio(
-        request.body.idMunicipio,
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await editMunicipio(
+        authorizationHeader,
+        response,
+        request.body.idDepartamento,
         request.body.nombre,
         request.body.geocode,
         request.body.idDepartamento,
-        request.body.idUsuario
+        JSON.parse(request.body.aprobar)
       );
-  
-      if(!municipio) return response.status(404).send('Municipio no encontrado');
 
-      response.status(200).json({municipio});
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al modificar el Municipio: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al modificar el municipio: ' + error });
     }
   })
 
 
-  //DELETE eliminar municipio
-  app.delete("/api/municipios", upload.any(), async (request, response) => {
+  //PUT revisar municipio
+  app.put("/api/revisiones/municipios", upload.any(), async (request, response) => {
     try {
-      const municipio = await deleteMunicipio(
-        request.body.idMunicipio
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await revisarUpdateMunicipio(
+        authorizationHeader,
+        response,
+        request.body.idMunicipio,
+        JSON.parse(request.body.aprobado),
+        request.body.observaciones,
       );
 
-      if(!municipio) return response.status(404).send('Municipio no encontrado');
-
-      response.status(200).json({municipio});
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al eliminar el Municipio: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al revisar el municipio: ' + error });
+    }
+  })
+
+
+  //DELETE eliminar departamento
+  app.delete("/api/municipios", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await deleteMunicipio(
+        authorizationHeader,
+        response,
+        request.body.id,
+        request.body.observaciones,
+      );
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al eliminar el municipio: ' + error });
     }
   })
 
