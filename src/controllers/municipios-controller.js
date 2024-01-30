@@ -72,7 +72,7 @@ export async function getPagedMunicipios({header, response, page, pageSize, sort
     const skip = (page) * pageSize
 
     //Sort
-    const sortQuery = getSorting({sort, reviews, defaultSort: { departamento: { geocode: 1 }, geocode: 1 }})
+    const sortQuery = getSorting({sort, reviews, defaultSort: { geocode: 1 }})
 
     //Filter
     const filterQuery = getFilter({filterParams: filter, reviews, deleteds})
