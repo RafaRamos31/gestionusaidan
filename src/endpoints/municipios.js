@@ -122,7 +122,7 @@ export const getMunicipiosEndpoints = (app, upload) => {
       response = await editMunicipio(
         authorizationHeader,
         response,
-        request.body.idDepartamento,
+        request.body.idMunicipio,
         request.body.nombre,
         request.body.geocode,
         request.body.idDepartamento,
