@@ -139,7 +139,7 @@ export const getDepartamentosEndpoints = (app, upload) => {
       response = await revisarUpdateDepartamento(
         authorizationHeader,
         response,
-        request.body.idDepartamento,
+        request.body.id,
         JSON.parse(request.body.aprobado),
         request.body.observaciones,
       );

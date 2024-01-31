@@ -143,7 +143,7 @@ export const getMunicipiosEndpoints = (app, upload) => {
       response = await revisarUpdateMunicipio(
         authorizationHeader,
         response,
-        request.body.idMunicipio,
+        request.body.id,
         JSON.parse(request.body.aprobado),
         request.body.observaciones,
       );
