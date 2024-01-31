@@ -309,7 +309,7 @@ export async function editMunicipio(header, response, idMunicipio, nombre, geoco
     await updateMunicipio.save();
     await municipio.save();
 
-    response.json(municipio);
+    response.json(updateMunicipio);
     return response;
 
   } catch (error) {
