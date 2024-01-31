@@ -17,7 +17,7 @@ export const getFilter = ({filterParams, reviews=false, deleteds=false}) => {
       filter[filterParams.field] = { $regex: new RegExp(filterParams.value, 'i')}
     }
     if(filterParams.operator === 'is'){
-      filter[filterParams.field] = { $regex: new RegExp(filterParams.value, 'i')}
+      filter[filterParams.field] = filterParams.value;
     }
   }
   return filter;
