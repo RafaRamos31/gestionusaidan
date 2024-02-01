@@ -155,7 +155,7 @@ function hashPassword(password) {
 //Login y Registro
 export async function loginUser(email, password){
   try{
-    const usuario = await Usuario.findOne({correo: email, password: hashPassword(password)});
+    const usuario = await Usuario.findOne({correo: email, password: hashPassword(password)}).populate('rol');
     return usuario;
   } catch (error) {
     throw error;
