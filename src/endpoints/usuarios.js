@@ -115,7 +115,7 @@ export const getUsuariosEndpoints = (app, upload) => {
         userId: usuario._id,
         userName: usuario.nombre,
         userEmail: usuario.correo,
-        userRol: usuario.rol
+        userPermisos: usuario.rol?.permisos
       }
       const token = jwt.sign(tokenUser, 'algo', { expiresIn: '5h' });
 
@@ -152,7 +152,7 @@ export const getUsuariosEndpoints = (app, upload) => {
         userId: auth.payload.userId,
         userName: auth.payload.userName,
         userEmail: auth.payload.userEmail,
-        userRol: auth.payload.userRol
+        userPermisos: auth.payload.userPermisos
       }
 
       const newToken = jwt.sign(tokenUser, 'algo', { expiresIn: '5h' });
