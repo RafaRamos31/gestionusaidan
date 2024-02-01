@@ -1,4 +1,4 @@
-import { createRol, deleteRol, editRol, getCountRoles, getListRoles, getPagedRoles, getRevisionesRol, getRolById, revisarUpdateRol } from "../controllers/roles-controller";
+import { createRol, deleteRol, editRol, getCountRoles, getListRoles, getPagedRoles, getRevisionesRol, getRolById, revisarUpdateRol } from "../controllers/roles-controller.js";
 
 export const getRolesEndpoints = (app, upload) => {
 
