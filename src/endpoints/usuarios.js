@@ -115,6 +115,7 @@ export const getUsuariosEndpoints = (app, upload) => {
         userId: usuario._id,
         userName: usuario.nombre,
         userEmail: usuario.correo,
+        userRolId: usuario.rol?._id,
         userPermisos: usuario.rol?.permisos
       }
       const token = jwt.sign(tokenUser, 'algo', { expiresIn: '5h' });
@@ -152,6 +153,7 @@ export const getUsuariosEndpoints = (app, upload) => {
         userId: auth.payload.userId,
         userName: auth.payload.userName,
         userEmail: auth.payload.userEmail,
+        userRolId: auth.payload.userRolId,
         userPermisos: auth.payload.userPermisos
       }
 

@@ -2,6 +2,7 @@ import Departamento from "../models/departamentos.js";
 import { decodeToken } from "../utilities/jwtDecoder.js";
 import { getFilter, getSorting } from "../utilities/queryConstructor.js";
 import { updateVersion } from "../utilities/versionHelper.js";
+import { privateGetRolById } from "./roles-controller.js";
 import { getUsuarioByIdSimple } from "./usuarios-controller.js";
 
 //Internos para validacion de claves unicas
@@ -35,6 +36,16 @@ export async function getCountDepartamentos({header, response, filterParams, rev
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Departamentos. ' + auth.payload });
 
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Configuración']['Departamentos'] === false){
+      return response.status(401).json({ error: 'Error al obtener Departamentos. No cuenta con los permisos suficientes.'});
+    }
+
+    if(rol && rol.permisos.acciones['Departamentos']['Ver Eliminados'] === false){
+      deleteds = false;
+    }
+
     const filter = getFilter({filterParams, reviews, deleteds})
 
     const count = await Departamento.count(filter);
@@ -52,6 +63,16 @@ export async function getPagedDepartamentos({header, response, page, pageSize, s
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Departamentos. ' + auth.payload });
+
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Configuración']['Departamentos'] === false){
+      return response.status(401).json({ error: 'Error al obtener Departamentos. No cuenta con los permisos suficientes.'});
+    }
+
+    if(rol && rol.permisos.acciones['Departamentos']['Ver Eliminados'] === false){
+      deleteds = false;
+    }
 
     //Paginacion
     const skip = (page) * pageSize
@@ -104,7 +125,13 @@ export async function getDepartamentoById(header, response, idDepartamento){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Departamento. ' + auth.payload });
-    
+
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && (rol.permisos.vistas['Configuración']['Departamentos'] === false && rol.permisos.acciones['Departamentos']['Revisar'] === false)){
+      return response.status(401).json({ error: 'Error al obtener Departamento. No cuenta con los permisos suficientes.'});
+    }
+
     const departamento = await Departamento.findById(idDepartamento).populate([{
       path: 'editor revisor eliminador',
       select: '_id nombre',
@@ -124,6 +151,12 @@ export async function getRevisionesDepartamento(header, response, idDepartamento
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Departamento. ' + auth.payload });
     
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Departamentos']['Revisar'] === false){
+      return response.status(401).json({ error: 'Error al obtener Revisiones de Departamento. No cuenta con los permisos suficientes.'});
+    }
+
     const revisiones = await Departamento.find({original: {_id: idDepartamento}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
       path: 'editor revisor',
       select: '_id nombre',
@@ -142,6 +175,12 @@ export async function createDepartamento(header, response, nombre, geocode, apro
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el departamento. ' + auth.payload });
+
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Departamentos']['Crear'] === false){
+      return response.status(401).json({ error: 'Error al crear el departamento. No cuenta con los permisos suficientes.'});
+    }
 
     const editor = await getUsuarioByIdSimple(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al crear el departamento. Usuario no encontrado.' });
@@ -214,6 +253,12 @@ export async function editDepartamento(header, response, idDepartamento, nombre,
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar el departamento. ' + auth.payload });
 
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Departamentos']['Modificar'] === false){
+      return response.status(401).json({ error: 'Error al editar el departamento. No cuenta con los permisos suficientes.'});
+    }
+
     const departamento = await privateGetDepartamentoById(idDepartamento);
     if(!departamento) return response.status(404).json({ error: 'Error al editar el departamento. Departamento no encontrado' });
 
@@ -278,6 +323,12 @@ export async function revisarUpdateDepartamento(header, response, idDepartamento
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el departamento. ' + auth.payload });
+
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Departamentos']['Revisar'] === false){
+      return response.status(401).json({ error: 'Error al revisar el departamento. No cuenta con los permisos suficientes.'});
+    }
 
     const updateDepartamento = await privateGetDepartamentoById(idDepartamento);
     if(!updateDepartamento) return response.status(404).json({ error: 'Error al revisar el departamento. Revisión no encontrada.' });
@@ -376,6 +427,12 @@ export async function revisarUpdateDepartamento(header, response, idDepartamento
 export async function deleteDepartamento(header, response, idDepartamento, observaciones=null){
   const auth = decodeToken(header);
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al eliminar el departamento. ' + auth.payload });
+
+  //Validaciones de rol
+  const rol = await privateGetRolById(auth.payload.userRolId);
+  if(rol && rol.permisos.acciones['Departamentos']['Eliminar'] === false){
+    return response.status(401).json({ error: 'Error al eliminar el departamento. No cuenta con los permisos suficientes.'});
+  }
 
   const departamento = await privateGetDepartamentoById(idDepartamento);
   if(!departamento) return response.status(404).json({ error: 'Error al eliminar el departamento. Departamento no encontrado.' });
