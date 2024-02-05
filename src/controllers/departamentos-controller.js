@@ -153,7 +153,7 @@ export async function getRevisionesDepartamento(header, response, idDepartamento
     
     //Validaciones de rol
     const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Departamentos']['Revisar'] === false){
+    if(rol && rol.permisos.acciones['Departamentos']['Ver Historial'] === false){
       return response.status(401).json({ error: 'Error al obtener Revisiones de Departamento. No cuenta con los permisos suficientes.'});
     }
 
