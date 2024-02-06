@@ -1,37 +1,110 @@
-import { createComponente, deleteComponente, editComponente, getAllComponentes, getComponentById } from "../controllers/componentes-controller.js";
+import { createComponente, deleteComponente, editComponente, getComponentesById, getCountComponentes, getListComponentes, getPagedComponentes, getRevisionesComponente, revisarUpdateComponente } from "../controllers/componentes-controller.js";
 
 export const getComponentesEndpoints = (app, upload) => {
 
-  //GET componentes
-  app.get("/api/componentes", async (request, response) => {
+  //GET count componentes
+  app.post("/api/count/componentes", upload.any(), async (request, response) => {
     try {
-      const componentes = await getAllComponentes();
-      response.json(componentes);
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getCountComponentes({
+        header: authorizationHeader,
+        response,
+        filterParams: JSON.parse(request.body.filter),
+        reviews: JSON.parse(request.body.reviews),
+        deleteds: JSON.parse(request.body.deleteds)
+      });
+
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener los componentes: ' + error });
     }
   })
 
+  //POST Get PAGED componentes
+  app.post("/api/paged/componentes", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getPagedComponentes({
+        header: authorizationHeader,
+        response,
+        page: request.body.page,
+        pageSize: request.body.pageSize,
+        filter: JSON.parse(request.body.filter),
+        sort: JSON.parse(request.body.sort),
+        reviews: JSON.parse(request.body.reviews),
+        deleteds: JSON.parse(request.body.deleteds)
+      });
+      
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener los componentes: ' + error });
+    }
+  })
+
+
+  //POST Get List componentes
+  app.post("/api/list/componentes", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getListComponentes({
+        header: authorizationHeader,
+        response,
+        filter: JSON.parse(request.body.filter)
+      });
+      
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener los componentes: ' + error });
+    }
+  })
+
+
   //GET componente by Id
   app.get("/api/componente/:idComponente", upload.any(), async (request, response) => {
     try {
-      const componente = await getComponentById(request.params.idComponente);
-      if(!componente) return response.status(404).send('Componente no encontrado');
+      const authorizationHeader = request.headers['authorization'];
 
-      response.json(componente);
+      response = await getComponentesById(
+        authorizationHeader,
+        response,
+        request.params.idComponente
+      );
+
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener el componente: ' + error });
     }
   })
+  
 
-  //POST componentes
+  //GET revisiones componente
+  app.get("/api/revisiones/componente/:idComponente", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getRevisionesComponente(
+        authorizationHeader,
+        response,
+        request.params.idComponente
+      );
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener las revisiones del componente: ' + error });
+    }
+  })
+
+
+  //POST sector
   app.post("/api/componentes", upload.any(), async (request, response) => {
     try {
-      const componentes = await createComponente(
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await createComponente(
+        authorizationHeader,
+        response,
         request.body.nombre,
-        request.body.idUsuario
+        JSON.parse(request.body.aprobar)
       );
-      response.json(componentes);
+      
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al registrar el componente: ' + error });
     }
@@ -40,33 +113,54 @@ export const getComponentesEndpoints = (app, upload) => {
   //PUT modificar componente
   app.put("/api/componentes", upload.any(), async (request, response) => {
     try {
-      const componente = await editComponente(
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await editComponente(
+        authorizationHeader,
+        response,
         request.body.idComponente,
         request.body.nombre,
-        request.body.idUsuario
+        JSON.parse(request.body.aprobar)
       );
-  
-      if(!componente) return response.status(404).send('Componente no encontrado');
 
-      response.status(200).json({componente});
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al modificar Componente: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al modificar el componente: ' + error });
+    }
+  })
+
+  //PUT revisar componente
+  app.put("/api/revisiones/componentes", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await revisarUpdateComponente(
+        authorizationHeader,
+        response,
+        request.body.id,
+        JSON.parse(request.body.aprobado),
+        request.body.observaciones,
+      );
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al revisar el componente: ' + error });
     }
   })
 
 
-  //DELETE eliminar componente
+  //DELETE eliminar componentes
   app.delete("/api/componentes", upload.any(), async (request, response) => {
     try {
-      const componente = await deleteComponente(
-        request.body.idComponente
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await deleteComponente(
+        authorizationHeader,
+        response,
+        request.body.id,
+        request.body.observaciones,
       );
 
-      if(!componente) return response.status(404).send('Componente no encontrado');
-
-      response.status(200).json({componente});
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al eliminar el Componente: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al eliminar el componente: ' + error });
     }
   })
 

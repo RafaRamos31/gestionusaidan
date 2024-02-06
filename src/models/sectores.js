@@ -5,20 +5,9 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  geocode: {
-    type: String,
-    required: true,
-    maxlength: 6,
-    minlength: 6
-  },
-  municipio: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Municipio",
-    required: true,
-  },
   original: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Aldea",
+    ref: "Sector",
   },
   version: {
     type: String,
@@ -62,4 +51,4 @@ const schema = new mongoose.Schema({
 /**
  * Modelo de entidad de un Componente
  */
-export default mongoose.model("Aldea", schema, "Aldeas");
+export default mongoose.model("Sector", schema, "Sectores");

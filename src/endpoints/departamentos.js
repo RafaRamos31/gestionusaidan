@@ -50,8 +50,7 @@ export const getDepartamentosEndpoints = (app, upload) => {
       response = await getListDepartamentos({
         header: authorizationHeader,
         response,
-        filter: JSON.parse(request.body.filter),
-        sort: JSON.parse(request.body.sort),
+        filter: JSON.parse(request.body.filter)
       });
       
     } catch (error) {

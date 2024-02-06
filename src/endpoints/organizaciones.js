@@ -1,110 +1,194 @@
-import { createOrganizacion, deleteOrganizacion, editOrganizacion, getOrganizacionById, getOrganizaciones, getOrganizacionesList } from "../controllers/organizaciones-controller.js";
+import { createOrganizacion, deleteOrganizacion, editOrganizacion, getCountOrganizaciones, getListOrganizaciones, getOrganizacionById, getPagedOrganizaciones, getRevisionesOrganizacion, revisarUpdateOrganizacion } from "../controllers/organizaciones-controller.js";
 
 export const getOrganizacionesEndpoints = (app, upload) => {
 
-  //GET/POST organizaciones
-  app.post("/api/getorganizaciones", upload.any(), async (request, response) => {
+  //GET count municipios
+  app.post("/api/count/organizaciones", upload.any(), async (request, response) => {
     try {
-      const organizaciones = await getOrganizaciones(
-        request.body.tipoOrganizacion,
-        request.body.nivelOrganizacion,
-        request.body.idDepartamento,
-        request.body.idMunicipio,
-        request.body.idAldea,
-        request.body.idCaserio,
-      );
-      response.json(organizaciones);
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getCountOrganizaciones({
+        header: authorizationHeader,
+        response,
+        filterParams: JSON.parse(request.body.filter),
+        reviews: JSON.parse(request.body.reviews),
+        deleteds: JSON.parse(request.body.deleteds)
+      });
+
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener las organizaciones: ' + error });
     }
   })
 
-  //Get Organizacion List
-  app.get("/api/organizacioneslist", upload.any(), async (request, response) => {
+  //POST Get PAGED organizaciones
+  app.post("/api/paged/organizaciones", upload.any(), async (request, response) => {
     try {
-      const organizaciones = await getOrganizacionesList();
-      response.json(organizaciones);
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getPagedOrganizaciones({
+        header: authorizationHeader,
+        response,
+        page: request.body.page,
+        pageSize: request.body.pageSize,
+        filter: JSON.parse(request.body.filter),
+        sort: JSON.parse(request.body.sort),
+        reviews: JSON.parse(request.body.reviews),
+        deleteds: JSON.parse(request.body.deleteds)
+      });
+      
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener las organizaciones: ' + error });
     }
   })
 
-  //GET Organizacion by Id
+
+  //POST Get List organizaciones
+  app.post("/api/list/organizaciones", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getListOrganizaciones({
+        header: authorizationHeader,
+        response,
+        filter: JSON.parse(request.body.filter)
+      });
+      
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener las organizaciones: ' + error });
+    }
+  })
+
+
+  //GET organizacion by Id
   app.get("/api/organizacion/:idOrganizacion", upload.any(), async (request, response) => {
     try {
-      const organizacion = await getOrganizacionById(request.params.idOrganizacion);
-      if(!organizacion) return response.status(404).send('Organizacion no encontrada');
+      const authorizationHeader = request.headers['authorization'];
 
-      response.json(organizacion);
+      response = await getOrganizacionById(
+        authorizationHeader,
+        response,
+        request.params.idOrganizacion
+      );
+
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al obtener la organizacion: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al obtener la organización: ' + error });
     }
   })
 
-  //POST Organizacion
+
+  //GET revisiones organizacion
+  app.get("/api/revisiones/organizacion/:idOrganizacion", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getRevisionesOrganizacion(
+        authorizationHeader,
+        response,
+        request.params.idOrganizacion
+      );
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener las revisiones de la organización: ' + error });
+    }
+  })
+
+
+  //POST organizacion
   app.post("/api/organizaciones", upload.any(), async (request, response) => {
     try {
-      const organizacion = await createOrganizacion(
-        request.body.codigoOrganizacion,
-        request.body.idOrgtype,
-        request.body.nivelOrganizacion,
-        request.body.nombre,
-        request.body.idDepartamento,
-        request.body.idMunicipio,
-        request.body.idAldea,
-        request.body.idCaserio,
-        request.body.telefonoOrganizacion,
-        request.body.nombreContacto,
-        request.body.telefonoContacto,
-        request.body.correoContacto,
-        request.body.geolocacion,
-        request.body.idUsuario
-      );
-      response.json(organizacion);
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await createOrganizacion({
+        header: authorizationHeader,
+        response,
+        nombre: request.body.nombre,
+        codigoOrganizacion: request.body.codigoOrganizacion,
+        idSector: request.body.idSector,
+        idTipoOrganizacion: request.body.idTipoOrganizacion,
+        nivelOrganizacion: request.body.nivelOrganizacion,
+        idDepartamento: request.body.idDepartamento,
+        idMunicipio: request.body.idMunicipio,
+        idAldea: request.body.idAldea,
+        idCaserio: request.body.idCaserio,
+        telefonoOrganizacion: request.body.telefonoOrganizacion,
+        nombreContacto: request.body.nombreContacto,
+        telefonoContacto: request.body.telefonoContacto,
+        correoContacto: request.body.correoContacto,
+        geolocacion: request.body.geolocacion,
+        aprobar: JSON.parse(request.body.aprobar)
+      });
+      
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al registrar la organizacion: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al registrar la organización: ' + error });
     }
   })
 
 
-  //PUT Editar Organizacion
+  //PUT modificar organizacion
   app.put("/api/organizaciones", upload.any(), async (request, response) => {
     try {
-      const organizacion = await editOrganizacion(
-        request.body.idOrganizacion,
-        request.body.codigoOrganizacion,
-        request.body.idOrgtype,
-        request.body.nivelOrganizacion,
-        request.body.nombre,
-        request.body.idDepartamento,
-        request.body.idMunicipio,
-        request.body.idAldea,
-        request.body.idCaserio,
-        request.body.telefonoOrganizacion,
-        request.body.nombreContacto,
-        request.body.telefonoContacto,
-        request.body.correoContacto,
-        request.body.geolocacion,
-        request.body.idUsuario
-      );
+      const authorizationHeader = request.headers['authorization'];
 
-      if(!organizacion) return response.status(404).send('Organizacion no encontrada');
+      response = await editOrganizacion({
+        header: authorizationHeader,
+        response,
+        idOrganizacion: request.body.idOrganizacion,
+        nombre: request.body.nombre,
+        codigoOrganizacion: request.body.codigoOrganizacion,
+        idSector: request.body.idSector,
+        idTipoOrganizacion: request.body.idTipoOrganizacion,
+        nivelOrganizacion: request.body.nivelOrganizacion,
+        idDepartamento: request.body.idDepartamento,
+        idMunicipio: request.body.idMunicipio,
+        idAldea: request.body.idAldea,
+        idCaserio: request.body.idCaserio,
+        telefonoOrganizacion: request.body.telefonoOrganizacion,
+        nombreContacto: request.body.nombreContacto,
+        telefonoContacto: request.body.telefonoContacto,
+        correoContacto: request.body.correoContacto,
+        geolocacion: request.body.geolocacion,
+        aprobar: JSON.parse(request.body.aprobar)
+      });
 
-      response.json(organizacion);
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al modificar la organizacion: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al modificar la organización: ' + error });
     }
   })
 
-  //DELETE Eliminar organizacion
+
+  //PUT revisar municipio
+  app.put("/api/revisiones/organizaciones", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await revisarUpdateOrganizacion(
+        authorizationHeader,
+        response,
+        request.body.id,
+        JSON.parse(request.body.aprobado),
+        request.body.observaciones,
+      );
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al revisar la organización: ' + error });
+    }
+  })
+
+
+  //DELETE eliminar organizacion
   app.delete("/api/organizaciones", upload.any(), async (request, response) => {
     try {
-      const organizacion = await deleteOrganizacion(request.body.idOrganizacion);
-      if(!organizacion) return response.status(404).send('Organizacion no encontrada');
+      const authorizationHeader = request.headers['authorization'];
 
-      response.json(organizacion);
+      response = await deleteOrganizacion(
+        authorizationHeader,
+        response,
+        request.body.id,
+        request.body.observaciones,
+      );
+
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al eliminar la organizacion: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al eliminar la organización: ' + error });
     }
   })
 

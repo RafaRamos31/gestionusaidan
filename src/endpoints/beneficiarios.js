@@ -1,115 +1,194 @@
-import { createBeneficiario, deleteBeneficiario, editBeneficiario, getBeneficiarioById, getBeneficiarios, getStatsBeneficiarios } from "../controllers/beneficiarios-controller.js";
+import { createBeneficiario, deleteBeneficiario, editBeneficiario, getBeneficiarioById, getCountBeneficiarios, getListBeneficiarios, getPagedBeneficiarios, getRevisionesBeneficiario, revisarUpdateBeneficiario } from "../controllers/beneficiarios-controller.js";
 
 export const getBeneficiariosEndpoints = (app, upload) => {
 
-  //GET/POST beneficiarios
-  app.post("/api/getbeneficiarios", upload.any(), async (request, response) => {
+  //GET count beneficiarios
+  app.post("/api/count/beneficiarios", upload.any(), async (request, response) => {
     try {
-      const beneficiarios = await getBeneficiarios(
-        request.body.idDepartamento,
-        request.body.idMunicipio,
-        request.body.idAldea,
-        request.body.idCaserio,
-        request.body.idOrganizacion,
-        request.body.idCargo
-      );
-      response.json(beneficiarios);
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getCountBeneficiarios({
+        header: authorizationHeader,
+        response,
+        filterParams: JSON.parse(request.body.filter),
+        reviews: JSON.parse(request.body.reviews),
+        deleteds: JSON.parse(request.body.deleteds)
+      });
+
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener los beneficiarios: ' + error });
     }
   })
 
-  //GET Beneficiario by Id
+  //POST Get PAGED organizaciones
+  app.post("/api/paged/beneficiarios", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getPagedBeneficiarios({
+        header: authorizationHeader,
+        response,
+        page: request.body.page,
+        pageSize: request.body.pageSize,
+        filter: JSON.parse(request.body.filter),
+        sort: JSON.parse(request.body.sort),
+        reviews: JSON.parse(request.body.reviews),
+        deleteds: JSON.parse(request.body.deleteds)
+      });
+      
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener los beneficiarios: ' + error });
+    }
+  })
+
+
+  //POST Get List beneficiarios
+  app.post("/api/list/beneficiarios", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getListBeneficiarios({
+        header: authorizationHeader,
+        response,
+        filter: JSON.parse(request.body.filter)
+      });
+      
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener los beneficiarios: ' + error });
+    }
+  })
+
+
+  //GET organizacion by Id
   app.get("/api/beneficiario/:idBeneficiario", upload.any(), async (request, response) => {
     try {
-      const beneficiario = await getBeneficiarioById(request.params.idBeneficiario);
-      if(!beneficiario) return response.status(404).send('Beneficiario no encontrado');
+      const authorizationHeader = request.headers['authorization'];
 
-      response.json(beneficiario);
+      response = await getBeneficiarioById(
+        authorizationHeader,
+        response,
+        request.params.idBeneficiario
+      );
+
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al obtener el beneficiario: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al obtener Beneficiario: ' + error });
     }
   })
 
-  //POST Beneficiario
+
+  //GET revisiones beneficiario
+  app.get("/api/revisiones/beneficiario/:idBeneficiario", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getRevisionesBeneficiario(
+        authorizationHeader,
+        response,
+        request.params.idBeneficiario
+      );
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener las revisiones del Beneficiario: ' + error });
+    }
+  })
+
+
+  //POST organizacion
   app.post("/api/beneficiarios", upload.any(), async (request, response) => {
     try {
-      const beneficiario = await createBeneficiario(
-        request.body.dni,
-        request.body.nombre,
-        request.body.sexo,
-        request.body.fechaNacimiento,
-        request.body.idDepartamento,
-        request.body.idMunicipio,
-        request.body.idAldea,
-        request.body.idCaserio,
-        request.body.telefono,
-        request.body.idOrganizacion,
-        request.body.idCargo,
-        request.body.geolocacion,
-        request.body.idUsuario
-      );
-      response.json(beneficiario);
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await createBeneficiario({
+        header: authorizationHeader,
+        response,
+        nombre: request.body.nombre,
+        sexo: request.body.sexo,
+        fechaNacimiento: request.body.fechaNacimiento,
+        dni: request.body.dni,
+        idSector: request.body.idSector,
+        idTipoOrganizacion: request.body.idTipoOrganizacion,
+        idOrganizacion: request.body.idOrganizacion,
+        idCargo: request.body.idCargo,
+        telefono: request.body.telefono,
+        idDepartamento: request.body.idDepartamento,
+        idMunicipio: request.body.idMunicipio,
+        idAldea: request.body.idAldea,
+        idCaserio: request.body.idCaserio,
+        geolocacion: request.body.geolocacion,
+        aprobar: JSON.parse(request.body.aprobar)
+      });
+      
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al registrar el beneficiario: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al registrar Beneficiario: ' + error });
     }
   })
 
 
-  //PUT Editar Beneficiario
+  //PUT modificar beneficiario
   app.put("/api/beneficiarios", upload.any(), async (request, response) => {
     try {
-      const beneficiario = await editBeneficiario(
-        request.body.idBeneficiario,
-        request.body.dni,
-        request.body.nombre,
-        request.body.sexo,
-        request.body.fechaNacimiento,
-        request.body.idDepartamento,
-        request.body.idMunicipio,
-        request.body.idAldea,
-        request.body.idCaserio,
-        request.body.telefono,
-        request.body.idOrganizacion,
-        request.body.idCargo,
-        request.body.geolocacion,
-        request.body.idUsuario
-      );
+      const authorizationHeader = request.headers['authorization'];
 
-      if(!beneficiario) return response.status(404).send('Beneficiario no encontrado');
+      response = await editBeneficiario({
+        header: authorizationHeader,
+        response,
+        idBeneficiario: request.body.idBeneficiario,
+        nombre: request.body.nombre,
+        sexo: request.body.sexo,
+        fechaNacimiento: request.body.fechaNacimiento,
+        dni: request.body.dni,
+        idSector: request.body.idSector,
+        idTipoOrganizacion: request.body.idTipoOrganizacion,
+        idOrganizacion: request.body.idOrganizacion,
+        idCargo: request.body.idCargo,
+        telefono: request.body.telefono,
+        idDepartamento: request.body.idDepartamento,
+        idMunicipio: request.body.idMunicipio,
+        idAldea: request.body.idAldea,
+        idCaserio: request.body.idCaserio,
+        geolocacion: request.body.geolocacion,
+        aprobar: JSON.parse(request.body.aprobar)
+      });
 
-      response.json(beneficiario);
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al modificar el beneficiario: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al modificar Beneficiario: ' + error });
     }
   })
 
-  //DELETE Eliminar beneficiario
+
+  //PUT revisar beneficiario
+  app.put("/api/revisiones/beneficiarios", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await revisarUpdateBeneficiario(
+        authorizationHeader,
+        response,
+        request.body.id,
+        JSON.parse(request.body.aprobado),
+        request.body.observaciones,
+      );
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al revisar Beneficiario: ' + error });
+    }
+  })
+
+
+  //DELETE eliminar beneficiario
   app.delete("/api/beneficiarios", upload.any(), async (request, response) => {
     try {
-      const beneficiario = await deleteBeneficiario(request.body.idBeneficiario);
-      if(!beneficiario) return response.status(404).send('Beneficiario no encontrado');
+      const authorizationHeader = request.headers['authorization'];
 
-      response.json(beneficiario);
-    } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al eliminar el beneficiario: ' + error });
-    }
-  })
-
-  //GET/POST stats beneficiarios
-  app.post("/api/getstatsbeneficiarios", upload.any(), async (request, response) => {
-    try {
-      const beneficiarios = await getStatsBeneficiarios(
-        request.body.idDepartamento,
-        request.body.idMunicipio,
-        request.body.idAldea,
-        request.body.idCaserio,
-        request.body.idOrganizacion,
-        request.body.idCargo
+      response = await deleteBeneficiario(
+        authorizationHeader,
+        response,
+        request.body.id,
+        request.body.observaciones,
       );
-      response.json(beneficiarios);
+
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al obtener los beneficiarios: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al eliminar Beneficiario: ' + error });
     }
   })
 

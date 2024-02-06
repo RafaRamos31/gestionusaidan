@@ -3,7 +3,8 @@ import { decodeToken } from "../utilities/jwtDecoder.js";
 import { getFilter, getSorting } from "../utilities/queryConstructor.js";
 import { updateVersion } from "../utilities/versionHelper.js";
 import { privateGetDepartamentoById } from "./departamentos-controller.js";
-import { getUsuarioByIdSimple } from "./usuarios-controller.js";
+import { privateGetRolById } from "./roles-controller.js";
+import { privateGetUsuarioById } from "./usuarios-controller.js";
 
 
 //Internos para validacion de claves unicas
@@ -24,14 +25,6 @@ async function validateUniquesMunicipio({id=null, geocode = null}){
 //Get internal
 export async function privateGetMunicipioById(idMunicipio){
   try {
-    return Municipio.findById(idMunicipio);
-  } catch (error) {
-    throw error;
-  }
-}
-
-export async function getMunicipioByIdSimple(idMunicipio){
-  try {
     return Municipio.findById(idMunicipio).populate([
       {
       path: 'departamento',
@@ -48,6 +41,16 @@ export async function getCountMunicipios({header, response, filterParams, review
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Municipios. ' + auth.payload });
+
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Configuración']['Municipios'] === false){
+      return response.status(401).json({ error: 'Error al obtener Municipios. No cuenta con los permisos suficientes.'});
+    }
+
+    if(rol && rol.permisos.acciones['Municipios']['Ver Eliminados'] === false){
+      deleteds = false;
+    }
 
     const filter = getFilter({filterParams, reviews, deleteds})
 
@@ -67,6 +70,16 @@ export async function getPagedMunicipios({header, response, page, pageSize, sort
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Municipios. ' + auth.payload });
+
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Configuración']['Municipios'] === false){
+      return response.status(401).json({ error: 'Error al obtener Municipios. No cuenta con los permisos suficientes.'});
+    }
+
+    if(rol && rol.permisos.acciones['Municipios']['Ver Eliminados'] === false){
+      deleteds = false;
+    }
 
     //Paginacion
     const skip = (page) * pageSize
@@ -98,7 +111,7 @@ export async function getPagedMunicipios({header, response, page, pageSize, sort
 
 
 //Get Info List
-export async function getListMunicipios({header, response, sort, filter}){
+export async function getListMunicipios({header, response, filter}){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Municipios. ' + auth.payload });
@@ -126,6 +139,12 @@ export async function getMunicipioById(header, response, idMunicipio){
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Municipio. ' + auth.payload });
     
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && (rol.permisos.vistas['Configuración']['Municipios'] === false && rol.permisos.acciones['Municipios']['Revisar'] === false)){
+      return response.status(401).json({ error: 'Error al obtener Municipio. No cuenta con los permisos suficientes.'});
+    }
+
     const municipio = await Municipio.findById(idMunicipio).populate([
     {
       path: 'editor revisor eliminador',
@@ -152,6 +171,12 @@ export async function getRevisionesMunicipio(header, response, idMunicipio){
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Municipio. ' + auth.payload });
     
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Municipios']['Ver Historial'] === false){
+      return response.status(401).json({ error: 'Error al obtener Revisiones de Municipio. No cuenta con los permisos suficientes.'});
+    }
+
     const revisiones = await Municipio.find({original: {_id: idMunicipio}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([
     {
       path: 'editor revisor eliminador',
@@ -177,7 +202,13 @@ export async function createMunicipio(header, response, nombre, geocode, idDepar
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el municipio. ' + auth.payload });
 
-    const editor = await getUsuarioByIdSimple(auth.payload.userId);
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Municipios']['Crear'] === false){
+      return response.status(401).json({ error: 'Error al crear el municipio. No cuenta con los permisos suficientes.'});
+    }
+
+    const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al crear el municipio. Usuario no encontrado.' });
 
     const existentGeocode = await validateUniquesMunicipio({geocode})
@@ -254,10 +285,16 @@ export async function editMunicipio(header, response, idMunicipio, nombre, geoco
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar el municipio. ' + auth.payload });
 
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Municipios']['Modificar'] === false){
+      return response.status(401).json({ error: 'Error al editar el municipio. No cuenta con los permisos suficientes.'});
+    }
+
     const municipio = await privateGetMunicipioById(idMunicipio);
     if(!municipio) return response.status(404).json({ error: 'Error al editar el municipio. Municipio no encontrado.' });
 
-    const editor = await getUsuarioByIdSimple(auth.payload.userId);
+    const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al editar el municipio. Usuario no encontrado.' });
 
     const existentGeocode = await validateUniquesMunicipio({geocode, id: idMunicipio})
@@ -325,13 +362,19 @@ export async function revisarUpdateMunicipio(header, response, idMunicipio, apro
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el municipio. ' + auth.payload });
 
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Municipios']['Revisar'] === false){
+      return response.status(401).json({ error: 'Error al revisar el municipio. No cuenta con los permisos suficientes.'});
+    }
+
     const updateMunicipio = await privateGetMunicipioById(idMunicipio);
     if(!updateMunicipio) return response.status(404).json({ error: 'Error al revisar el municipio. Revisión no encontrada.' });
 
     const original = await privateGetMunicipioById(updateMunicipio.original);
     if(!original && updateMunicipio.version !== '0.1') return response.status(404).json({ error: 'Error al revisar el municipio. Municipio no encontrado.' });
 
-    const revisor = await getUsuarioByIdSimple(auth.payload.userId);
+    const revisor = await privateGetUsuarioById(auth.payload.userId);
     if(!revisor) return response.status(404).json({ error: 'Error al revisar el municipio. Usuario no encontrado.' });
 
     if(aprobado){
@@ -426,10 +469,16 @@ export async function deleteMunicipio(header, response, idMunicipio, observacion
   const auth = decodeToken(header);
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al eliminar el municipio. ' + auth.payload });
 
+  //Validaciones de rol
+  const rol = await privateGetRolById(auth.payload.userRolId);
+  if(rol && rol.permisos.acciones['Municipios']['Eliminar'] === false){
+    return response.status(401).json({ error: 'Error al eliminar el municipio. No cuenta con los permisos suficientes.'});
+  }
+
   const municipio = await privateGetMunicipioById(idMunicipio);
   if(!municipio) return response.status(404).json({ error: 'Error al eliminar el municipio. Municipio no encontrado.' });
 
-  const eliminador = await getUsuarioByIdSimple(auth.payload.userId);
+  const eliminador = await privateGetUsuarioById(auth.payload.userId);
   if(!eliminador) return response.status(404).json({ error: 'Error al eliminar el municipio. Usuario no encontrado.' });
 
   if(municipio.estado !== 'Eliminado'){

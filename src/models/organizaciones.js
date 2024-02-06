@@ -1,10 +1,17 @@
 import mongoose from "mongoose";
 
 const schema = new mongoose.Schema({
-  codigoOrganizacion: {
+  nombre: {
     type: String,
     required: true,
-    unique: true
+  },
+  codigoOrganizacion: {
+    type: String
+  },
+  sector: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Sector",
+    required: true,
   },
   tipoOrganizacion: {
     type: mongoose.Schema.Types.ObjectId,
@@ -12,10 +19,6 @@ const schema = new mongoose.Schema({
     required: true,
   },
   nivelOrganizacion: {
-    type: Number,
-    required: true,
-  },
-  nombre: {
     type: String,
     required: true,
   },
@@ -41,30 +44,60 @@ const schema = new mongoose.Schema({
   },
   telefonoOrganizacion: {
     type: String,
-    required: true,
   },
   nombreContacto: {
     type: String,
-    required: true,
   },
   telefonoContacto: {
     type: String,
-    required: true,
   },
   correoContacto: {
     type: String,
-    required: true,
   },
   geolocacion: {
     type: String
   },
-  ultimaEdicion: {
+  original: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Organizacion",
+  },
+  version: {
+    type: String,
+  },
+  ultimaRevision: {
+    type: String,
+  },
+  estado: {
+    type: String,
+  },
+  fechaEdicion: {
     type: Date
   },
   editor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Usuario",
   },
+  fechaRevision: {
+    type: Date
+  },
+  revisor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+  },
+  fechaEliminacion: {
+    type: Date
+  },
+  eliminador: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+  },
+  observaciones: {
+    type: String,
+  },
+  pendientes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+  }]
 });
 
 /**

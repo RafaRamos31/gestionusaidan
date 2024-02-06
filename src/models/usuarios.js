@@ -9,77 +9,66 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  sexo: {
-    type: Number,
-    required: true,
-  },
-  fechaNacimiento: {
-    type: String
-  },
-  departamento: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Departamento",
-    required: true,
-  },
-  municipio: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Municipio",
-    required: true,
-  },
-  aldea: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Aldea",
-    required: true,
-  },
-  caserio: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Caserio",
-    required: true,
-  },
   telefono: {
     type: String,
     required: true,
   },
-  organizacion: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Organizacion",
-    required: true,
-  },
-  cargo: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Cargo",
-    required: true,
-  },
-  geolocacion: {
-    type: String
-  },
   componente: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Componente",
+    required: true,
   },
   rol: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Rol"
+    ref: "Rol",
   },
   correo: {
-    type: String,
-    required: true,
-    unique: true
+    type: String
   },
   password: {
-    type: String,
-    required: true,
+    type: String
   },
-  ultimaEdicion: {
+  original: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+  },
+  version: {
+    type: String,
+  },
+  ultimaRevision: {
+    type: String,
+  },
+  estado: {
+    type: String,
+  },
+  fechaEdicion: {
     type: Date
   },
   editor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Usuario",
   },
-  estado: {
-    type: String
+  fechaRevision: {
+    type: Date
   },
+  revisor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+  },
+  fechaEliminacion: {
+    type: Date
+  },
+  eliminador: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+  },
+  observaciones: {
+    type: String,
+  },
+  pendientes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+  }]
 });
 
 /**

@@ -50,8 +50,7 @@ export const getMunicipiosEndpoints = (app, upload) => {
       response = await getListMunicipios({
         header: authorizationHeader,
         response,
-        filter: JSON.parse(request.body.filter),
-        sort: JSON.parse(request.body.sort),
+        filter: JSON.parse(request.body.filter)
       });
       
     } catch (error) {

@@ -2,7 +2,7 @@ import Rol from "../models/roles.js";
 import { decodeToken } from "../utilities/jwtDecoder.js";
 import { getFilter, getSorting } from "../utilities/queryConstructor.js";
 import { updateVersion } from "../utilities/versionHelper.js";
-import { getUsuarioByIdSimple } from "./usuarios-controller.js";
+import { privateGetUsuarioById } from "./usuarios-controller.js";
 
 
 //Get internal
@@ -21,6 +21,16 @@ export async function getCountRoles({header, response, filterParams, reviews=fal
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Roles. ' + auth.payload });
 
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Configuración']['Roles'] === false){
+      return response.status(401).json({ error: 'Error al obtener Roles. No cuenta con los permisos suficientes.'});
+    }
+
+    if(rol && rol.permisos.acciones['Roles']['Ver Eliminados'] === false){
+      deleteds = false;
+    }
+
     const filter = getFilter({filterParams, reviews, deleteds})
 
     const count = await Rol.count(filter);
@@ -38,6 +48,16 @@ export async function getPagedRoles({header, response, page, pageSize, sort, fil
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Roles. ' + auth.payload });
+
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Configuración']['Roles'] === false){
+      return response.status(401).json({ error: 'Error al obtener Roles. No cuenta con los permisos suficientes.'});
+    }
+
+    if(rol && rol.permisos.acciones['Roles']['Ver Eliminados'] === false){
+      deleteds = false;
+    }
 
     //Paginacion
     const skip = (page) * pageSize
@@ -91,6 +111,12 @@ export async function getRolById(header, response, idRol){
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Rol. ' + auth.payload });
     
+    //Validaciones de rol
+    const rolPerm = await privateGetRolById(auth.payload.userRolId);
+    if(rolPerm && (rolPerm.permisos.vistas['Configuración']['Roles'] === false && rolPerm.permisos.acciones['Roles']['Revisar'] === false)){
+      return response.status(401).json({ error: 'Error al obtener Rol. No cuenta con los permisos suficientes.'});
+    }
+
     const rol = await Rol.findById(idRol).populate([{
       path: 'editor revisor eliminador',
       select: '_id nombre',
@@ -110,6 +136,12 @@ export async function getRevisionesRol(header, response, idRol){
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Rol. ' + auth.payload });
     
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Roles']['Ver Historial'] === false){
+      return response.status(401).json({ error: 'Error al obtener Revisiones de Rol. No cuenta con los permisos suficientes.'});
+    }
+
     const revisiones = await Rol.find({original: {_id: idRol}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
       path: 'editor revisor',
       select: '_id nombre',
@@ -129,7 +161,13 @@ export async function createRol(header, response, nombre, permisos, aprobar=fals
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el rol. ' + auth.payload });
 
-    const editor = await getUsuarioByIdSimple(auth.payload.userId);
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Roles']['Crear'] === false){
+      return response.status(401).json({ error: 'Error al crear el rol. No cuenta con los permisos suficientes.'});
+    }
+
+    const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al crear el rol. Usuario no encontrado.' });
 
     const baseRol = new Rol({
@@ -197,10 +235,16 @@ export async function editRol(header, response, idRol, nombre, permisos, aprobar
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar el rol. ' + auth.payload });
 
+    //Validaciones de rol
+    const rolPerm = await privateGetRolById(auth.payload.userRolId);
+    if(rolPerm && rolPerm.permisos.acciones['Roles']['Modificar'] === false){
+      return response.status(401).json({ error: 'Error al editar el rol. No cuenta con los permisos suficientes.'});
+    }
+
     const rol = await privateGetRolById(idRol);
     if(!rol) return response.status(404).json({ error: 'Error al editar el rol. Rol no encontrado' });
 
-    const editor = await getUsuarioByIdSimple(auth.payload.userId);
+    const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al editar el rol. Usuario no encontrado' });
 
     //Crear objeto de actualizacion
@@ -259,13 +303,19 @@ export async function revisarUpdateRol(header, response, idRol, aprobado, observ
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el rol. ' + auth.payload });
 
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Roles']['Revisar'] === false){
+      return response.status(401).json({ error: 'Error al revisar el rol. No cuenta con los permisos suficientes.'});
+    }
+
     const updateRol = await privateGetRolById(idRol);
     if(!updateRol) return response.status(404).json({ error: 'Error al revisar el rol. Revisión no encontrada.' });
 
     const original = await privateGetRolById(updateRol.original);
     if(!original && updateRol.version !== '0.1') return response.status(404).json({ error: 'Error al revisar el rol. Rol no encontrado.' });
 
-    const revisor = await getUsuarioByIdSimple(auth.payload.userId);
+    const revisor = await privateGetUsuarioById(auth.payload.userId);
     if(!revisor) return response.status(404).json({ error: 'Error al revisar el rol. Usuario no encontrado' });
 
     if(aprobado){
@@ -357,10 +407,16 @@ export async function deleteRol(header, response, idRol, observaciones=null){
   const auth = decodeToken(header);
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al eliminar el rol. ' + auth.payload });
 
+  //Validaciones de rol
+  const rolPerm = await privateGetRolById(auth.payload.userRolId);
+  if(rolPerm && rolPerm.permisos.acciones['Roles']['Eliminar'] === false){
+    return response.status(401).json({ error: 'Error al eliminar el rol. No cuenta con los permisos suficientes.'});
+  }
+
   const rol = await privateGetRolById(idRol);
   if(!rol) return response.status(404).json({ error: 'Error al eliminar el rol. Rol no encontrado.' });
 
-  const eliminador = await getUsuarioByIdSimple(auth.payload.userId);
+  const eliminador = await privateGetUsuarioById(auth.payload.userId);
   if(!eliminador) return response.status(404).json({ error: 'Error al eliminar el rol. Usuario no encontrado.' });
 
   if(rol.estado !== 'Eliminado'){

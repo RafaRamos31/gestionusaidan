@@ -1,10 +1,10 @@
 import Inversion from "../models/inversiones.js";
-import { getAldeaByIdSimple } from "./aldeas-controller.js";
-import { getAreaInvById } from "./areasInv-controller.js";
-import { getCaserioByIdSimple } from "./caserios-controller.js";
-import { getDepartamentoById } from "./departamentos-controller.js";
-import { getMunicipioByIdSimple } from "./municipios-controller.js";
 import { getUsuarioById } from "./usuarios-controller.js";
+import { getAreaInvById } from "./areasInv-controller.js";
+import { getDepartamentoById } from "./departamentos-controller.js";
+import { privateGetAldeaById } from "./aldeas-controller.js";
+import { privateGetCaserioById } from "./caserios-controller.js";
+import { privateGetMunicipioById } from "./municipios-controller.js";
 
 export async function getInversionById(idInversion){
   try {
@@ -55,9 +55,9 @@ export async function createInversion(nombre, sector, idArea, idDepartamento, id
   const promises = await Promise.all([
     getAreaInvById(idArea),
     getDepartamentoById(idDepartamento),
-    getMunicipioByIdSimple(idMunicipio),
-    getAldeaByIdSimple(idAldea),
-    getCaserioByIdSimple(idCaserio),
+    privateGetMunicipioById(idMunicipio),
+    privateGetAldeaById(idAldea),
+    privateGetCaserioById(idCaserio),
     getUsuarioById(idUsuario)
   ])
 
@@ -88,9 +88,9 @@ export async function editInversion(idInversion, nombre, sector, idArea, idDepar
   const promises = await Promise.all([
     getAreaInvById(idArea),
     getDepartamentoById(idDepartamento),
-    getMunicipioByIdSimple(idMunicipio),
-    getAldeaByIdSimple(idAldea),
-    getCaserioByIdSimple(idCaserio),
+    privateGetMunicipioById(idMunicipio),
+    privateGetAldeaById(idAldea),
+    privateGetCaserioById(idCaserio),
     getUsuarioById(idUsuario)
   ])
 

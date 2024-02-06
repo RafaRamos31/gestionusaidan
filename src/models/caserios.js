@@ -8,7 +8,6 @@ const schema = new mongoose.Schema({
   geocode: {
     type: String,
     required: true,
-    unique: true,
     maxlength: 8,
     minlength: 8
   },
@@ -17,13 +16,47 @@ const schema = new mongoose.Schema({
     ref: "Aldea",
     required: true,
   },
-  ultimaEdicion: {
+  original: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Caserio",
+  },
+  version: {
+    type: String,
+  },
+  ultimaRevision: {
+    type: String,
+  },
+  estado: {
+    type: String,
+  },
+  fechaEdicion: {
     type: Date
   },
   editor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Usuario",
   },
+  fechaRevision: {
+    type: Date
+  },
+  revisor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+  },
+  fechaEliminacion: {
+    type: Date
+  },
+  eliminador: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+  },
+  observaciones: {
+    type: String,
+  },
+  pendientes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+  }]
 });
 
 /**
