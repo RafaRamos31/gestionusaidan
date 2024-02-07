@@ -124,7 +124,7 @@ export async function getListAldeas({header, response, filter}){
     //Filter
     const filterQuery = getFilter({filterParams: filter})
 
-    const aldeas = await Aldea.find(filterQuery, '_id nombre geocode').sort(sortQuery);
+    const aldeas = await Aldea.find(filterQuery, '_id nombre geocode').limit(50).sort(sortQuery);
 
     response.json(aldeas);
     return response;

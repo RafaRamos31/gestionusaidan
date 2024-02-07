@@ -124,7 +124,7 @@ export async function getListCaserios({header, response, filter}){
     //Filter
     const filterQuery = getFilter({filterParams: filter})
 
-    const caserios = await Caserio.find(filterQuery, '_id nombre geocode').sort(sortQuery);
+    const caserios = await Caserio.find(filterQuery, '_id nombre geocode').limit(50).sort(sortQuery);
 
     response.json(caserios);
     return response;

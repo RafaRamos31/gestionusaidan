@@ -122,7 +122,7 @@ export async function getListOrganizaciones({header, response, filter}){
     //Filter
     const filterQuery = getFilter({filterParams: filter})
 
-    const organizaciones = await Organizacion.find(filterQuery, '_id nombre').sort(sortQuery);
+    const organizaciones = await Organizacion.find(filterQuery, '_id nombre').limit(50).sort(sortQuery);
 
     response.json(organizaciones);
     return response;

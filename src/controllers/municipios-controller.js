@@ -122,7 +122,7 @@ export async function getListMunicipios({header, response, filter}){
     //Filter
     const filterQuery = getFilter({filterParams: filter})
 
-    const municipios = await Municipio.find(filterQuery, '_id nombre geocode').sort(sortQuery);
+    const municipios = await Municipio.find(filterQuery, '_id nombre geocode').limit(50).sort(sortQuery);
 
     response.json(municipios);
     return response;
