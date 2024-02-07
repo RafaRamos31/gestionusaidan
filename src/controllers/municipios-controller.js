@@ -117,7 +117,7 @@ export async function getListMunicipios({header, response, filter}){
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Municipios. ' + auth.payload });
 
     //Sort
-    const sortQuery = getSorting({sort, defaultSort: { geocode: 1 }})
+    const sortQuery = getSorting({defaultSort: { geocode: 1 }})
 
     //Filter
     const filterQuery = getFilter({filterParams: filter})

@@ -117,7 +117,7 @@ export async function getListOrganizaciones({header, response, filter}){
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Organizaciones. ' + auth.payload });
 
     //Sort
-    const sortQuery = getSorting({sort, defaultSort: { nombre: 1 }})
+    const sortQuery = getSorting({defaultSort: { nombre: 1 }})
 
     //Filter
     const filterQuery = getFilter({filterParams: filter})

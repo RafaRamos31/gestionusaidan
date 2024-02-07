@@ -98,13 +98,13 @@ export async function getPagedDepartamentos({header, response, page, pageSize, s
 
 
 //Get Info List
-export async function getListDepartamentos({header, response, sort, filter}){
+export async function getListDepartamentos({header, response, filter}){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Departamentos. ' + auth.payload });
 
     //Sort
-    const sortQuery = getSorting({sort, defaultSort: { geocode: 1 }})
+    const sortQuery = getSorting({defaultSort: { geocode: 1 }})
 
     //Filter
     const filterQuery = getFilter({filterParams: filter})

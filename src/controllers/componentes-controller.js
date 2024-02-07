@@ -84,13 +84,13 @@ export async function getPagedComponentes({header, response, page, pageSize, sor
 
 
 //Get Info List
-export async function getListComponentes({header, response, sort, filter}){
+export async function getListComponentes({header, response, filter}){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Componentes. ' + auth.payload });
 
     //Sort
-    const sortQuery = getSorting({sort, defaultSort: { nombre: 1 }})
+    const sortQuery = getSorting({defaultSort: { nombre: 1 }})
 
     //Filter
     const filterQuery = getFilter({filterParams: filter})

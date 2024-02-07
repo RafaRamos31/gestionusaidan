@@ -83,13 +83,13 @@ export async function getPagedRoles({header, response, page, pageSize, sort, fil
 
 
 //Get Info List
-export async function getListRoles({header, response, sort, filter}){
+export async function getListRoles({header, response, filter}){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Roles. ' + auth.payload });
 
     //Sort
-    const sortQuery = getSorting({sort, defaultSort: { geocode: 1 }})
+    const sortQuery = getSorting({defaultSort: { geocode: 1 }})
 
     //Filter
     const filterQuery = getFilter({filterParams: filter})

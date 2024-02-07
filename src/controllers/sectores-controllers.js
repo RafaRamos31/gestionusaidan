@@ -84,13 +84,13 @@ export async function getPagedSectores({header, response, page, pageSize, sort, 
 
 
 //Get Info List
-export async function getListSectores({header, response, sort, filter}){
+export async function getListSectores({header, response, filter}){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Sectores. ' + auth.payload });
 
     //Sort
-    const sortQuery = getSorting({sort, defaultSort: { nombre: 1 }})
+    const sortQuery = getSorting({defaultSort: { nombre: 1 }})
 
     //Filter
     const filterQuery = getFilter({filterParams: filter})
