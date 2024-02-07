@@ -23,10 +23,10 @@ export const getFilter = ({filterParams, reviews=false, deleteds=false}) => {
   return filter;
 }
 
-export const getSorting = ({sort, defaultSort, reviews=false}) => {
+export const getSorting = ({sort=null, defaultSort, reviews=false}) => {
   //Sorting
   let sortQuery = {}
-  if(sort.field && sort.sort){
+  if(sort && sort.field && sort.sort){
     sortQuery[sort.field] = sort.sort === 'desc' ? -1 : 1
     return sortQuery;
   }
