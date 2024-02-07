@@ -8,8 +8,8 @@ const schema = new mongoose.Schema({
   geocode: {
     type: String,
     required: true,
-    maxlength: 8,
-    minlength: 8
+    maxlength: 9,
+    minlength: 9
   },
   aldea: {
     type: mongoose.Schema.Types.ObjectId,
