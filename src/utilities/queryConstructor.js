@@ -1,3 +1,4 @@
+import mongoose from "mongoose"
 
 export const getFilter = ({filterParams, reviews=false, deleteds=false}) => {
 
@@ -20,7 +21,12 @@ export const getFilter = ({filterParams, reviews=false, deleteds=false}) => {
       filter[filterParams.field] = filterParams.value;
     }
     if(filterParams.operator === 'equals'){
-      filter[filterParams.field] = filterParams.value;
+      try {
+        const objectId = mongoose.Types.ObjectId(filterParams.value);
+        filter[filterParams.field] = objectId;
+      } catch (error) {
+        return filter;
+      }
     }
   }
   return filter;
