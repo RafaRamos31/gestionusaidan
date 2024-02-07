@@ -16,6 +16,11 @@ const schema = new mongoose.Schema({
     ref: "Municipio",
     required: true,
   },
+  departamento: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Departamento",
+    required: true,
+  },
   original: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Aldea",

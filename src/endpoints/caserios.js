@@ -104,6 +104,8 @@ export const getCaseriosEndpoints = (app, upload) => {
         request.body.nombre,
         request.body.geocode,
         request.body.idAldea,
+        request.body.idMunicipio,
+        request.body.idDepartamento,
         JSON.parse(request.body.aprobar)
       );
       
@@ -125,6 +127,8 @@ export const getCaseriosEndpoints = (app, upload) => {
         request.body.nombre,
         request.body.geocode,
         request.body.idAldea,
+        request.body.idMunicipio,
+        request.body.idDepartamento,
         JSON.parse(request.body.aprobar)
       );
 

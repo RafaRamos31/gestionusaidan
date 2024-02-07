@@ -104,6 +104,7 @@ export const getAldeasEndpoints = (app, upload) => {
         request.body.nombre,
         request.body.geocode,
         request.body.idMunicipio,
+        request.body.idDepartamento,
         JSON.parse(request.body.aprobar)
       );
       
@@ -125,6 +126,7 @@ export const getAldeasEndpoints = (app, upload) => {
         request.body.nombre,
         request.body.geocode,
         request.body.idMunicipio,
+        request.body.idDepartamento,
         JSON.parse(request.body.aprobar)
       );
 

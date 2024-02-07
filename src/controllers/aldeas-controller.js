@@ -2,6 +2,7 @@ import Aldea from "../models/aldeas.js";
 import { decodeToken } from "../utilities/jwtDecoder.js";
 import { getFilter, getSorting } from "../utilities/queryConstructor.js";
 import { updateVersion } from "../utilities/versionHelper.js";
+import { privateGetDepartamentoById } from "./departamentos-controller.js";
 import { privateGetMunicipioById } from "./municipios-controller.js";
 import { privateGetRolById } from "./roles-controller.js";
 import { privateGetUsuarioById } from "./usuarios-controller.js";
@@ -27,7 +28,7 @@ export async function privateGetAldeaById(idAldea){
   try {
     return Aldea.findById(idAldea).populate([
       {
-      path: 'municipio',
+      path: 'municipio departamento',
       select: '_id nombre geocode',
       },
     ]);
@@ -97,7 +98,7 @@ export async function getPagedAldeas({header, response, page, pageSize, sort, fi
       select: '_id nombre',
       },
       {
-      path: 'municipio',
+      path: 'municipio departamento',
       select: '_id nombre geocode',
       },
     ]);
@@ -152,7 +153,7 @@ export async function getAldeaById(header, response, idAldea){
       select: '_id nombre',
       },
       {
-      path: 'municipio',
+      path: 'municipio departamento',
       select: '_id nombre geocode',
       },
     ]);
@@ -184,7 +185,7 @@ export async function getRevisionesAldea(header, response, idAldea){
       select: '_id nombre',
       },
       {
-      path: 'municipio',
+      path: 'municipio departamento',
       select: '_id nombre geocode',
       },
     ]);
@@ -198,7 +199,7 @@ export async function getRevisionesAldea(header, response, idAldea){
 }
 
 //Crear depto
-export async function createAldea(header, response, nombre, geocode, idMunicipio, aprobar=false){
+export async function createAldea(header, response, nombre, geocode, idMunicipio, idDepartamento, aprobar=false){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear la aldea. ' + auth.payload });
@@ -217,12 +218,16 @@ export async function createAldea(header, response, nombre, geocode, idMunicipio
 
     const municipio = await privateGetMunicipioById(idMunicipio);
     if(!municipio) return response.status(404).json({ error: 'Error al crear la aldea. Municipio no encontrado.' });
+
+    const departamento = await privateGetDepartamentoById(idDepartamento);
+    if(!departamento) return response.status(404).json({ error: 'Error al crear la aldea. Departamento no encontrado.' });
     
     const baseAldea = new Aldea({
       //Propiedades de objeto
       nombre,
       geocode,
       municipio,
+      departamento,
       //Propiedades de control
       original: null,
       version: '0.1',
@@ -246,6 +251,7 @@ export async function createAldea(header, response, nombre, geocode, idMunicipio
         nombre,
         geocode,
         municipio,
+        departamento,
         //Propiedades de control
         original: null,
         version: '1.0',
@@ -281,7 +287,7 @@ export async function createAldea(header, response, nombre, geocode, idMunicipio
 
 
 //Edit info
-export async function editAldea(header, response, idAldea, nombre, geocode, idMunicipio, aprobar=false){
+export async function editAldea(header, response, idAldea, nombre, geocode, idMunicipio, idDepartamento, aprobar=false){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar la aldea. ' + auth.payload });
@@ -303,6 +309,9 @@ export async function editAldea(header, response, idAldea, nombre, geocode, idMu
 
     const municipio = await privateGetMunicipioById(idMunicipio);
     if(!municipio) return response.status(404).json({ error: 'Error al editar la aldea. Municipio no encontrado.' });
+
+    const departamento = await privateGetDepartamentoById(idDepartamento);
+    if(!departamento) return response.status(404).json({ error: 'Error al editar la aldea. Departamento no encontrado.' });
     
     //Crear objeto de actualizacion
     const updateAldea = new Aldea({
@@ -310,6 +319,7 @@ export async function editAldea(header, response, idAldea, nombre, geocode, idMu
       nombre,
       geocode,
       municipio,
+      departamento,
       //Propiedades de control
       original: aldea._id,
       version: updateVersion(aldea.ultimaRevision),
@@ -330,6 +340,7 @@ export async function editAldea(header, response, idAldea, nombre, geocode, idMu
       aldea.nombre = nombre;
       aldea.geocode = geocode;
       aldea.municipio = municipio;
+      aldea.departamento = departamento;
       //Propiedades de control
       aldea.version = updateVersion(aldea.version, aprobar);
       aldea.ultimaRevision = municipio.version;
@@ -392,6 +403,7 @@ export async function revisarUpdateAldea(header, response, idAldea, aprobado, ob
         original.nombre = updateAldea.nombre;
         original.geocode = updateAldea.geocode;
         original.municipio = updateAldea.municipio;
+        original.departamento = updateAldea.departamento;
         //Propiedades de control
         original.version = updateVersion(original.version, aprobado);
         original.ultimaRevision = original.version;
@@ -407,6 +419,7 @@ export async function revisarUpdateAldea(header, response, idAldea, aprobado, ob
           nombre: updateAldea.nombre,
           geocode: updateAldea.geocode,
           municipio: updateAldea.municipio,
+          departamento: updateAldea.departamento,
           //Propiedades de control
           original: null,
           version: '1.0',

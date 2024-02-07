@@ -3,6 +3,8 @@ import { decodeToken } from "../utilities/jwtDecoder.js";
 import { getFilter, getSorting } from "../utilities/queryConstructor.js";
 import { updateVersion } from "../utilities/versionHelper.js";
 import { privateGetAldeaById } from "./aldeas-controller.js";
+import { privateGetDepartamentoById } from "./departamentos-controller.js";
+import { privateGetMunicipioById } from "./municipios-controller.js";
 import { privateGetRolById } from "./roles-controller.js";
 import { privateGetUsuarioById } from "./usuarios-controller.js";
 
@@ -27,7 +29,7 @@ export async function privateGetCaserioById(idCaserio){
   try {
     return Caserio.findById(idCaserio).populate([
       {
-      path: 'aldea',
+      path: 'aldea municipio departamento',
       select: '_id nombre geocode',
       },
     ]);
@@ -96,7 +98,7 @@ export async function getPagedCaserios({header, response, page, pageSize, sort, 
       select: '_id nombre',
       },
       {
-      path: 'aldea',
+      path: 'aldea municipio departamento',
       select: '_id nombre geocode',
       },
     ]);
@@ -151,7 +153,7 @@ export async function getCaserioById(header, response, idCaserio){
       select: '_id nombre',
       },
       {
-      path: 'aldea',
+      path: 'aldea municipio departamento',
       select: '_id nombre geocode',
       },
     ]);
@@ -183,7 +185,7 @@ export async function getRevisionesCaserio(header, response, idCaserio){
       select: '_id nombre',
       },
       {
-      path: 'aldea',
+      path: 'aldea municipio departamento',
       select: '_id nombre geocode',
       },
     ]);
@@ -197,7 +199,7 @@ export async function getRevisionesCaserio(header, response, idCaserio){
 }
 
 //Crear caserio
-export async function createCaserio(header, response, nombre, geocode, idAldea, aprobar=false){
+export async function createCaserio(header, response, nombre, geocode, idAldea, idMunicipio, idDepartamento, aprobar=false){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el caserio. ' + auth.payload });
@@ -216,12 +218,20 @@ export async function createCaserio(header, response, nombre, geocode, idAldea, 
 
     const aldea = await privateGetAldeaById(idAldea);
     if(!aldea) return response.status(404).json({ error: 'Error al crear el caserio. Aldea no encontrada.' });
+
+    const municipio = await privateGetMunicipioById(idMunicipio);
+    if(!municipio) return response.status(404).json({ error: 'Error al crear el caserio. Municipio no encontrada.' });
+
+    const departamento = await privateGetDepartamentoById(idDepartamento);
+    if(!departamento) return response.status(404).json({ error: 'Error al crear el caserio. Departamento no encontrada.' });
     
     const baseCaserio = new Caserio({
       //Propiedades de objeto
       nombre,
       geocode,
       aldea,
+      municipio,
+      departamento,
       //Propiedades de control
       original: null,
       version: '0.1',
@@ -245,6 +255,8 @@ export async function createCaserio(header, response, nombre, geocode, idAldea, 
         nombre,
         geocode,
         aldea,
+        municipio,
+        departamento,
         //Propiedades de control
         original: null,
         version: '1.0',
@@ -280,7 +292,7 @@ export async function createCaserio(header, response, nombre, geocode, idAldea, 
 
 
 //Edit info
-export async function editCaserio(header, response, idCaserio, nombre, geocode, idAldea, aprobar=false){
+export async function editCaserio(header, response, idCaserio, nombre, geocode, idAldea, idMunicipio, idDepartamento, aprobar=false){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar el caserio. ' + auth.payload });
@@ -302,6 +314,12 @@ export async function editCaserio(header, response, idCaserio, nombre, geocode, 
 
     const aldea = await privateGetAldeaById(idAldea);
     if(!aldea) return response.status(404).json({ error: 'Error al editar el caserio. Aldea no encontrada.' });
+
+    const municipio = await privateGetMunicipioById(idMunicipio);
+    if(!municipio) return response.status(404).json({ error: 'Error al editar el caserio. Municipio no encontrada.' });
+
+    const departamento = await privateGetDepartamentoById(idDepartamento);
+    if(!departamento) return response.status(404).json({ error: 'Error al editar el caserio. Departamento no encontrada.' });
     
     //Crear objeto de actualizacion
     const updateCaserio = new Caserio({
@@ -309,6 +327,8 @@ export async function editCaserio(header, response, idCaserio, nombre, geocode, 
       nombre,
       geocode,
       aldea,
+      municipio,
+      departamento,
       //Propiedades de control
       original: caserio._id,
       version: updateVersion(caserio.ultimaRevision),
@@ -329,6 +349,8 @@ export async function editCaserio(header, response, idCaserio, nombre, geocode, 
       caserio.nombre = nombre;
       caserio.geocode = geocode;
       caserio.aldea = aldea;
+      caserio.municipio = municipio;
+      caserio.departamento = departamento;
       //Propiedades de control
       caserio.version = updateVersion(caserio.version, aprobar);
       caserio.ultimaRevision = caserio.version;
@@ -391,6 +413,8 @@ export async function revisarUpdateCaserio(header, response, idCaserio, aprobado
         original.nombre = updateCaserio.nombre;
         original.geocode = updateCaserio.geocode;
         original.aldea = updateCaserio.aldea;
+        original.municipio = updateCaserio.municipio;
+        original.departamento = updateCaserio.departamento;
         //Propiedades de control
         original.version = updateVersion(original.version, aprobado);
         original.ultimaRevision = original.version;
@@ -405,6 +429,8 @@ export async function revisarUpdateCaserio(header, response, idCaserio, aprobado
           //Propiedades de objeto
           nombre: updateCaserio.nombre,
           geocode: updateCaserio.geocode,
+          aldea: updateCaserio.aldea,
+          municipio: updateCaserio.municipio,
           departamento: updateCaserio.departamento,
           //Propiedades de control
           original: null,
