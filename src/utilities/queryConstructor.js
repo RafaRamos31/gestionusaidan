@@ -19,6 +19,9 @@ export const getFilter = ({filterParams, reviews=false, deleteds=false}) => {
     if(filterParams.operator === 'is'){
       filter[filterParams.field] = filterParams.value;
     }
+    if(filterParams.operator === 'equals'){
+      filter[filterParams.field] = filterParams.value;
+    }
   }
   return filter;
 }
