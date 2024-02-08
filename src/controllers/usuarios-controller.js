@@ -387,6 +387,7 @@ export async function revisarUpdateUsuario(header, response, idUsuario, aprobado
 
       await updateUsuario.save();
 
+      usuario.editor = updateUsuario.editor;
       usuario.original = usuario._id;
       await usuario.save();
       
