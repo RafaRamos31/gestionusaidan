@@ -337,7 +337,6 @@ export async function revisarUpdateUsuario(header, response, idUsuario, aprobado
     if(rol && rol.permisos.acciones['Usuarios']['Revisar'] === false){
       return response.status(401).json({ error: 'Error al revisar Usuario. No cuenta con los permisos suficientes.'});
     }
-    if(!rol) return response.status(404).json({ error: 'Error al revisar Usuario. Rol no encontrado.' });
 
     const updateUsuario = await privateGetUsuarioById(idUsuario);
     if(!updateUsuario) return response.status(404).json({ error: 'Error al revisar Usuario. Revisión no encontrada.' });
