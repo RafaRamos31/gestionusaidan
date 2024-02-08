@@ -1,5 +1,4 @@
 import Ticket from "../models/tickets.js";
-import { getUsuarioById } from "./usuarios-controller.js";
 
 export async function getAllTickets(){
   return Ticket.find();
@@ -14,12 +13,9 @@ export async function getTicketById(idTicket){
   }
 }
 
-export async function crearTicket(idUsuario=null){
-  const editor = await getUsuarioById(idUsuario);
+export async function crearTicket(){
   const ticket = new Ticket({
     fechaCreacion: new Date(),
-    ultimaEdicion: new Date(),
-    editor
   })
 
   return ticket.save();
