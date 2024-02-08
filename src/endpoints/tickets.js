@@ -1,4 +1,5 @@
-import { crearTicket, deleteTicket, getAllTickets, getTicketById } from "../controllers/tickets-controller.js";
+import jwt from 'jsonwebtoken';
+import { crearTicket, deleteTicket, getTicketById } from "../controllers/tickets-controller.js";
 
 export const getTicketsEndpoints = (app, upload) => {
 
