@@ -173,6 +173,7 @@ export const getUsuariosEndpoints = (app, upload) => {
         response,
         request.body.id,
         JSON.parse(request.body.aprobado),
+        request.body.idRol,
         request.body.observaciones,
       );
 
