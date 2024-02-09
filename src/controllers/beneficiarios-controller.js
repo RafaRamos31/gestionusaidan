@@ -162,6 +162,32 @@ export async function getBeneficiarioById(header, response, idBeneficiario){
 }
 
 
+export async function getBeneficiarioByDNI(header, response, dniBeneficiario){
+  try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Beneficiario. ' + auth.payload });
+    
+    //Validaciones de rol
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && (rol.permisos.vistas['Clientes']['Beneficiarios'] === false && rol.permisos.acciones['Beneficiarios']['Revisar'] === false)){
+      return response.status(401).json({ error: 'Error al obtener Beneficiario. No cuenta con los permisos suficientes.'});
+    }
+
+    const beneficiario = await Beneficiario.find({dni: dniBeneficiario, estado: 'Publicado'}).populate([
+    {
+      path: 'sector tipoOrganizacion organizacion cargo departamento municipio aldea caserio editor revisor eliminador',
+      select: '_id nombre',
+    }]);
+
+    response.json(beneficiario);
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+
 //Get revisiones organizacion
 export async function getRevisionesBeneficiario(header, response, idBeneficiario){
   try {

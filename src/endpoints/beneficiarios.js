@@ -1,4 +1,4 @@
-import { createBeneficiario, deleteBeneficiario, editBeneficiario, getBeneficiarioById, getCountBeneficiarios, getListBeneficiarios, getPagedBeneficiarios, getRevisionesBeneficiario, revisarUpdateBeneficiario } from "../controllers/beneficiarios-controller.js";
+import { createBeneficiario, deleteBeneficiario, editBeneficiario, getBeneficiarioByDNI, getBeneficiarioById, getCountBeneficiarios, getListBeneficiarios, getPagedBeneficiarios, getRevisionesBeneficiario, revisarUpdateBeneficiario } from "../controllers/beneficiarios-controller.js";
 
 export const getBeneficiariosEndpoints = (app, upload) => {
 
@@ -68,6 +68,22 @@ export const getBeneficiariosEndpoints = (app, upload) => {
         authorizationHeader,
         response,
         request.params.idBeneficiario
+      );
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener Beneficiario: ' + error });
+    }
+  })
+
+  //GET organizacion by DNI
+  app.get("/api/beneficiarioDNI/:dniBeneficiario", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getBeneficiarioByDNI(
+        authorizationHeader,
+        response,
+        request.params.dniBeneficiario
       );
 
     } catch (error) {
