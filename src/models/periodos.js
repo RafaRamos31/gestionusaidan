@@ -5,13 +5,15 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  descripcion: {
-    type: String,
-    required: true,
+  fechaInicio: {
+    type: Date
+  },
+  fechaFinal: {
+    type: Date
   },
   original: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Resultado",
+    ref: "Periodo",
   },
   version: {
     type: String,
@@ -55,4 +57,4 @@ const schema = new mongoose.Schema({
 /**
  * Modelo de entidad de un Componente
  */
-export default mongoose.model("Resultado", schema, "Resultados");
+export default mongoose.model("Periodo", schema, "Periodos");

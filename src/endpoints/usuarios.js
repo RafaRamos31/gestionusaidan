@@ -195,7 +195,7 @@ export const getUsuariosEndpoints = (app, upload) => {
         userRolId: usuario.rol?._id,
         userPermisos: usuario.rol?.permisos
       }
-      const token = jwt.sign(tokenUser, 'algo', { expiresIn: '5h' });
+      const token = jwt.sign(tokenUser, 'algo', { expiresIn: '12h' });
 
       response.json({token});
 

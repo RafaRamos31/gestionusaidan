@@ -12,11 +12,13 @@ import { getUsuariosEndpoints } from "../src/endpoints/usuarios.js";
 import { getAreasEndpoints } from "../src/endpoints/areas.js";
 import { getSubareasEndpoints } from "../src/endpoints/subareas.js";
 import { getBeneficiariosEndpoints } from "../src/endpoints/beneficiarios.js";
-import { getResultadosEndpoints } from "../src/endpoints/resultados.js";
 import { getAreasInvEndpoints } from "../src/endpoints/areasInv.js";
 import { getInversionesEndpoints } from "../src/endpoints/inversiones.js";
 import { getTicketsEndpoints } from "../src/endpoints/tickets.js";
 import { getSectoresEndpoints } from "../src/endpoints/sectores.js";
+import { getResultadosEndpoints } from "../src/endpoints/resultados.js";
+import { getSubresultadosEndpoints } from "../src/endpoints/subresultados.js";
+import { getActividadesEndpoints } from "../src/endpoints/actividades.js";
 
 /**
  * Separa la logica de definicion de rutas y su respuesta a peticiones REST
@@ -41,11 +43,13 @@ export function addRestDirections(app) {
   app = getAreasEndpoints(app, upload);
   app = getSubareasEndpoints(app, upload);
   app = getBeneficiariosEndpoints(app, upload);
-  app = getResultadosEndpoints(app, upload);
   app = getAreasInvEndpoints(app, upload);
   app = getInversionesEndpoints(app, upload);
   app = getTicketsEndpoints(app, upload);
   app = getSectoresEndpoints(app, upload);
+  app = getResultadosEndpoints(app, upload);
+  app = getSubresultadosEndpoints(app, upload);
+  app = getActividadesEndpoints(app, upload);
 
   return app;
 }

@@ -9,9 +9,13 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  original: {
+  resultado: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Resultado",
+  },
+  original: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "SubResultado",
   },
   version: {
     type: String,
@@ -55,4 +59,4 @@ const schema = new mongoose.Schema({
 /**
  * Modelo de entidad de un Componente
  */
-export default mongoose.model("Resultado", schema, "Resultados");
+export default mongoose.model("SubResultado", schema, "SubResultados");
