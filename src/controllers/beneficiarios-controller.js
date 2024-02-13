@@ -379,8 +379,8 @@ export async function editBeneficiario({header, response, idBeneficiario, nombre
       caserio: promises[7],
       geolocacion,
       //Propiedades de control
-      original: beneficario._id,
-      version: updateVersion(beneficario.ultimaRevision),
+      original: beneficiario._id,
+      version: updateVersion(beneficiario.ultimaRevision),
       estado: aprobar ? 'Validado' : 'En revisión',
       fechaEdicion: new Date(),
       editor: editor,
