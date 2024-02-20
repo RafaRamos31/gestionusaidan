@@ -12,6 +12,7 @@ const schema = new mongoose.Schema({
   resultado: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Resultado",
+    required: true
   },
   original: {
     type: mongoose.Schema.Types.ObjectId,

@@ -23,7 +23,7 @@ export async function loginUser(email, password){
 
 //Internos para validacion de claves unicas
 async function validateUniquesUsuario({id=null, dni=null, correo=null}){
-  let filter = {estado: 'Publicado'}
+  let filter = {estado: { $in: ['Publicado', 'Eliminado'] }}
 
   if(id){
     filter = {...filter, _id: {$nin: [id] }}

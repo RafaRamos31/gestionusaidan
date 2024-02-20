@@ -5,73 +5,73 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  descripcion: {
-    type: String,
-    required: true,
-  },
-  lugar: {
-    type: String,
-    required: true,
-  },
-  unidadMedida: {
-    type: String,
-    required: true,
-  },
-  resultado: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Resultado",
-    required: true,
-  },
-  subresultado: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "SubResultado",
-    required: true,
-  },
-  actividad: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Actividad",
-    required: true,
-  },
-  subactividad: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "SubActividad",
-    required: true,
-  },
-  componente: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Componente",
-    required: true,
-  },
-  cantidadProgramada: {
-    type: Number,
-    required: true,
-  },
-  cantidadRealizada: {
-    type: Number
-  },
-  yearInicio: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Year",
-    required: true,
-  },
-  trimestreInicio: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Quarter",
-    required: true,
-  },
-  yearFinal: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Year",
-    required: true,
-  },
-  trimestreFinal: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Quarter",
-    required: true,
-  },
-  original: {
+  tarea: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Tarea",
+    required: true,
+  },
+  areaTematica: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "AreaTematica",
+  },
+  fechaInicio: {
+    type: Date,
+    required: true,
+  },
+  fechaFinal: {
+    type: Date,
+    required: true,
+  },
+  departamento: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Departamento",
+    required: true,
+  },
+  municipio: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Municipio",
+    required: true,
+  },
+  aldea: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Aldea",
+    required: true,
+  },
+  caserio: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Caserio",
+    required: true,
+  },
+  sectores: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Sector",
+  }],
+  nivel: {
+    type: String,
+    required: true,
+  },
+  organizador: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+    required: true,
+  },
+  responsables: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+  }],
+  participantes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Beneficiario",
+  }],
+  enlaceListado: {
+    type: String,
+  },
+  enlacesFotografias: [{
+    type: String,
+  }],
+  original: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Evento",
   },
   version: {
     type: String,
@@ -115,4 +115,4 @@ const schema = new mongoose.Schema({
 /**
  * Modelo de entidad de un Componente
  */
-export default mongoose.model("Tarea", schema, "Tareas");
+export default mongoose.model("Evento", schema, "Eventos");

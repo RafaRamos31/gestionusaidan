@@ -19,9 +19,22 @@ const schema = new mongoose.Schema({
     ref: "SubResultado",
     required: true,
   },
-  original: {
+  actividad: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Actividad",
+    required: true,
+  },
+  componentes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Componente"
+  }],
+  areasTematicas: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "AreaTematica"
+  }],
+  original: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "SubActividad",
   },
   version: {
     type: String,
@@ -65,4 +78,4 @@ const schema = new mongoose.Schema({
 /**
  * Modelo de entidad de un Componente
  */
-export default mongoose.model("Actividad", schema, "Actividades");
+export default mongoose.model("SubActividad", schema, "SubActividades");

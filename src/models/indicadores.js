@@ -9,37 +9,24 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  medida: {
+    type: String,
+    required: true,
+  },
   tipoIndicador: {
     type: String,
     required: true,
   },
-  resultados: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Resultado",
-  }],
   frecuencia: {
-    type: String,
-    required: true,
-  },
-  medida: {
     type: String,
     required: true,
   },
   metas: {
     type: Object
   },
-  progresoMetaLOP: {
-    type: Number,
-    required: true,
+  progresos: {
+    type: Object
   },
-  metaLOP: {
-    type: Number,
-    required: true,
-  },
-  actividades: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Actividad",
-  }],
   original: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Indicador",

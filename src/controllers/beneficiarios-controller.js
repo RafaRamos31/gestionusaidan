@@ -15,7 +15,7 @@ import { privateGetUsuarioById } from "./usuarios-controller.js";
 
 //Internos para validacion de claves unicas
 async function validateUniquesBeneficiarios({id=null, dni=null}){
-  let filter = {estado: 'Publicado'}
+  let filter = {estado: { $in: ['Publicado', 'Eliminado'] }}
 
   if(id){
     filter = {...filter, _id: {$nin: [id] }}

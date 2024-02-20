@@ -5,6 +5,10 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  year: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Year",
+  },
   fechaInicio: {
     type: Date
   },
@@ -13,7 +17,7 @@ const schema = new mongoose.Schema({
   },
   original: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Periodo",
+    ref: "Quarter",
   },
   version: {
     type: String,
@@ -57,4 +61,4 @@ const schema = new mongoose.Schema({
 /**
  * Modelo de entidad de un Componente
  */
-export default mongoose.model("Periodo", schema, "Periodos");
+export default mongoose.model("Quarter", schema, "Quarters");

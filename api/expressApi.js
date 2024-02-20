@@ -19,6 +19,11 @@ import { getSectoresEndpoints } from "../src/endpoints/sectores.js";
 import { getResultadosEndpoints } from "../src/endpoints/resultados.js";
 import { getSubresultadosEndpoints } from "../src/endpoints/subresultados.js";
 import { getActividadesEndpoints } from "../src/endpoints/actividades.js";
+import { getYearsEndpoints } from "../src/endpoints/years.js";
+import { getQuartersEndpoints } from "../src/endpoints/quarters.js";
+import { getSubActividadesEndpoints } from "../src/endpoints/subactividades.js";
+import { getIndicadoresEndpoints } from "../src/endpoints/indicadores.js";
+import { getTareasEndpoints } from "../src/endpoints/tareas.js";
 
 /**
  * Separa la logica de definicion de rutas y su respuesta a peticiones REST
@@ -50,6 +55,11 @@ export function addRestDirections(app) {
   app = getResultadosEndpoints(app, upload);
   app = getSubresultadosEndpoints(app, upload);
   app = getActividadesEndpoints(app, upload);
+  app = getYearsEndpoints(app, upload);
+  app = getQuartersEndpoints(app, upload);
+  app = getSubActividadesEndpoints(app, upload);
+  app = getIndicadoresEndpoints(app, upload);
+  app = getTareasEndpoints(app, upload);
 
   return app;
 }

@@ -1,14 +1,15 @@
-import Actividad from "../models/actividades.js";
+import SubActividad from "../models/subactividades.js";
 import { decodeToken } from "../utilities/jwtDecoder.js";
 import { getFilter, getSorting } from "../utilities/queryConstructor.js";
 import { updateVersion } from "../utilities/versionHelper.js";
+import { privateGetActividadById } from "./actividades-controller.js";
 import { privateGetResultadoById } from "./resultados-controller.js";
 import { privateGetRolById } from "./roles-controller.js";
 import { privateGetSubresultadoById } from "./subresultados-controller.js";
 import { privateGetUsuarioById } from "./usuarios-controller.js";
 
 //Internos para validacion de claves unicas
-async function validateUniquesActividades({id=null, nombre = null}){
+async function validateUniquesSubActividades({id=null, nombre = null}){
   let filter = {estado: { $in: ['Publicado', 'Eliminado'] }}
 
   if(id){
@@ -19,13 +20,13 @@ async function validateUniquesActividades({id=null, nombre = null}){
     filter = {...filter, nombre: nombre}
   }
 
-  return Actividad.exists(filter);
+  return SubActividad.exists(filter);
 }
 
 //Get internal
-export async function privateGetActividadById(idActividad){
+export async function privateGetSubActividadById(idSubactividad){
   try {
-    return Actividad.findById(idActividad);
+    return SubActividad.findById(idSubactividad);
   } catch (error) {
     throw error;
   }
@@ -33,10 +34,10 @@ export async function privateGetActividadById(idActividad){
 
 
 //Get Count
-export async function getCountActividades({header, response, filterParams, reviews=false, deleteds=false}){
+export async function getCountSubActividades({header, response, filterParams, reviews=false, deleteds=false}){
   try {
     const auth = decodeToken(header);
-    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener actividades. ' + auth.payload });
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener sub actividades. ' + auth.payload });
 
     //Validaciones de rol
     /*const rol = await privateGetRolById(auth.payload.userRolId);
@@ -50,7 +51,7 @@ export async function getCountActividades({header, response, filterParams, revie
 
     const filter = getFilter({filterParams, reviews, deleteds})
 
-    const count = await Actividad.count(filter);
+    const count = await SubActividad.count(filter);
 
     response.json({ count });
     return response;
@@ -61,10 +62,10 @@ export async function getCountActividades({header, response, filterParams, revie
 }
 
 //Get Info Paged
-export async function getPagedActividades({header, response, page, pageSize, sort, filter, reviews=false, deleteds=false}){
+export async function getPagedSubActividades({header, response, page, pageSize, sort, filter, reviews=false, deleteds=false}){
   try {
     const auth = decodeToken(header);
-    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Actividades. ' + auth.payload });
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener SubActividades. ' + auth.payload });
 
     //Validaciones de rol
     /*const rol = await privateGetRolById(auth.payload.userRolId);
@@ -85,17 +86,17 @@ export async function getPagedActividades({header, response, page, pageSize, sor
     //Filter
     const filterQuery = getFilter({filterParams: filter, reviews, deleteds})
 
-    const actividades = await Actividad.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate([{
+    const subactividades = await SubActividad.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate([{
       path: 'editor revisor eliminador',
       select: '_id nombre',
     },
     {
-      path: 'resultado subresultado',
+      path: 'resultado subresultado actividad',
       select: '_id nombre descripcion',
     },
   ]);
 
-    response.json(actividades);
+    response.json(subactividades);
     return response;
 
   } catch (error) {
@@ -105,10 +106,10 @@ export async function getPagedActividades({header, response, page, pageSize, sor
 
 
 //Get Info List
-export async function getListActividades({header, response, filter}){
+export async function getListSubActividades({header, response, filter}){
   try {
     const auth = decodeToken(header);
-    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener actividades. ' + auth.payload });
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener sub-actividades. ' + auth.payload });
 
     //Sort
     const sortQuery = getSorting({defaultSort: { nombre: 1 }})
@@ -116,9 +117,9 @@ export async function getListActividades({header, response, filter}){
     //Filter
     const filterQuery = getFilter({filterParams: filter})
 
-    const actividades = await Actividad.find(filterQuery, '_id nombre descripcion').sort(sortQuery);
+    const subactividades = await SubActividad.find(filterQuery, '_id nombre descripcion').sort(sortQuery);
 
-    response.json(actividades);
+    response.json(subactividades);
     return response;
 
   } catch (error) {
@@ -128,10 +129,10 @@ export async function getListActividades({header, response, filter}){
 
 
 //Get individual 
-export async function getActividadById(header, response, idActividad){
+export async function getSubActividadById(header, response, idSubActividad){
   try {
     const auth = decodeToken(header);
-    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Actividad. ' + auth.payload });
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener SubActividad. ' + auth.payload });
 
     //Validaciones de rol
     /*const rol = await privateGetRolById(auth.payload.userRolId);
@@ -139,17 +140,17 @@ export async function getActividadById(header, response, idActividad){
       return response.status(401).json({ error: 'Error al obtener Resultado. No cuenta con los permisos suficientes.'});
     }*/
 
-    const actividad = await Actividad.findById(idActividad).populate([{
+    const subactividad = await SubActividad.findById(idSubActividad).populate([{
       path: 'editor revisor eliminador',
       select: '_id nombre',
     },
     {
-      path: 'resultado subresultado',
+      path: 'resultado subresultado actividad',
       select: '_id nombre descripcion',
     },
   ]);
 
-    response.json(actividad);
+    response.json(subactividad);
     return response;
 
   } catch (error) {
@@ -158,10 +159,10 @@ export async function getActividadById(header, response, idActividad){
 }
 
 //Get revisiones subresultado
-export async function getRevisionesActividades(header, response, idActividad){
+export async function getRevisionesSubActividades(header, response, idSubActividad){
   try {
     const auth = decodeToken(header);
-    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Actividad. ' + auth.payload });
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de SubActividad. ' + auth.payload });
     
     //Validaciones de rol
     /*const rol = await privateGetRolById(auth.payload.userRolId);
@@ -169,12 +170,12 @@ export async function getRevisionesActividades(header, response, idActividad){
       return response.status(401).json({ error: 'Error al obtener Revisiones de Resultado. No cuenta con los permisos suficientes.'});
     }*/
 
-    const revisiones = await Actividad.find({original: {_id: idActividad}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
+    const revisiones = await SubActividad.find({original: {_id: idSubActividad}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
       path: 'editor revisor eliminador',
       select: '_id nombre',
     },
     {
-      path: 'resultado subresultado',
+      path: 'resultado subresultado actividad',
       select: '_id nombre descripcion',
     },
   ]);
@@ -188,10 +189,10 @@ export async function getRevisionesActividades(header, response, idActividad){
 }
 
 //Crear actividad
-export async function createActividad(header, response, nombre, descripcion, idResultado, idSubresultado, aprobar=false){
+export async function createSubActividad(header, response, nombre, descripcion, idResultado, idSubresultado, idActividad, aprobar=false){
   try {
     const auth = decodeToken(header);
-    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear la actividad. ' + auth.payload });
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear la sub-actividad. ' + auth.payload });
 
     //Validaciones de rol
     /*const rol = await privateGetRolById(auth.payload.userRolId);
@@ -202,18 +203,20 @@ export async function createActividad(header, response, nombre, descripcion, idR
     const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al crear la actividad. Usuario no encontrado.' });
 
-    const existentNombre = await validateUniquesActividades({nombre})
+    const existentNombre = await validateUniquesSubActividades({nombre})
     if(existentNombre) return response.status(400).json({ error: `Error al crear la actividad. El código ${nombre} ya está en uso.` });
 
     const resultado = await privateGetResultadoById(idResultado)
     const subresultado = await privateGetSubresultadoById(idSubresultado)
+    const actividad = await privateGetActividadById(idActividad)
 
-    const baseActividad = new Actividad({
+    const baseSubactividad = new SubActividad({
       //Propiedades de objeto
       nombre,
       descripcion,
       resultado,
       subresultado,
+      actividad,
       //Propiedades de control
       original: null,
       version: '0.1',
@@ -229,15 +232,16 @@ export async function createActividad(header, response, nombre, descripcion, idR
       pendientes: []
     })
 
-    await baseActividad.save();
+    await baseSubactividad.save();
 
     if(aprobar){
-      const actividad = new Actividad({
+      const subactividad = new SubActividad({
         //Propiedades de objeto
         nombre,
         descripcion,
         resultado,
         subresultado,
+        actividad,
         //Propiedades de control
         original: null,
         version: '1.0',
@@ -253,18 +257,18 @@ export async function createActividad(header, response, nombre, descripcion, idR
         pendientes: []
       })
       
-      baseActividad.original = actividad._id;
-      baseActividad.estado = 'Validado';
-      baseActividad.fechaRevision = new Date();
-      baseActividad.revisor = editor;
+      baseSubactividad.original = subactividad._id;
+      baseSubactividad.estado = 'Validado';
+      baseSubactividad.fechaRevision = new Date();
+      baseSubactividad.revisor = editor;
 
-      await baseActividad.save();
+      await baseSubactividad.save();
 
-      actividad.original = actividad._id;
-      await actividad.save();
+      subactividad.original = subactividad._id;
+      await subactividad.save();
     }
 
-    response.json(baseActividad);
+    response.json(baseSubactividad);
     return response;
   } catch (error) {
     throw error;
@@ -272,10 +276,10 @@ export async function createActividad(header, response, nombre, descripcion, idR
 }
 
 //Edit info
-export async function editActividad(header, response, idActividad, nombre, descripcion, idResultado, idSubresultado, aprobar=false){
+export async function editSubActividad(header, response, idSubactividad, nombre, descripcion, idResultado, idSubresultado, idActividad, aprobar=false){
   try {
     const auth = decodeToken(header);
-    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar la actividad. ' + auth.payload });
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar la sub-actividad. ' + auth.payload });
 
     //Validaciones de rol
     /*const rol = await privateGetRolById(auth.payload.userRolId);
@@ -283,28 +287,30 @@ export async function editActividad(header, response, idActividad, nombre, descr
       return response.status(401).json({ error: 'Error al editar el departamento. No cuenta con los permisos suficientes.'});
     }*/
 
-    const actividad = await privateGetActividadById(idActividad);
-    if(!actividad) return response.status(404).json({ error: 'Error al editar la actividad. Actividad no encontrada' });
+    const subactividad = await privateGetSubActividadById(idSubactividad);
+    if(!subactividad) return response.status(404).json({ error: 'Error al editar la sub-actividad. Sub-actividad no encontrada' });
 
     const editor = await privateGetUsuarioById(auth.payload.userId);
-    if(!editor) return response.status(404).json({ error: 'Error al editar la actividad. Usuario no encontrado' });
+    if(!editor) return response.status(404).json({ error: 'Error al editar la sub-actividad. Usuario no encontrado' });
 
-    const existentNombre = await validateUniquesActividades({nombre, id: idActividad})
-    if(existentNombre) return response.status(400).json({ error: `Error al editar la actividad. El código ${nombre} ya está en uso.` });
+    const existentNombre = await validateUniquesSubActividades({nombre, id: idSubactividad})
+    if(existentNombre) return response.status(400).json({ error: `Error al editar la sub-actividad. El código ${nombre} ya está en uso.` });
 
     const resultado = await privateGetResultadoById(idResultado);
     const subresultado = await privateGetSubresultadoById(idSubresultado);
+    const actividad = await privateGetActividadById(idActividad);
 
     //Crear objeto de actualizacion
-    const updateActividad = new Actividad({
+    const updateSubactividad = new SubActividad({
       //Propiedades de objeto
       nombre,
       descripcion,
       resultado,
       subresultado,
+      actividad,
       //Propiedades de control
-      original: actividad._id,
-      version: updateVersion(actividad.ultimaRevision),
+      original: subactividad._id,
+      version: updateVersion(subactividad.ultimaRevision),
       estado: aprobar ? 'Validado' : 'En revisión',
       fechaEdicion: new Date(),
       editor: editor,
@@ -319,27 +325,27 @@ export async function editActividad(header, response, idActividad, nombre, descr
     if(aprobar){
       //Actualizar objeto publico
       //Propiedades de objeto
-      actividad.nombre = nombre;
-      actividad.descripcion = descripcion;
-      actividad.resultado = resultado;
+      subactividad.nombre = nombre;
+      subactividad.descripcion = descripcion;
+      subactividad.resultado = resultado;
       //Propiedades de control
-      actividad.version = updateVersion(actividad.version, aprobar);
-      actividad.ultimaRevision = actividad.version;
-      actividad.fechaEdicion = new Date();
-      actividad.editor = editor;
-      actividad.fechaRevision = new Date();
-      actividad.revisor = editor;
-      actividad.observaciones = null;
+      subactividad.version = updateVersion(subactividad.version, aprobar);
+      subactividad.ultimaRevision = subactividad.version;
+      subactividad.fechaEdicion = new Date();
+      subactividad.editor = editor;
+      subactividad.fechaRevision = new Date();
+      subactividad.revisor = editor;
+      subactividad.observaciones = null;
     }
     else{
-      actividad.pendientes = actividad.pendientes.concat(editor._id);
-      actividad.ultimaRevision = updateVersion(actividad.ultimaRevision)
+      subactividad.pendientes = subactividad.pendientes.concat(editor._id);
+      subactividad.ultimaRevision = updateVersion(subactividad.ultimaRevision)
     }
   
-    await updateActividad.save();
-    await actividad.save();
+    await updateSubactividad.save();
+    await subactividad.save();
 
-    response.json(updateActividad);
+    response.json(updateSubactividad);
     return response;
 
   } catch (error) {
@@ -349,10 +355,10 @@ export async function editActividad(header, response, idActividad, nombre, descr
 
 
 //Review
-export async function revisarUpdateActividad(header, response, idActividad, aprobado, observaciones){
+export async function revisarUpdateSubactividad(header, response, idSubActividad, aprobado, observaciones){
   try {
     const auth = decodeToken(header);
-    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar la actividad. ' + auth.payload });
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar la sub-actividad. ' + auth.payload });
 
     //Validaciones de rol
     /*const rol = await privateGetResultadoById(auth.payload.userRolId);
@@ -360,53 +366,55 @@ export async function revisarUpdateActividad(header, response, idActividad, apro
       return response.status(401).json({ error: 'Error al revisar el departamento. No cuenta con los permisos suficientes.'});
     }*/
 
-    const updateActividad = await privateGetActividadById(idActividad);
-    if(!updateActividad) return response.status(404).json({ error: 'Error al revisar la actividad. Revisión no encontrada.' });
+    const updateSubactividad = await privateGetSubActividadById(idSubActividad);
+    if(!updateSubactividad) return response.status(404).json({ error: 'Error al revisar la sub-actividad. Revisión no encontrada.' });
 
-    const original = await privateGetActividadById(updateActividad.original);
-    if(!original && updateActividad.version !== '0.1') return response.status(404).json({ error: 'Error al revisar la actividad. Actividad no encontrada.' });
+    const original = await privateGetSubActividadById(updateSubactividad.original);
+    if(!original && updateSubactividad.version !== '0.1') return response.status(404).json({ error: 'Error al revisar la sub-actividad. Sub-Actividad no encontrada.' });
 
     const revisor = await privateGetUsuarioById(auth.payload.userId);
-    if(!revisor) return response.status(404).json({ error: 'Error al revisar la actividad. Usuario no encontrado' });
+    if(!revisor) return response.status(404).json({ error: 'Error al revisar la sub-actividad. Usuario no encontrado' });
 
     if(aprobado){
       //Actualizar objeto de actualizacion
       //Propiedades de control 
-      updateActividad.estado = 'Validado'
-      updateActividad.fechaRevision = new Date();
-      updateActividad.revisor = revisor;
-      updateActividad.observaciones = observaciones;
+      updateSubactividad.estado = 'Validado'
+      updateSubactividad.fechaRevision = new Date();
+      updateSubactividad.revisor = revisor;
+      updateSubactividad.observaciones = observaciones;
 
       if(original){
         //Actualizar objeto publico
         //Propiedades de objeto
-        original.nombre = updateActividad.nombre;
-        original.descripcion = updateActividad.descripcion;
-        original.resultado = updateActividad.resultado;
-        original.subresultado = updateActividad.subresultado,
+        original.nombre = updateSubactividad.nombre;
+        original.descripcion = updateSubactividad.descripcion;
+        original.resultado = updateSubactividad.resultado;
+        original.subresultado = updateSubactividad.subresultado,
+        original.actividad = updateSubactividad.actividad,
         //Propiedades de control
         original.version = updateVersion(original.version, aprobado);
         original.ultimaRevision = original.version;
-        original.fechaEdicion = updateActividad.fechaEdicion;
-        original.editor = updateActividad.editor;
+        original.fechaEdicion = updateSubactividad.fechaEdicion;
+        original.editor = updateSubactividad.editor;
         original.fechaRevision = new Date();
         original.revisor = revisor;
         original.observaciones = null;
       }
       else{
-        const actividad = new Actividad({
+        const subactividad = new SubActividad({
           //Propiedades de objeto
-          nombre: updateActividad.nombre,
-          descripcion: updateActividad.descripcion,
-          resultado: updateActividad.resultado,
-          subresultado: updateActividad.subresultado,
+          nombre: updateSubactividad.nombre,
+          descripcion: updateSubactividad.descripcion,
+          resultado: updateSubactividad.resultado,
+          subresultado: updateSubactividad.subresultado,
+          actividad: updateSubactividad.actividad,
           //Propiedades de control
           original: null,
           version: '1.0',
           ultimaRevision: '1.0',
           estado: 'Publicado',
-          fechaEdicion: updateActividad.fechaEdicion,
-          editor: updateActividad.editor,
+          fechaEdicion: updateSubactividad.fechaEdicion,
+          editor: updateSubactividad.editor,
           fechaRevision: new Date(),
           revisor: revisor,
           fechaEliminacion: null,
@@ -415,29 +423,29 @@ export async function revisarUpdateActividad(header, response, idActividad, apro
           pendientes: []
         })
         
-        updateActividad.original = actividad._id;
+        updateSubactividad.original = subactividad._id;
   
-        await updateActividad.save();
+        await updateSubactividad.save();
   
-        actividad.original = actividad._id;
-        await actividad.save();
+        subactividad.original = subactividad._id;
+        await subactividad.save();
       }
       
     }
     else{
       //Actualizar objeto de actualizacion
       //Propiedades de control 
-      updateActividad.estado = 'Rechazado'
-      updateActividad.fechaRevision = new Date();
-      updateActividad.revisor = revisor;
-      updateActividad.observaciones = observaciones;
+      updateSubactividad.estado = 'Rechazado'
+      updateSubactividad.fechaRevision = new Date();
+      updateSubactividad.revisor = revisor;
+      updateSubactividad.observaciones = observaciones;
     }
 
     if(original){
       let newPendientes = []
 
       original.pendientes.map(elemento => {
-        if(!updateActividad.editor._id.equals(elemento._id)){
+        if(!updateSubactividad.editor._id.equals(elemento._id)){
           newPendientes = newPendientes.concat(elemento);
         }
       })
@@ -446,9 +454,9 @@ export async function revisarUpdateActividad(header, response, idActividad, apro
       await original.save();
     }
     
-    await updateActividad.save();
+    await updateSubactividad.save();
 
-    response.json(updateActividad);
+    response.json(updateSubactividad);
     return response;
     
   } catch (error) {
@@ -458,9 +466,9 @@ export async function revisarUpdateActividad(header, response, idActividad, apro
 
 
 //Delete undelete
-export async function deleteActividad(header, response, idActividad, observaciones=null){
+export async function deleteSubActividad(header, response, idSubActividad, observaciones=null){
   const auth = decodeToken(header);
-  if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al eliminar la actividad. ' + auth.payload });
+  if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al eliminar la sub-actividad. ' + auth.payload });
 
   //Validaciones de rol
   /*const rol = await privateGetRolById(auth.payload.userRolId);
@@ -468,29 +476,29 @@ export async function deleteActividad(header, response, idActividad, observacion
     return response.status(401).json({ error: 'Error al eliminar el resultado. No cuenta con los permisos suficientes.'});
   }*/
 
-  const actividad = await privateGetActividadById(idActividad);
-  if(!actividad) return response.status(404).json({ error: 'Error al eliminar la actividad. Actividad no encontrada.' });
+  const subactividad = await privateGetSubActividadById(idSubActividad);
+  if(!subactividad) return response.status(404).json({ error: 'Error al eliminar la sub-actividad. Sub-Actividad no encontrada.' });
 
   const eliminador = await privateGetUsuarioById(auth.payload.userId);
-  if(!eliminador) return response.status(404).json({ error: 'Error al eliminar la actividad. Usuario no encontrado.' });
+  if(!eliminador) return response.status(404).json({ error: 'Error al eliminar la sub-actividad. Usuario no encontrado.' });
 
-  if(actividad.estado !== 'Eliminado'){
-    actividad.estado = 'Eliminado'
-    actividad.fechaEliminacion = new Date();
-    actividad.eliminador = eliminador;
-    actividad.observaciones = observaciones;
+  if(subactividad.estado !== 'Eliminado'){
+    subactividad.estado = 'Eliminado'
+    subactividad.fechaEliminacion = new Date();
+    subactividad.eliminador = eliminador;
+    subactividad.observaciones = observaciones;
   }
 
   else{
-    actividad.estado = 'Publicado'
-    actividad.fechaEliminacion = null;
-    actividad.eliminador = null;
-    actividad.observaciones = null;
+    subactividad.estado = 'Publicado'
+    subactividad.fechaEliminacion = null;
+    subactividad.eliminador = null;
+    subactividad.observaciones = null;
   }
   
 
-  await actividad.save();
+  await subactividad.save();
 
-  response.json(actividad);
+  response.json(subactividad);
   return response;
 }
