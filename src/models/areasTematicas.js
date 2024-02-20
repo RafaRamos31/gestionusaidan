@@ -5,6 +5,10 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  descripcion: {
+    type: String,
+    required: true,
+  },
   indicadores: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Indicador"

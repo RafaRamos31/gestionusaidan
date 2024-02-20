@@ -74,13 +74,18 @@ export async function getPagedTareas({header, response, page, pageSize, sort, fi
     //Filter
     const filterQuery = getFilter({filterParams: filter, reviews, deleteds})
 
-    const tareas = await Tarea.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate([{
-      path: 'editor revisor eliminador',
+    const tareas = await Tarea.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate([
+    {
+      path: 'editor revisor eliminador componente',
       select: '_id nombre',
     },
     {
       path: 'resultado subresultado actividad subactividad',
       select: '_id nombre descripcion',
+    },
+    {
+      path: 'year trimestre',
+      select: '_id nombre fechaInicio fechaFinal',
     },
   ]);
 
@@ -129,12 +134,16 @@ export async function getTareaById(header, response, idTarea){
     }*/
 
     const tarea = await Tarea.findById(idTarea).populate([{
-      path: 'editor revisor eliminador',
+      path: 'editor revisor eliminador componente',
       select: '_id nombre',
     },
     {
       path: 'resultado subresultado actividad subactividad',
       select: '_id nombre descripcion',
+    },
+    {
+      path: 'year trimestre',
+      select: '_id nombre fechaInicio fechaFinal',
     },
   ]);
 
@@ -159,12 +168,16 @@ export async function getRevisionesTarea(header, response, idTarea){
     }*/
 
     const revisiones = await Tarea.find({original: {_id: idTarea}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
-      path: 'editor revisor eliminador',
+      path: 'editor revisor eliminador componente',
       select: '_id nombre',
     },
     {
       path: 'resultado subresultado actividad subactividad',
       select: '_id nombre descripcion',
+    },
+    {
+      path: 'year trimestre',
+      select: '_id nombre fechaInicio fechaFinal',
     },
   ]);
 
@@ -177,7 +190,7 @@ export async function getRevisionesTarea(header, response, idTarea){
 }
 
 //Crear tarea
-export async function createTarea({header, response, nombre, idResultado, idSubresultado, idActividad, idSubActividad, medida, 
+export async function createTarea({header, response, nombre, descripcion, idResultado, idSubresultado, idActividad, idSubActividad, medida, 
   cantidadProgramada, idIndicadorPrincipal, indicadoresSecundarios, aprobar=false}){
   try {
     const auth = decodeToken(header);

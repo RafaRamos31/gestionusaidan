@@ -2,10 +2,7 @@ import SubActividad from "../models/subactividades.js";
 import { decodeToken } from "../utilities/jwtDecoder.js";
 import { getFilter, getSorting } from "../utilities/queryConstructor.js";
 import { updateVersion } from "../utilities/versionHelper.js";
-import { privateGetActividadById } from "./actividades-controller.js";
-import { privateGetResultadoById } from "./resultados-controller.js";
 import { privateGetRolById } from "./roles-controller.js";
-import { privateGetSubresultadoById } from "./subresultados-controller.js";
 import { privateGetUsuarioById } from "./usuarios-controller.js";
 
 //Internos para validacion de claves unicas
@@ -87,11 +84,11 @@ export async function getPagedSubActividades({header, response, page, pageSize, 
     const filterQuery = getFilter({filterParams: filter, reviews, deleteds})
 
     const subactividades = await SubActividad.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate([{
-      path: 'editor revisor eliminador',
+      path: 'editor revisor eliminador componentes',
       select: '_id nombre',
     },
     {
-      path: 'resultado subresultado actividad',
+      path: 'resultado subresultado actividad areasTematicas',
       select: '_id nombre descripcion',
     },
   ]);
@@ -141,11 +138,11 @@ export async function getSubActividadById(header, response, idSubActividad){
     }*/
 
     const subactividad = await SubActividad.findById(idSubActividad).populate([{
-      path: 'editor revisor eliminador',
+      path: 'editor revisor eliminador componentes',
       select: '_id nombre',
     },
     {
-      path: 'resultado subresultado actividad',
+      path: 'resultado subresultado actividad areasTematicas',
       select: '_id nombre descripcion',
     },
   ]);
@@ -171,11 +168,11 @@ export async function getRevisionesSubActividades(header, response, idSubActivid
     }*/
 
     const revisiones = await SubActividad.find({original: {_id: idSubActividad}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
-      path: 'editor revisor eliminador',
+      path: 'editor revisor eliminador componentes',
       select: '_id nombre',
     },
     {
-      path: 'resultado subresultado actividad',
+      path: 'resultado subresultado actividad areasTematicas',
       select: '_id nombre descripcion',
     },
   ]);
@@ -189,7 +186,7 @@ export async function getRevisionesSubActividades(header, response, idSubActivid
 }
 
 //Crear actividad
-export async function createSubActividad(header, response, nombre, descripcion, idResultado, idSubresultado, idActividad, aprobar=false){
+export async function createSubActividad(header, response, nombre, descripcion, idResultado, idSubresultado, idActividad, componentes, areasTematicas, aprobar=false){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear la sub-actividad. ' + auth.payload });
@@ -206,17 +203,15 @@ export async function createSubActividad(header, response, nombre, descripcion, 
     const existentNombre = await validateUniquesSubActividades({nombre})
     if(existentNombre) return response.status(400).json({ error: `Error al crear la actividad. El código ${nombre} ya está en uso.` });
 
-    const resultado = await privateGetResultadoById(idResultado)
-    const subresultado = await privateGetSubresultadoById(idSubresultado)
-    const actividad = await privateGetActividadById(idActividad)
-
     const baseSubactividad = new SubActividad({
       //Propiedades de objeto
       nombre,
       descripcion,
-      resultado,
-      subresultado,
-      actividad,
+      resultado: idResultado,
+      subresultado: idSubresultado,
+      actividad: idActividad,
+      componentes,
+      areasTematicas,
       //Propiedades de control
       original: null,
       version: '0.1',
@@ -239,9 +234,11 @@ export async function createSubActividad(header, response, nombre, descripcion, 
         //Propiedades de objeto
         nombre,
         descripcion,
-        resultado,
-        subresultado,
-        actividad,
+        resultado: idResultado,
+        subresultado: idSubresultado,
+        actividad: idActividad,
+        componentes,
+        areasTematicas,
         //Propiedades de control
         original: null,
         version: '1.0',
@@ -276,7 +273,7 @@ export async function createSubActividad(header, response, nombre, descripcion, 
 }
 
 //Edit info
-export async function editSubActividad(header, response, idSubactividad, nombre, descripcion, idResultado, idSubresultado, idActividad, aprobar=false){
+export async function editSubActividad(header, response, idSubactividad, nombre, descripcion, idResultado, idSubresultado, idActividad, componentes, areasTematicas, aprobar=false){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar la sub-actividad. ' + auth.payload });
@@ -296,18 +293,16 @@ export async function editSubActividad(header, response, idSubactividad, nombre,
     const existentNombre = await validateUniquesSubActividades({nombre, id: idSubactividad})
     if(existentNombre) return response.status(400).json({ error: `Error al editar la sub-actividad. El código ${nombre} ya está en uso.` });
 
-    const resultado = await privateGetResultadoById(idResultado);
-    const subresultado = await privateGetSubresultadoById(idSubresultado);
-    const actividad = await privateGetActividadById(idActividad);
-
     //Crear objeto de actualizacion
     const updateSubactividad = new SubActividad({
       //Propiedades de objeto
       nombre,
       descripcion,
-      resultado,
-      subresultado,
-      actividad,
+      resultado: idResultado,
+      subresultado: idSubresultado,
+      actividad: idActividad,
+      componentes,
+      areasTematicas,
       //Propiedades de control
       original: subactividad._id,
       version: updateVersion(subactividad.ultimaRevision),
@@ -327,7 +322,11 @@ export async function editSubActividad(header, response, idSubactividad, nombre,
       //Propiedades de objeto
       subactividad.nombre = nombre;
       subactividad.descripcion = descripcion;
-      subactividad.resultado = resultado;
+      subactividad.resultado = idResultado;
+      subactividad.subresultado = idSubresultado;
+      subactividad.actividad = idActividad;
+      subactividad.componentes = componentes;
+      subactividad.areasTematicas = areasTematicas;
       //Propiedades de control
       subactividad.version = updateVersion(subactividad.version, aprobar);
       subactividad.ultimaRevision = subactividad.version;
@@ -389,8 +388,10 @@ export async function revisarUpdateSubactividad(header, response, idSubActividad
         original.nombre = updateSubactividad.nombre;
         original.descripcion = updateSubactividad.descripcion;
         original.resultado = updateSubactividad.resultado;
-        original.subresultado = updateSubactividad.subresultado,
-        original.actividad = updateSubactividad.actividad,
+        original.subresultado = updateSubactividad.subresultado;
+        original.actividad = updateSubactividad.actividad;
+        original.componentes = updateSubactividad.componentes;
+        original.areasTematicas = updateSubactividad.areasTematicas;
         //Propiedades de control
         original.version = updateVersion(original.version, aprobado);
         original.ultimaRevision = original.version;
@@ -408,6 +409,8 @@ export async function revisarUpdateSubactividad(header, response, idSubActividad
           resultado: updateSubactividad.resultado,
           subresultado: updateSubactividad.subresultado,
           actividad: updateSubactividad.actividad,
+          componentes: updateSubactividad.componentes,
+          areasTematicas: updateSubactividad.areasTematicas,
           //Propiedades de control
           original: null,
           version: '1.0',

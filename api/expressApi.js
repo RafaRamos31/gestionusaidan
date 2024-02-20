@@ -9,8 +9,6 @@ import { getCaseriosEndpoints } from "../src/endpoints/caserios.js";
 import { getOrganizacionesEndpoints } from "../src/endpoints/organizaciones.js";
 import { getCargosEndpoints } from "../src/endpoints/cargos.js";
 import { getUsuariosEndpoints } from "../src/endpoints/usuarios.js";
-import { getAreasEndpoints } from "../src/endpoints/areas.js";
-import { getSubareasEndpoints } from "../src/endpoints/subareas.js";
 import { getBeneficiariosEndpoints } from "../src/endpoints/beneficiarios.js";
 import { getAreasInvEndpoints } from "../src/endpoints/areasInv.js";
 import { getInversionesEndpoints } from "../src/endpoints/inversiones.js";
@@ -24,6 +22,7 @@ import { getQuartersEndpoints } from "../src/endpoints/quarters.js";
 import { getSubActividadesEndpoints } from "../src/endpoints/subactividades.js";
 import { getIndicadoresEndpoints } from "../src/endpoints/indicadores.js";
 import { getTareasEndpoints } from "../src/endpoints/tareas.js";
+import { getAreasTematicasEndpoints } from "../src/endpoints/areasTematicas.js";
 
 /**
  * Separa la logica de definicion de rutas y su respuesta a peticiones REST
@@ -45,8 +44,6 @@ export function addRestDirections(app) {
   app = getOrganizacionesEndpoints(app, upload);
   app = getCargosEndpoints(app, upload);
   app = getUsuariosEndpoints(app, upload);
-  app = getAreasEndpoints(app, upload);
-  app = getSubareasEndpoints(app, upload);
   app = getBeneficiariosEndpoints(app, upload);
   app = getAreasInvEndpoints(app, upload);
   app = getInversionesEndpoints(app, upload);
@@ -60,6 +57,7 @@ export function addRestDirections(app) {
   app = getSubActividadesEndpoints(app, upload);
   app = getIndicadoresEndpoints(app, upload);
   app = getTareasEndpoints(app, upload);
+  app = getAreasTematicasEndpoints(app, upload);
 
   return app;
 }

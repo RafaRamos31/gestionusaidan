@@ -93,7 +93,7 @@ export const getSubActividadesEndpoints = (app, upload) => {
   })
 
 
-  //POST resultado
+  //POST 
   app.post("/api/subactividades", upload.any(), async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
@@ -106,6 +106,8 @@ export const getSubActividadesEndpoints = (app, upload) => {
         request.body.idResultado,
         request.body.idSubresultado,
         request.body.idActividad,
+        JSON.parse(request.body.componentes)?.data,
+        JSON.parse(request.body.areasTematicas)?.data,
         JSON.parse(request.body.aprobar)
       );
       
@@ -128,6 +130,8 @@ export const getSubActividadesEndpoints = (app, upload) => {
         request.body.idResultado,
         request.body.idSubresultado,
         request.body.idActividad,
+        JSON.parse(request.body.componentes)?.data,
+        JSON.parse(request.body.areasTematicas)?.data,
         JSON.parse(request.body.aprobar)
       );
 

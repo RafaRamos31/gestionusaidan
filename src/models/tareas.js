@@ -49,22 +49,12 @@ const schema = new mongoose.Schema({
   cantidadRealizada: {
     type: Number
   },
-  yearInicio: {
+  year: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Year",
     required: true,
   },
-  trimestreInicio: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Quarter",
-    required: true,
-  },
-  yearFinal: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Year",
-    required: true,
-  },
-  trimestreFinal: {
+  trimestre: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Quarter",
     required: true,
