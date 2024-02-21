@@ -307,7 +307,7 @@ export async function createIndicador({header, response, nombre, descripcion, me
 }
 
 //Edit info
-export async function editIndicador({header, response, idIndicador, nombre, descripcion, medida, tipoIndicador, frecuencia, metas, progresos, aprobar=false}){
+export async function editIndicador({header, response, idIndicador, nombre, descripcion, medida, tipoIndicador, frecuencia, metas, aprobar=false}){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar el indicador. ' + auth.payload });
@@ -336,7 +336,7 @@ export async function editIndicador({header, response, idIndicador, nombre, desc
       tipoIndicador,
       frecuencia,
       metas,
-      progresos,
+      progresos: progresosModel,
       //Propiedades de control
       original: indicador._id,
       version: updateVersion(indicador.ultimaRevision),
@@ -360,7 +360,6 @@ export async function editIndicador({header, response, idIndicador, nombre, desc
       indicador.tipoIndicador = tipoIndicador
       indicador.frecuencia = frecuencia
       indicador.metas = metas
-      indicador.progresos = progresos
       //Propiedades de control
       indicador.version = updateVersion(indicador.version, aprobar);
       indicador.ultimaRevision = indicador.version;
@@ -425,7 +424,6 @@ export async function revisarUpdateIndicador(header, response, idIndicador, apro
         original.tipoIndicador = updateIndicador.tipoIndicador
         original.frecuencia = updateIndicador.frecuencia
         original.metas = updateIndicador.metas
-        original.progresos = updateIndicador.progresos
         //Propiedades de control
         original.version = updateVersion(original.version, aprobado);
         original.ultimaRevision = original.version;

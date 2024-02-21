@@ -130,7 +130,6 @@ export const getIndicadoresEndpoints = (app, upload) => {
         tipoIndicador: request.body.tipoIndicador,
         frecuencia: request.body.frecuencia,
         metas: JSON.parse(request.body.metas),
-        progresos: JSON.parse(request.body.progresos),
         aprobar: JSON.parse(request.body.aprobar)
       });
 
