@@ -171,6 +171,9 @@ export async function getRevisionesSubResultado(header, response, idSubresultado
     const revisiones = await SubResultado.find({original: {_id: idSubresultado}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
       path: 'editor revisor',
       select: '_id nombre',
+    }, {
+      path: 'resultado',
+      select: '_id nombre descripcion',
     }]);
 
     response.json(revisiones);

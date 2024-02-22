@@ -3,7 +3,7 @@
  * Aquí se configuran las dependencias, se define la lógica principal
  * y se inicia la ejecución del programa.
  *
- * Autor: USAID - Proyecto Avanzando por la Salud de Honduras
+ * Autor: Feed the Future Honduras Avanzando por la Nutrición
  * Fecha: Junio 2023
  * Versión: 1.0.0
  */
