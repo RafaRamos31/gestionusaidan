@@ -39,14 +39,14 @@ export async function getCountYears({header, response, filterParams, reviews=fal
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Años Fiscales. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.vistas['Configuración']['Departamentos'] === false){
-    //   return response.status(401).json({ error: 'Error al obtener Departamentos. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Planificación']['Años Fiscales'] === false){
+      return response.status(401).json({ error: 'Error al obtener Años Fiscales. No cuenta con los permisos suficientes.'});
+    }
 
-    // if(rol && rol.permisos.acciones['Departamentos']['Ver Eliminados'] === false){
-    //   deleteds = false;
-    // }
+    if(rol && rol.permisos.acciones['Años Fiscales']['Ver Eliminados'] === false){
+      deleteds = false;
+    }
 
     const filter = getFilter({filterParams, reviews, deleteds})
 
@@ -67,14 +67,14 @@ export async function getPagedYears({header, response, page, pageSize, sort, fil
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Años Fiscales. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.vistas['Configuración']['Departamentos'] === false){
-    //   return response.status(401).json({ error: 'Error al obtener Departamentos. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Planificación']['Años Fiscales'] === false){
+      return response.status(401).json({ error: 'Error al obtener Años Fiscales. No cuenta con los permisos suficientes.'});
+    }
 
-    // if(rol && rol.permisos.acciones['Departamentos']['Ver Eliminados'] === false){
-    //   deleteds = false;
-    // }
+    if(rol && rol.permisos.acciones['Años Fiscales']['Ver Eliminados'] === false){
+      deleteds = false;
+    }
 
     //Paginacion
     const skip = (page) * pageSize
@@ -129,10 +129,10 @@ export async function getYearById(header, response, idYear){
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Años Fiscales. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && (rol.permisos.vistas['Configuración']['Departamentos'] === false && rol.permisos.acciones['Departamentos']['Revisar'] === false)){
-    //   return response.status(401).json({ error: 'Error al obtener Departamento. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && (rol.permisos.vistas['Planificación']['Años Fiscales'] === false && rol.permisos.acciones['Años Fiscales']['Revisar'] === false)){
+      return response.status(401).json({ error: 'Error al obtener Años Fiscales. No cuenta con los permisos suficientes.'});
+    }
 
     const year = await Year.findById(idYear).populate([{
       path: 'editor revisor eliminador',
@@ -154,10 +154,10 @@ export async function getRevisionesYear(header, response, idYear){
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Año Fiscal. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.acciones['Departamentos']['Ver Historial'] === false){
-    //   return response.status(401).json({ error: 'Error al obtener Revisiones de Departamento. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Años Fiscales']['Ver Historial'] === false){
+      return response.status(401).json({ error: 'Error al obtener Revisiones de Años Fiscales. No cuenta con los permisos suficientes.'});
+    }
 
     const revisiones = await Year.find({original: {_id: idYear}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
       path: 'editor revisor',
@@ -179,10 +179,10 @@ export async function createYear(header, response, nombre, fechaInicio, baseFech
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el año fiscal. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.acciones['Departamentos']['Crear'] === false){
-    //   return response.status(401).json({ error: 'Error al crear el departamento. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Años Fiscales']['Crear'] === false){
+      return response.status(401).json({ error: 'Error al crear Años Fiscales. No cuenta con los permisos suficientes.'});
+    }
 
     const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al crear el año fiscal. Usuario no encontrado.' });
@@ -262,10 +262,10 @@ export async function editYear(header, response, idYear, nombre, fechaInicio, ba
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar el año fiscal. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.acciones['Departamentos']['Modificar'] === false){
-    //   return response.status(401).json({ error: 'Error al editar el departamento. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Años Fiscales']['Modificar'] === false){
+      return response.status(401).json({ error: 'Error al editar Años Fiscales. No cuenta con los permisos suficientes.'});
+    }
 
     const year = await privateGetYearById(idYear);
     if(!year) return response.status(404).json({ error: 'Error al editar el año fiscal. Año fiscal no encontrado' });
@@ -338,10 +338,10 @@ export async function revisarUpdateYear(header, response, idYear, aprobado, obse
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el año fiscal. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.acciones['Departamentos']['Revisar'] === false){
-    //   return response.status(401).json({ error: 'Error al revisar el departamento. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Años Fiscales']['Revisar'] === false){
+      return response.status(401).json({ error: 'Error al revisar Años Fiscales. No cuenta con los permisos suficientes.'});
+    }
 
     const updateYear = await privateGetYearById(idYear);
     if(!updateYear) return response.status(404).json({ error: 'Error al revisar el año fiscal. Revisión no encontrada.' });
@@ -444,10 +444,10 @@ export async function deleteYear(header, response, idYear, observaciones=null){
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al eliminar el año fiscal. ' + auth.payload });
 
   //Validaciones de rol
-  // const rol = await privateGetRolById(auth.payload.userRolId);
-  // if(rol && rol.permisos.acciones['Departamentos']['Eliminar'] === false){
-  //   return response.status(401).json({ error: 'Error al eliminar el departamento. No cuenta con los permisos suficientes.'});
-  // }
+  const rol = await privateGetRolById(auth.payload.userRolId);
+  if(rol && rol.permisos.acciones['Años Fiscales']['Eliminar'] === false){
+    return response.status(401).json({ error: 'Error al eliminar Años Fiscales. No cuenta con los permisos suficientes.'});
+  }
 
   const year = await privateGetYearById(idYear);
   if(!year) return response.status(404).json({ error: 'Error al eliminar el año fiscal. Año fiscal no encontrado.' });

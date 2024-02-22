@@ -82,14 +82,14 @@ export async function getCountIndicadores({header, response, filterParams, revie
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener indicadores. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.vistas['Planificación']['Resultados'] === false){
-      return response.status(401).json({ error: 'Error al obtener Resultados. No cuenta con los permisos suficientes.'});
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Indicadores']['Indicadores'] === false){
+      return response.status(401).json({ error: 'Error al obtener Indicadores. No cuenta con los permisos suficientes.'});
     }
 
-    if(rol && rol.permisos.acciones['Resultados']['Ver Eliminados'] === false){
+    if(rol && rol.permisos.acciones['Indicadores']['Ver Eliminados'] === false){
       deleteds = false;
-    }*/
+    }
 
     const filter = getFilter({filterParams, reviews, deleteds})
 
@@ -110,14 +110,14 @@ export async function getPagedIndicadores({header, response, page, pageSize, sor
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Indicadores. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.vistas['Planificación']['Resultados'] === false){
-      return response.status(401).json({ error: 'Error al obtener Departamentos. No cuenta con los permisos suficientes.'});
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Indicadores']['Indicadores'] === false){
+      return response.status(401).json({ error: 'Error al obtener Indicadores. No cuenta con los permisos suficientes.'});
     }
 
-    if(rol && rol.permisos.acciones['Resultados']['Ver Eliminados'] === false){
+    if(rol && rol.permisos.acciones['Indicadores']['Ver Eliminados'] === false){
       deleteds = false;
-    }*/
+    }
 
     //Paginacion
     const skip = (page) * pageSize
@@ -173,10 +173,10 @@ export async function getIndicadorById(header, response, idIndicador){
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener indicadores. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && (rol.permisos.vistas['Planificación']['Resultados'] === false && rol.permisos.acciones['Resultados']['Revisar'] === false)){
-      return response.status(401).json({ error: 'Error al obtener Resultado. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && (rol.permisos.vistas['Indicadores']['Indicadores'] === false && rol.permisos.acciones['Indicadores']['Revisar'] === false)){
+      return response.status(401).json({ error: 'Error al obtener Indicadores. No cuenta con los permisos suficientes.'});
+    }
 
     const indicador = await Indicador.findById(idIndicador).populate([{
       path: 'editor revisor eliminador',
@@ -199,10 +199,10 @@ export async function getRevisionesIndicadores(header, response, idIndicador){
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Indicador. ' + auth.payload });
     
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Resultados']['Ver Historial'] === false){
-      return response.status(401).json({ error: 'Error al obtener Revisiones de Resultado. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Indicadores']['Ver Historial'] === false){
+      return response.status(401).json({ error: 'Error al obtener Revisiones de Indicadores. No cuenta con los permisos suficientes.'});
+    }
 
     const revisiones = await Indicador.find({original: {_id: idIndicador}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
       path: 'editor revisor eliminador',
@@ -226,10 +226,10 @@ export async function createIndicador({header, response, nombre, descripcion, me
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el indicador. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Resultados']['Crear'] === false){
-      return response.status(401).json({ error: 'Error al crear el departamento. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Indicadores']['Crear'] === false){
+      return response.status(401).json({ error: 'Error al crear el Indicador. No cuenta con los permisos suficientes.'});
+    }
 
     const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al crear el indicador. Usuario no encontrado.' });
@@ -313,10 +313,10 @@ export async function editIndicador({header, response, idIndicador, nombre, desc
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar el indicador. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Resultados']['Modificar'] === false){
-      return response.status(401).json({ error: 'Error al editar el departamento. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Indicadores']['Modificar'] === false){
+      return response.status(401).json({ error: 'Error al editar el Indicador. No cuenta con los permisos suficientes.'});
+    }
 
     const indicador = await privateGetIndicadorById(idIndicador);
     if(!indicador) return response.status(404).json({ error: 'Error al editar el indicador. Indicador no encontrado' });
@@ -393,10 +393,10 @@ export async function revisarUpdateIndicador(header, response, idIndicador, apro
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el indicador. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetResultadoById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Resultados']['Revisar'] === false){
-      return response.status(401).json({ error: 'Error al revisar el departamento. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetResultadoById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Indicadores']['Revisar'] === false){
+      return response.status(401).json({ error: 'Error al revisar el Indicador. No cuenta con los permisos suficientes.'});
+    }
 
     const updateIndicador = await privateGetIndicadorById(idIndicador);
     if(!updateIndicador) return response.status(404).json({ error: 'Error al revisar el indicador. Revisión no encontrada.' });
@@ -506,10 +506,10 @@ export async function deleteIndicador(header, response, idIndicador, observacion
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al eliminar el indicador. ' + auth.payload });
 
   //Validaciones de rol
-  /*const rol = await privateGetRolById(auth.payload.userRolId);
-  if(rol && rol.permisos.acciones['Resultados']['Eliminar'] === false){
-    return response.status(401).json({ error: 'Error al eliminar el resultado. No cuenta con los permisos suficientes.'});
-  }*/
+  const rol = await privateGetRolById(auth.payload.userRolId);
+  if(rol && rol.permisos.acciones['Indicadores']['Eliminar'] === false){
+    return response.status(401).json({ error: 'Error al eliminar el Indicador. No cuenta con los permisos suficientes.'});
+  }
 
   const indicador = await privateGetIndicadorById(idIndicador);
   if(!indicador) return response.status(404).json({ error: 'Error al eliminar el indicador. Indicador no encontrado.' });

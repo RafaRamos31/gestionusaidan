@@ -39,14 +39,14 @@ export async function getCountActividades({header, response, filterParams, revie
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener actividades. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.vistas['Planificación']['Resultados'] === false){
-      return response.status(401).json({ error: 'Error al obtener Resultados. No cuenta con los permisos suficientes.'});
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Planificación']['Actividades'] === false){
+      return response.status(401).json({ error: 'Error al obtener Actividades. No cuenta con los permisos suficientes.'});
     }
 
-    if(rol && rol.permisos.acciones['Resultados']['Ver Eliminados'] === false){
+    if(rol && rol.permisos.acciones['Actividades']['Ver Eliminados'] === false){
       deleteds = false;
-    }*/
+    }
 
     const filter = getFilter({filterParams, reviews, deleteds})
 
@@ -67,14 +67,14 @@ export async function getPagedActividades({header, response, page, pageSize, sor
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Actividades. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.vistas['Planificación']['Resultados'] === false){
-      return response.status(401).json({ error: 'Error al obtener Departamentos. No cuenta con los permisos suficientes.'});
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Planificación']['Actividades'] === false){
+      return response.status(401).json({ error: 'Error al obtener Actividades. No cuenta con los permisos suficientes.'});
     }
 
-    if(rol && rol.permisos.acciones['Resultados']['Ver Eliminados'] === false){
+    if(rol && rol.permisos.acciones['Actividades']['Ver Eliminados'] === false){
       deleteds = false;
-    }*/
+    }
 
     //Paginacion
     const skip = (page) * pageSize
@@ -134,10 +134,10 @@ export async function getActividadById(header, response, idActividad){
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Actividad. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && (rol.permisos.vistas['Planificación']['Resultados'] === false && rol.permisos.acciones['Resultados']['Revisar'] === false)){
-      return response.status(401).json({ error: 'Error al obtener Resultado. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && (rol.permisos.vistas['Planificación']['Actividades'] === false && rol.permisos.acciones['Actividades']['Revisar'] === false)){
+      return response.status(401).json({ error: 'Error al obtener Actividades. No cuenta con los permisos suficientes.'});
+    }
 
     const actividad = await Actividad.findById(idActividad).populate([{
       path: 'editor revisor eliminador',
@@ -164,10 +164,10 @@ export async function getRevisionesActividades(header, response, idActividad){
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Actividad. ' + auth.payload });
     
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Resultados']['Ver Historial'] === false){
-      return response.status(401).json({ error: 'Error al obtener Revisiones de Resultado. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Actividades']['Ver Historial'] === false){
+      return response.status(401).json({ error: 'Error al obtener Revisiones de Actividad. No cuenta con los permisos suficientes.'});
+    }
 
     const revisiones = await Actividad.find({original: {_id: idActividad}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
       path: 'editor revisor eliminador',
@@ -194,10 +194,10 @@ export async function createActividad(header, response, nombre, descripcion, idR
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear la actividad. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Resultados']['Crear'] === false){
-      return response.status(401).json({ error: 'Error al crear el departamento. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Actividades']['Crear'] === false){
+      return response.status(401).json({ error: 'Error al crear Actividad. No cuenta con los permisos suficientes.'});
+    }
 
     const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al crear la actividad. Usuario no encontrado.' });
@@ -278,10 +278,10 @@ export async function editActividad(header, response, idActividad, nombre, descr
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar la actividad. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Resultados']['Modificar'] === false){
-      return response.status(401).json({ error: 'Error al editar el departamento. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Actividades']['Modificar'] === false){
+      return response.status(401).json({ error: 'Error al editar la Actividad. No cuenta con los permisos suficientes.'});
+    }
 
     const actividad = await privateGetActividadById(idActividad);
     if(!actividad) return response.status(404).json({ error: 'Error al editar la actividad. Actividad no encontrada' });
@@ -355,10 +355,10 @@ export async function revisarUpdateActividad(header, response, idActividad, apro
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar la actividad. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetResultadoById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Resultados']['Revisar'] === false){
-      return response.status(401).json({ error: 'Error al revisar el departamento. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetResultadoById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Actividades']['Revisar'] === false){
+      return response.status(401).json({ error: 'Error al revisar la Actividad. No cuenta con los permisos suficientes.'});
+    }
 
     const updateActividad = await privateGetActividadById(idActividad);
     if(!updateActividad) return response.status(404).json({ error: 'Error al revisar la actividad. Revisión no encontrada.' });
@@ -463,10 +463,10 @@ export async function deleteActividad(header, response, idActividad, observacion
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al eliminar la actividad. ' + auth.payload });
 
   //Validaciones de rol
-  /*const rol = await privateGetRolById(auth.payload.userRolId);
-  if(rol && rol.permisos.acciones['Resultados']['Eliminar'] === false){
-    return response.status(401).json({ error: 'Error al eliminar el resultado. No cuenta con los permisos suficientes.'});
-  }*/
+  const rol = await privateGetRolById(auth.payload.userRolId);
+  if(rol && rol.permisos.acciones['Actividades']['Eliminar'] === false){
+    return response.status(401).json({ error: 'Error al eliminar la actividad. No cuenta con los permisos suficientes.'});
+  }
 
   const actividad = await privateGetActividadById(idActividad);
   if(!actividad) return response.status(404).json({ error: 'Error al eliminar la actividad. Actividad no encontrada.' });

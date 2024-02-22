@@ -39,14 +39,14 @@ export async function getCountQuarter({header, response, filterParams, reviews=f
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Trimestres. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.vistas['Configuración']['Departamentos'] === false){
-    //   return response.status(401).json({ error: 'Error al obtener Departamentos. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Planificación']['Trimestres'] === false){
+      return response.status(401).json({ error: 'Error al obtener Trimestres. No cuenta con los permisos suficientes.'});
+    }
 
-    // if(rol && rol.permisos.acciones['Departamentos']['Ver Eliminados'] === false){
-    //   deleteds = false;
-    // }
+    if(rol && rol.permisos.acciones['Trimestres']['Ver Eliminados'] === false){
+      deleteds = false;
+    }
 
     const filter = getFilter({filterParams, reviews, deleteds})
 
@@ -67,14 +67,14 @@ export async function getPagedQuarters({header, response, page, pageSize, sort, 
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Trimestres. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.vistas['Configuración']['Departamentos'] === false){
-    //   return response.status(401).json({ error: 'Error al obtener Departamentos. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Planificación']['Trimestres'] === false){
+      return response.status(401).json({ error: 'Error al obtener Trimestres. No cuenta con los permisos suficientes.'});
+    }
 
-    // if(rol && rol.permisos.acciones['Departamentos']['Ver Eliminados'] === false){
-    //   deleteds = false;
-    // }
+    if(rol && rol.permisos.acciones['Trimestres']['Ver Eliminados'] === false){
+      deleteds = false;
+    }
 
     //Paginacion
     const skip = (page) * pageSize
@@ -129,10 +129,10 @@ export async function getQuarterById(header, response, idQuarter){
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Trimestre. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && (rol.permisos.vistas['Configuración']['Departamentos'] === false && rol.permisos.acciones['Departamentos']['Revisar'] === false)){
-    //   return response.status(401).json({ error: 'Error al obtener Departamento. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && (rol.permisos.vistas['Planificación']['Trimestres'] === false && rol.permisos.acciones['Trimestres']['Revisar'] === false)){
+      return response.status(401).json({ error: 'Error al obtener Trimestres. No cuenta con los permisos suficientes.'});
+    }
 
     const quarter = await Quarter.findById(idQuarter).populate([{
       path: 'editor revisor eliminador year',
@@ -154,10 +154,10 @@ export async function getRevisionesQuarter(header, response, idQuarter){
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Trimestre. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.acciones['Departamentos']['Ver Historial'] === false){
-    //   return response.status(401).json({ error: 'Error al obtener Revisiones de Departamento. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Trimestres']['Ver Historial'] === false){
+      return response.status(401).json({ error: 'Error al obtener Revisiones de Trimestres. No cuenta con los permisos suficientes.'});
+    }
 
     const revisiones = await Year.find({original: {_id: idQuarter}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
       path: 'editor revisor',
@@ -179,10 +179,10 @@ export async function createQuarter(header, response, nombre, idYear, fechaInici
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el trimestre. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.acciones['Departamentos']['Crear'] === false){
-    //   return response.status(401).json({ error: 'Error al crear el departamento. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Trimestres']['Crear'] === false){
+      return response.status(401).json({ error: 'Error al crear el Trimestre. No cuenta con los permisos suficientes.'});
+    }
 
     const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al crear el trimestre. Usuario no encontrado.' });
@@ -281,10 +281,10 @@ export async function editQuarter(header, response, idQuarter, nombre, idYear, f
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar el año fiscal. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.acciones['Departamentos']['Modificar'] === false){
-    //   return response.status(401).json({ error: 'Error al editar el departamento. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Trimestres']['Modificar'] === false){
+      return response.status(401).json({ error: 'Error al editar el Trimestre. No cuenta con los permisos suficientes.'});
+    }
 
     const quarter = await privateGetQuarterById(idQuarter);
     if(!quarter) return response.status(404).json({ error: 'Error al editar el trimestre. Trimestre no encontrado' });
@@ -363,10 +363,10 @@ export async function revisarUpdateQuarter(header, response, idQuarter, aprobado
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el trimestre. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.acciones['Departamentos']['Revisar'] === false){
-    //   return response.status(401).json({ error: 'Error al revisar el departamento. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Trimestres']['Revisar'] === false){
+      return response.status(401).json({ error: 'Error al revisar el Trimestre. No cuenta con los permisos suficientes.'});
+    }
 
     const updateQuarter = await privateGetQuarterById(idQuarter);
     if(!updateQuarter) return response.status(404).json({ error: 'Error al revisar el trimestre. Revisión no encontrada.' });
@@ -471,10 +471,10 @@ export async function deleteQuarter(header, response, idQuarter, observaciones=n
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al eliminar el trimestre. ' + auth.payload });
 
   //Validaciones de rol
-  // const rol = await privateGetRolById(auth.payload.userRolId);
-  // if(rol && rol.permisos.acciones['Departamentos']['Eliminar'] === false){
-  //   return response.status(401).json({ error: 'Error al eliminar el departamento. No cuenta con los permisos suficientes.'});
-  // }
+  const rol = await privateGetRolById(auth.payload.userRolId);
+  if(rol && rol.permisos.acciones['Trimestres']['Eliminar'] === false){
+    return response.status(401).json({ error: 'Error al eliminar el Trimestre. No cuenta con los permisos suficientes.'});
+  }
 
   const quarter = await privateGetQuarterById(idQuarter);
   if(!quarter) return response.status(404).json({ error: 'Error al eliminar el trimestre. Trimestre no encontrado.' });

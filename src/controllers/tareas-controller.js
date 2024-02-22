@@ -28,14 +28,14 @@ export async function getCountTareas({header, response, filterParams, reviews=fa
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener las tareas. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.vistas['Planificación']['Resultados'] === false){
-      return response.status(401).json({ error: 'Error al obtener Resultados. No cuenta con los permisos suficientes.'});
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Planificación']['Tareas'] === false){
+      return response.status(401).json({ error: 'Error al obtener Tareas. No cuenta con los permisos suficientes.'});
     }
 
-    if(rol && rol.permisos.acciones['Resultados']['Ver Eliminados'] === false){
+    if(rol && rol.permisos.acciones['Tareas']['Ver Eliminados'] === false){
       deleteds = false;
-    }*/
+    }
 
     const filter = getFilter({filterParams, reviews, deleteds})
 
@@ -56,14 +56,14 @@ export async function getPagedTareas({header, response, page, pageSize, sort, fi
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Tareas. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.vistas['Planificación']['Resultados'] === false){
-      return response.status(401).json({ error: 'Error al obtener Departamentos. No cuenta con los permisos suficientes.'});
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Planificación']['Tareas'] === false){
+      return response.status(401).json({ error: 'Error al obtener Tareas. No cuenta con los permisos suficientes.'});
     }
 
-    if(rol && rol.permisos.acciones['Resultados']['Ver Eliminados'] === false){
+    if(rol && rol.permisos.acciones['Tareas']['Ver Eliminados'] === false){
       deleteds = false;
-    }*/
+    }
 
     //Paginacion
     const skip = (page) * pageSize
@@ -128,10 +128,10 @@ export async function getTareaById(header, response, idTarea){
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener la Tarea. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && (rol.permisos.vistas['Planificación']['Resultados'] === false && rol.permisos.acciones['Resultados']['Revisar'] === false)){
-      return response.status(401).json({ error: 'Error al obtener Resultado. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && (rol.permisos.vistas['Planificación']['Tareas'] === false && rol.permisos.acciones['Tareas']['Revisar'] === false)){
+      return response.status(401).json({ error: 'Error al obtener Tareas. No cuenta con los permisos suficientes.'});
+    }
 
     const tarea = await Tarea.findById(idTarea).populate([{
       path: 'editor revisor eliminador componente',
@@ -162,10 +162,10 @@ export async function getRevisionesTarea(header, response, idTarea){
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de la Tarea. ' + auth.payload });
     
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Resultados']['Ver Historial'] === false){
-      return response.status(401).json({ error: 'Error al obtener Revisiones de Resultado. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Tareas']['Ver Historial'] === false){
+      return response.status(401).json({ error: 'Error al obtener Revisiones de Tareas. No cuenta con los permisos suficientes.'});
+    }
 
     const revisiones = await Tarea.find({original: {_id: idTarea}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
       path: 'editor revisor eliminador componente',
@@ -197,10 +197,10 @@ export async function createTarea({header, response, nombre, descripcion, idResu
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear la tarea. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Resultados']['Crear'] === false){
-      return response.status(401).json({ error: 'Error al crear el departamento. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Tareas']['Crear'] === false){
+      return response.status(401).json({ error: 'Error al crear Tarea. No cuenta con los permisos suficientes.'});
+    }
 
     const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al crear la tarea. Usuario no encontrado.' });
@@ -295,10 +295,10 @@ export async function editTarea({header, response, nombre, idTarea, idResultado,
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar la tarea. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Resultados']['Modificar'] === false){
-      return response.status(401).json({ error: 'Error al editar el departamento. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Tareas']['Modificar'] === false){
+      return response.status(401).json({ error: 'Error al editar Tarea. No cuenta con los permisos suficientes.'});
+    }
 
     const tarea = await privateGetTareaById(idTarea);
     if(!tarea) return response.status(404).json({ error: 'Error al editar la tarea. Tarea no encontrada' });
@@ -385,10 +385,10 @@ export async function revisarUpdateTarea(header, response, idTarea, aprobado, ob
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar la tarea. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetResultadoById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Resultados']['Revisar'] === false){
-      return response.status(401).json({ error: 'Error al revisar el departamento. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetResultadoById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Tareas']['Revisar'] === false){
+      return response.status(401).json({ error: 'Error al revisar Tarea. No cuenta con los permisos suficientes.'});
+    }
 
     const updateTarea = await privateGetTareaById(idTarea);
     if(!updateTarea) return response.status(404).json({ error: 'Error al revisar la tarea. Revisión no encontrada.' });
@@ -504,10 +504,10 @@ export async function deleteTarea(header, response, idTarea, observaciones=null)
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al eliminar la tarea. ' + auth.payload });
 
   //Validaciones de rol
-  /*const rol = await privateGetRolById(auth.payload.userRolId);
-  if(rol && rol.permisos.acciones['Resultados']['Eliminar'] === false){
-    return response.status(401).json({ error: 'Error al eliminar el resultado. No cuenta con los permisos suficientes.'});
-  }*/
+  const rol = await privateGetRolById(auth.payload.userRolId);
+  if(rol && rol.permisos.acciones['Tareas']['Eliminar'] === false){
+    return response.status(401).json({ error: 'Error al eliminar Tarea. No cuenta con los permisos suficientes.'});
+  }
 
   const tarea = await privateGetTareaById(idTarea);
   if(!tarea) return response.status(404).json({ error: 'Error al eliminar la tarea. Tarea no encontrada.' });

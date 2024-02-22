@@ -37,14 +37,14 @@ export async function getCountAreasTematicas({header, response, filterParams, re
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Áreas Temáticas. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.vistas['Configuración']['Departamentos'] === false){
-    //   return response.status(401).json({ error: 'Error al obtener Departamentos. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Indicadores']['Áreas Temáticas'] === false){
+      return response.status(401).json({ error: 'Error al obtener Áreas Temáticas. No cuenta con los permisos suficientes.'});
+    }
 
-    // if(rol && rol.permisos.acciones['Departamentos']['Ver Eliminados'] === false){
-    //   deleteds = false;
-    // }
+    if(rol && rol.permisos.acciones['Áreas Temáticas']['Ver Eliminados'] === false){
+      deleteds = false;
+    }
 
     const filter = getFilter({filterParams, reviews, deleteds})
 
@@ -65,14 +65,14 @@ export async function getPagedAreasTematicas({header, response, page, pageSize, 
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Áreas Temáticas. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.vistas['Configuración']['Departamentos'] === false){
-    //   return response.status(401).json({ error: 'Error al obtener Departamentos. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Indicadores']['Áreas Temáticas'] === false){
+      return response.status(401).json({ error: 'Error al obtener Áreas Temáticas. No cuenta con los permisos suficientes.'});
+    }
 
-    // if(rol && rol.permisos.acciones['Departamentos']['Ver Eliminados'] === false){
-    //   deleteds = false;
-    // }
+    if(rol && rol.permisos.acciones['Áreas Temáticas']['Ver Eliminados'] === false){
+      deleteds = false;
+    }
 
     //Paginacion
     const skip = (page) * pageSize
@@ -133,10 +133,10 @@ export async function getAreaTematicaById(header, response, idAreaTematica){
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Área Temática. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && (rol.permisos.vistas['Configuración']['Departamentos'] === false && rol.permisos.acciones['Departamentos']['Revisar'] === false)){
-    //   return response.status(401).json({ error: 'Error al obtener Departamento. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && (rol.permisos.vistas['Indicadores']['Áreas Temáticas'] === false && rol.permisos.acciones['Áreas Temáticas']['Revisar'] === false)){
+      return response.status(401).json({ error: 'Error al obtener Áreas Temáticas. No cuenta con los permisos suficientes.'});
+    }
 
     const areaTematica = await AreaTematica.findById(idAreaTematica).populate([
       {
@@ -164,10 +164,10 @@ export async function getRevisionesAreaTematica(header, response, idAreaTematica
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Área Temática. ' + auth.payload });
     
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.acciones['Departamentos']['Ver Historial'] === false){
-    //   return response.status(401).json({ error: 'Error al obtener Revisiones de Departamento. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Áreas Temáticas']['Ver Historial'] === false){
+      return response.status(401).json({ error: 'Error al obtener Revisiones de Áreas Temáticas. No cuenta con los permisos suficientes.'});
+    }
 
     const revisiones = await AreaTematica.find({original: {_id: idAreaTematica}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
       path: 'editor revisor',
@@ -189,10 +189,10 @@ export async function createAreaTematica(header, response, nombre, descripcion, 
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el Área temática. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.acciones['Departamentos']['Crear'] === false){
-    //   return response.status(401).json({ error: 'Error al crear el Área temática. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Áreas Temáticas']['Crear'] === false){
+      return response.status(401).json({ error: 'Error al crear el Área temática. No cuenta con los permisos suficientes.'});
+    }
 
     const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al crear el Área temática. Usuario no encontrado.' });
@@ -268,10 +268,10 @@ export async function editAreaTematica(header, response, idAreaTematica, nombre,
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar el área temática. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.acciones['Departamentos']['Modificar'] === false){
-    //   return response.status(401).json({ error: 'Error al editar el área temática. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Áreas Temáticas']['Modificar'] === false){
+      return response.status(401).json({ error: 'Error al editar el área temática. No cuenta con los permisos suficientes.'});
+    }
 
     const areaTematica = await privateGetAreaTematicaById(idAreaTematica);
     if(!areaTematica) return response.status(404).json({ error: 'Error al editar el área temática. Área Temática no encontrada' });
@@ -341,10 +341,10 @@ export async function revisarUpdateAreaTematica(header, response, idAreaTematica
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el Área Temática. ' + auth.payload });
 
     //Validaciones de rol
-    // const rol = await privateGetRolById(auth.payload.userRolId);
-    // if(rol && rol.permisos.acciones['Departamentos']['Revisar'] === false){
-    //   return response.status(401).json({ error: 'Error al revisar el Área Temática. No cuenta con los permisos suficientes.'});
-    // }
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Áreas Temáticas']['Revisar'] === false){
+      return response.status(401).json({ error: 'Error al revisar el Área Temática. No cuenta con los permisos suficientes.'});
+    }
 
     const updateAreaTematica = await privateGetAreaTematicaById(idAreaTematica);
     if(!updateAreaTematica) return response.status(404).json({ error: 'Error al revisar el Área Temática. Revisión no encontrada.' });
@@ -447,10 +447,10 @@ export async function deleteAreaTematica(header, response, idAreaTematica, obser
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al eliminar el área temática. ' + auth.payload });
 
   //Validaciones de rol
-  // const rol = await privateGetRolById(auth.payload.userRolId);
-  // if(rol && rol.permisos.acciones['Departamentos']['Eliminar'] === false){
-  //   return response.status(401).json({ error: 'Error al eliminar el área temática. No cuenta con los permisos suficientes.'});
-  // }
+  const rol = await privateGetRolById(auth.payload.userRolId);
+  if(rol && rol.permisos.acciones['Áreas Temáticas']['Eliminar'] === false){
+    return response.status(401).json({ error: 'Error al eliminar el área temática. No cuenta con los permisos suficientes.'});
+  }
 
   const areaTematica = await privateGetAreaTematicaById(idAreaTematica);
   if(!areaTematica) return response.status(404).json({ error: 'Error al eliminar el área temática. Área Temática no encontrada.' });

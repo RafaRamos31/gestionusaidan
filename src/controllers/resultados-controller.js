@@ -37,14 +37,14 @@ export async function getCountResultados({header, response, filterParams, review
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Resultados. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
+    const rol = await privateGetRolById(auth.payload.userRolId);
     if(rol && rol.permisos.vistas['Planificación']['Resultados'] === false){
       return response.status(401).json({ error: 'Error al obtener Resultados. No cuenta con los permisos suficientes.'});
     }
 
     if(rol && rol.permisos.acciones['Resultados']['Ver Eliminados'] === false){
       deleteds = false;
-    }*/
+    }
 
     const filter = getFilter({filterParams, reviews, deleteds})
 
@@ -65,14 +65,14 @@ export async function getPagedResultados({header, response, page, pageSize, sort
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Resultados. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
+    const rol = await privateGetRolById(auth.payload.userRolId);
     if(rol && rol.permisos.vistas['Planificación']['Resultados'] === false){
-      return response.status(401).json({ error: 'Error al obtener Departamentos. No cuenta con los permisos suficientes.'});
+      return response.status(401).json({ error: 'Error al obtener Resultados. No cuenta con los permisos suficientes.'});
     }
 
     if(rol && rol.permisos.acciones['Resultados']['Ver Eliminados'] === false){
       deleteds = false;
-    }*/
+    }
 
     //Paginacion
     const skip = (page) * pageSize
@@ -127,10 +127,10 @@ export async function getResultadoById(header, response, idResultado){
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Resultado. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
+    const rol = await privateGetRolById(auth.payload.userRolId);
     if(rol && (rol.permisos.vistas['Planificación']['Resultados'] === false && rol.permisos.acciones['Resultados']['Revisar'] === false)){
       return response.status(401).json({ error: 'Error al obtener Resultado. No cuenta con los permisos suficientes.'});
-    }*/
+    }
 
     const resultado = await Resultado.findById(idResultado).populate([{
       path: 'editor revisor eliminador',
@@ -152,10 +152,10 @@ export async function getRevisionesResultado(header, response, idResultado){
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de Resultado. ' + auth.payload });
     
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
+    const rol = await privateGetRolById(auth.payload.userRolId);
     if(rol && rol.permisos.acciones['Resultados']['Ver Historial'] === false){
       return response.status(401).json({ error: 'Error al obtener Revisiones de Resultado. No cuenta con los permisos suficientes.'});
-    }*/
+    }
 
     const revisiones = await Resultado.find({original: {_id: idResultado}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
       path: 'editor revisor',
@@ -177,10 +177,10 @@ export async function createResultado(header, response, nombre, descripcion, apr
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el resultado. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
+    const rol = await privateGetRolById(auth.payload.userRolId);
     if(rol && rol.permisos.acciones['Resultados']['Crear'] === false){
-      return response.status(401).json({ error: 'Error al crear el departamento. No cuenta con los permisos suficientes.'});
-    }*/
+      return response.status(401).json({ error: 'Error al crear el resultado. No cuenta con los permisos suficientes.'});
+    }
 
     const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al crear el resultado. Usuario no encontrado.' });
@@ -254,10 +254,10 @@ export async function editResultado(header, response, idResultado, nombre, descr
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar el resultado. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
+    const rol = await privateGetRolById(auth.payload.userRolId);
     if(rol && rol.permisos.acciones['Resultados']['Modificar'] === false){
       return response.status(401).json({ error: 'Error al editar el departamento. No cuenta con los permisos suficientes.'});
-    }*/
+    }
 
     const resultado = await privateGetResultadoById(idResultado);
     if(!resultado) return response.status(404).json({ error: 'Error al editar el resultado. Resultado no encontrado' });
@@ -325,10 +325,10 @@ export async function revisarUpdateResultado(header, response, idResultado, apro
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el resultado. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetResultadoById(auth.payload.userRolId);
+    const rol = await privateGetResultadoById(auth.payload.userRolId);
     if(rol && rol.permisos.acciones['Resultados']['Revisar'] === false){
       return response.status(401).json({ error: 'Error al revisar el departamento. No cuenta con los permisos suficientes.'});
-    }*/
+    }
 
     const updateResultado = await privateGetResultadoById(idResultado);
     if(!updateResultado) return response.status(404).json({ error: 'Error al revisar el resultado. Revisión no encontrada.' });
@@ -429,10 +429,10 @@ export async function deleteResultado(header, response, idResultado, observacion
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al eliminar el resultado. ' + auth.payload });
 
   //Validaciones de rol
-  /*const rol = await privateGetRolById(auth.payload.userRolId);
+  const rol = await privateGetRolById(auth.payload.userRolId);
   if(rol && rol.permisos.acciones['Resultados']['Eliminar'] === false){
     return response.status(401).json({ error: 'Error al eliminar el resultado. No cuenta con los permisos suficientes.'});
-  }*/
+  }
 
   const resultado = await privateGetResultadoById(idResultado);
   if(!resultado) return response.status(404).json({ error: 'Error al eliminar el resultado. Resultado no encontrado.' });

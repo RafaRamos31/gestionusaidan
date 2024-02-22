@@ -37,14 +37,14 @@ export async function getCountSubActividades({header, response, filterParams, re
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener sub actividades. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.vistas['Planificación']['Resultados'] === false){
-      return response.status(401).json({ error: 'Error al obtener Resultados. No cuenta con los permisos suficientes.'});
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Planificación']['Sub Actividades'] === false){
+      return response.status(401).json({ error: 'Error al obtener Sub Actividades. No cuenta con los permisos suficientes.'});
     }
 
-    if(rol && rol.permisos.acciones['Resultados']['Ver Eliminados'] === false){
+    if(rol && rol.permisos.acciones['Sub Actividades']['Ver Eliminados'] === false){
       deleteds = false;
-    }*/
+    }
 
     const filter = getFilter({filterParams, reviews, deleteds})
 
@@ -65,14 +65,14 @@ export async function getPagedSubActividades({header, response, page, pageSize, 
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener SubActividades. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.vistas['Planificación']['Resultados'] === false){
-      return response.status(401).json({ error: 'Error al obtener Departamentos. No cuenta con los permisos suficientes.'});
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Planificación']['Sub Actividades'] === false){
+      return response.status(401).json({ error: 'Error al obtener Sub Actividades. No cuenta con los permisos suficientes.'});
     }
 
-    if(rol && rol.permisos.acciones['Resultados']['Ver Eliminados'] === false){
+    if(rol && rol.permisos.acciones['Sub Actividades']['Ver Eliminados'] === false){
       deleteds = false;
-    }*/
+    }
 
     //Paginacion
     const skip = (page) * pageSize
@@ -132,10 +132,10 @@ export async function getSubActividadById(header, response, idSubActividad){
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener SubActividad. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && (rol.permisos.vistas['Planificación']['Resultados'] === false && rol.permisos.acciones['Resultados']['Revisar'] === false)){
-      return response.status(401).json({ error: 'Error al obtener Resultado. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && (rol.permisos.vistas['Planificación']['Sub Actividades'] === false && rol.permisos.acciones['Sub Actividades']['Revisar'] === false)){
+      return response.status(401).json({ error: 'Error al obtener Sub Actividad. No cuenta con los permisos suficientes.'});
+    }
 
     const subactividad = await SubActividad.findById(idSubActividad).populate([{
       path: 'editor revisor eliminador componentes',
@@ -162,10 +162,10 @@ export async function getRevisionesSubActividades(header, response, idSubActivid
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de SubActividad. ' + auth.payload });
     
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Resultados']['Ver Historial'] === false){
-      return response.status(401).json({ error: 'Error al obtener Revisiones de Resultado. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Sub Actividades']['Ver Historial'] === false){
+      return response.status(401).json({ error: 'Error al obtener Revisiones de Sub Actividad. No cuenta con los permisos suficientes.'});
+    }
 
     const revisiones = await SubActividad.find({original: {_id: idSubActividad}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
       path: 'editor revisor eliminador componentes',
@@ -192,10 +192,10 @@ export async function createSubActividad(header, response, nombre, descripcion, 
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear la sub-actividad. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Resultados']['Crear'] === false){
-      return response.status(401).json({ error: 'Error al crear el departamento. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Sub Actividades']['Crear'] === false){
+      return response.status(401).json({ error: 'Error al crear Sub Actividad. No cuenta con los permisos suficientes.'});
+    }
 
     const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al crear la actividad. Usuario no encontrado.' });
@@ -279,10 +279,10 @@ export async function editSubActividad(header, response, idSubactividad, nombre,
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar la sub-actividad. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Resultados']['Modificar'] === false){
-      return response.status(401).json({ error: 'Error al editar el departamento. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Sub Actividades']['Modificar'] === false){
+      return response.status(401).json({ error: 'Error al editar Sub Actividad. No cuenta con los permisos suficientes.'});
+    }
 
     const subactividad = await privateGetSubActividadById(idSubactividad);
     if(!subactividad) return response.status(404).json({ error: 'Error al editar la sub-actividad. Sub-actividad no encontrada' });
@@ -360,10 +360,10 @@ export async function revisarUpdateSubactividad(header, response, idSubActividad
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar la sub-actividad. ' + auth.payload });
 
     //Validaciones de rol
-    /*const rol = await privateGetResultadoById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Resultados']['Revisar'] === false){
-      return response.status(401).json({ error: 'Error al revisar el departamento. No cuenta con los permisos suficientes.'});
-    }*/
+    const rol = await privateGetResultadoById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Sub Actividades']['Revisar'] === false){
+      return response.status(401).json({ error: 'Error al revisar Sub Actividad. No cuenta con los permisos suficientes.'});
+    }
 
     const updateSubactividad = await privateGetSubActividadById(idSubActividad);
     if(!updateSubactividad) return response.status(404).json({ error: 'Error al revisar la sub-actividad. Revisión no encontrada.' });
@@ -474,10 +474,10 @@ export async function deleteSubActividad(header, response, idSubActividad, obser
   if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al eliminar la sub-actividad. ' + auth.payload });
 
   //Validaciones de rol
-  /*const rol = await privateGetRolById(auth.payload.userRolId);
-  if(rol && rol.permisos.acciones['Resultados']['Eliminar'] === false){
-    return response.status(401).json({ error: 'Error al eliminar el resultado. No cuenta con los permisos suficientes.'});
-  }*/
+  const rol = await privateGetRolById(auth.payload.userRolId);
+  if(rol && rol.permisos.acciones['Sub Actividades']['Eliminar'] === false){
+    return response.status(401).json({ error: 'Error al eliminar Sub Actividad. No cuenta con los permisos suficientes.'});
+  }
 
   const subactividad = await privateGetSubActividadById(idSubActividad);
   if(!subactividad) return response.status(404).json({ error: 'Error al eliminar la sub-actividad. Sub-Actividad no encontrada.' });
