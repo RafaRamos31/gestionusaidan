@@ -195,9 +195,15 @@ export async function createYear(header, response, nombre, baseFechaInicio, base
     let fechaInicio;
     let fechaFinal;
 
-    fechaInicio = moment(baseFechaInicio).startOf('day')
-    fechaFinal = moment(baseFechaFinal).endOf('day')
-
+    if(zonaHoraria < 0){
+      fechaInicio = moment(baseFechaInicio).startOf('day').add(zonaHoraria, 'minutes');
+      fechaFinal = moment(baseFechaFinal).endOf('day').add(zonaHoraria, 'minutes');
+    }
+    else{
+      fechaInicio = moment(baseFechaInicio).startOf('day').subtract(zonaHoraria, 'minutes');
+      fechaFinal = moment(baseFechaFinal).endOf('day').subtract(zonaHoraria, 'minutes');
+    }
+    
     fechaInicio = new Date(fechaInicio)
     fechaFinal = new Date(fechaFinal)
 
@@ -255,7 +261,7 @@ export async function createYear(header, response, nombre, baseFechaInicio, base
       await year.save();
     }
 
-    response.json(baseYear);
+    response.json({baseYear, zonaHoraria});
     return response;
   } catch (error) {
     throw error;
