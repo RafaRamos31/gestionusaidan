@@ -196,16 +196,13 @@ export async function createYear(header, response, nombre, baseFechaInicio, base
     let fechaFinal;
 
     if(zonaHoraria < 0){
-      fechaInicio = moment(baseFechaInicio).startOf('day').add(zonaHoraria, 'minutes');
-      fechaFinal = moment(baseFechaFinal).endOf('day').add(zonaHoraria, 'minutes');
+      fechaInicio = moment.utc(baseFechaInicio).startOf('day').add(zonaHoraria*-1, 'minutes');
+      fechaFinal = moment.utc(baseFechaFinal).endOf('day').add(zonaHoraria*-1, 'minutes');
     }
     else{
-      fechaInicio = moment(baseFechaInicio).startOf('day').subtract(zonaHoraria, 'minutes');
-      fechaFinal = moment(baseFechaFinal).endOf('day').subtract(zonaHoraria, 'minutes');
+      fechaInicio = moment.utc(baseFechaInicio).startOf('day').add(zonaHoraria, 'minutes');
+      fechaFinal = moment.utc(baseFechaFinal).endOf('day').add(zonaHoraria, 'minutes');
     }
-    
-    fechaInicio = new Date(fechaInicio)
-    fechaFinal = new Date(fechaFinal)
 
     const baseYear = new Year({
       //Propiedades de objeto
