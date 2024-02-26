@@ -84,11 +84,11 @@ export async function getPagedSubActividades({header, response, page, pageSize, 
     const filterQuery = getFilter({filterParams: filter, reviews, deleteds})
 
     const subactividades = await SubActividad.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate([{
-      path: 'editor revisor eliminador componentes',
+      path: 'editor revisor eliminador',
       select: '_id nombre',
     },
     {
-      path: 'resultado subresultado actividad areasTematicas',
+      path: 'resultado subresultado actividad areasTematicas componentes',
       select: '_id nombre descripcion',
     },
   ]);
@@ -138,11 +138,11 @@ export async function getSubActividadById(header, response, idSubActividad){
     }
 
     const subactividad = await SubActividad.findById(idSubActividad).populate([{
-      path: 'editor revisor eliminador componentes',
+      path: 'editor revisor eliminador',
       select: '_id nombre',
     },
     {
-      path: 'resultado subresultado actividad areasTematicas',
+      path: 'resultado subresultado actividad areasTematicas componentes',
       select: '_id nombre descripcion',
     },
   ]);
@@ -168,11 +168,11 @@ export async function getRevisionesSubActividades(header, response, idSubActivid
     }
 
     const revisiones = await SubActividad.find({original: {_id: idSubActividad}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
-      path: 'editor revisor eliminador componentes',
+      path: 'editor revisor eliminador',
       select: '_id nombre',
     },
     {
-      path: 'resultado subresultado actividad areasTematicas',
+      path: 'resultado subresultado actividad areasTematicas componentes',
       select: '_id nombre descripcion',
     },
   ]);
