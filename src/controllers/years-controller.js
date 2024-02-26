@@ -195,14 +195,8 @@ export async function createYear(header, response, nombre, baseFechaInicio, base
     let fechaInicio;
     let fechaFinal;
 
-    if(zonaHoraria < 0){
-      fechaInicio = moment.utc(baseFechaInicio).startOf('day').subtract(zonaHoraria, 'minutes');
-      fechaFinal = moment.utc(baseFechaFinal).endOf('day').subtract(zonaHoraria, 'minutes');
-    }
-    else{
-      fechaInicio = moment.utc(baseFechaInicio).startOf('day').add(zonaHoraria, 'minutes');
-      fechaFinal = moment.utc(baseFechaFinal).endOf('day').add(zonaHoraria, 'minutes');
-    }
+    fechaInicio = moment(baseFechaInicio).startOf('day')
+    fechaFinal = moment(baseFechaFinal).endOf('day')
 
     fechaInicio = new Date(fechaInicio)
     fechaFinal = new Date(fechaFinal)
