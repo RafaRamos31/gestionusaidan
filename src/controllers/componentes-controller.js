@@ -95,7 +95,7 @@ export async function getListComponentes({header, response, filter}){
     //Filter
     const filterQuery = getFilter({filterParams: filter})
 
-    const componentes = await Componente.find(filterQuery, '_id nombre').sort(sortQuery);
+    const componentes = await Componente.find(filterQuery, '_id nombre descripcion').sort(sortQuery);
 
     response.json(componentes);
     return response;
@@ -157,7 +157,7 @@ export async function getRevisionesComponente(header, response, idComponente){
 }
 
 //Crear componente
-export async function createComponente(header, response, nombre, aprobar=false){
+export async function createComponente(header, response, nombre, descripcion, aprobar=false){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el componente. ' + auth.payload });
@@ -174,6 +174,7 @@ export async function createComponente(header, response, nombre, aprobar=false){
     const baseComponente = new Componente({
       //Propiedades de objeto
       nombre,
+      descripcion,
       //Propiedades de control
       original: null,
       version: '0.1',
@@ -195,6 +196,7 @@ export async function createComponente(header, response, nombre, aprobar=false){
       const componente = new Componente({
         //Propiedades de objeto
         nombre,
+        descripcion,
         //Propiedades de control
         original: null,
         version: '1.0',
@@ -229,7 +231,7 @@ export async function createComponente(header, response, nombre, aprobar=false){
 }
 
 //Edit info
-export async function editComponente(header, response, idComponente, nombre, aprobar=false){
+export async function editComponente(header, response, idComponente, nombre, descripcion, aprobar=false){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar el componente. ' + auth.payload });
@@ -250,6 +252,7 @@ export async function editComponente(header, response, idComponente, nombre, apr
     const updateComponente = new Componente({
       //Propiedades de objeto
       nombre,
+      descripcion,
       //Propiedades de control
       original: componente._id,
       version: updateVersion(componente.ultimaRevision),
@@ -268,6 +271,7 @@ export async function editComponente(header, response, idComponente, nombre, apr
       //Actualizar objeto publico
       //Propiedades de objeto
       componente.nombre = nombre;
+      componente.descripcion = descripcion;
       //Propiedades de control
       componente.version = updateVersion(componente.version, aprobar);
       componente.ultimaRevision = componente.version;
@@ -327,6 +331,7 @@ export async function revisarUpdateComponente(header, response, idComponente, ap
         //Actualizar objeto publico
         //Propiedades de objeto
         original.nombre = updateComponente.nombre;
+        original.descripcion = updateComponente.descripcion;
         //Propiedades de control
         original.version = updateVersion(original.version, aprobado);
         original.ultimaRevision = original.version;
@@ -340,6 +345,7 @@ export async function revisarUpdateComponente(header, response, idComponente, ap
         const componente = new Componente({
           //Propiedades de objeto
           nombre: updateComponente.nombre,
+          descripcion: updateComponente.descripcion,
           //Propiedades de control
           original: null,
           version: '1.0',

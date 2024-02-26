@@ -102,6 +102,7 @@ export const getComponentesEndpoints = (app, upload) => {
         authorizationHeader,
         response,
         request.body.nombre,
+        request.body.descripcion,
         JSON.parse(request.body.aprobar)
       );
       
@@ -120,6 +121,7 @@ export const getComponentesEndpoints = (app, upload) => {
         response,
         request.body.idComponente,
         request.body.nombre,
+        request.body.descripcion,
         JSON.parse(request.body.aprobar)
       );
 

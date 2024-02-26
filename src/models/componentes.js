@@ -5,6 +5,10 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  descripcion: {
+    type: String,
+    required: true,
+  },
   original: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Componente",
