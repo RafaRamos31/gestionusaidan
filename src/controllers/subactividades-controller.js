@@ -360,7 +360,7 @@ export async function revisarUpdateSubactividad(header, response, idSubActividad
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar la sub-actividad. ' + auth.payload });
 
     //Validaciones de rol
-    const rol = await privateGetResultadoById(auth.payload.userRolId);
+    const rol = await privateGetRolById(auth.payload.userRolId);
     if(rol && rol.permisos.acciones['Sub Actividades']['Revisar'] === false){
       return response.status(401).json({ error: 'Error al revisar Sub Actividad. No cuenta con los permisos suficientes.'});
     }
