@@ -173,7 +173,7 @@ export async function getRevisionesYear(header, response, idYear){
 }
 
 //Crear depto
-export async function createYear(header, response, nombre, fechaInicio, baseFechaFinal, aprobar=false){
+export async function createYear(header, response, nombre, baseFechaInicio, baseFechaFinal, aprobar=false){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el año fiscal. ' + auth.payload });
@@ -190,9 +190,8 @@ export async function createYear(header, response, nombre, fechaInicio, baseFech
     const existentName = await validateUniquesYear({nombre})
     if(existentName) return response.status(400).json({ error: `Error al crear el año fiscal. El año ${nombre} ya está en uso.` });
 
-    const fechaFinal = moment(baseFechaFinal, 'MM/DD/YYYY');
-    fechaFinal.add(1, 'day');
-    fechaFinal.subtract(1, 'millisecond');
+    const fechaInicio = moment(baseFechaInicio).startOf('day');
+    const fechaFinal = moment(baseFechaFinal).endOf('day');
 
     const baseYear = new Year({
       //Propiedades de objeto
@@ -256,7 +255,7 @@ export async function createYear(header, response, nombre, fechaInicio, baseFech
 }
 
 //Edit info
-export async function editYear(header, response, idYear, nombre, fechaInicio, baseFechaFinal, aprobar=false){
+export async function editYear(header, response, idYear, nombre, baseFechaInicio, baseFechaFinal, aprobar=false){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar el año fiscal. ' + auth.payload });
@@ -276,9 +275,8 @@ export async function editYear(header, response, idYear, nombre, fechaInicio, ba
     const existentName = await validateUniquesYear({nombre, id: idYear})
     if(existentName) return response.status(400).json({ error: `Error al editar el año fiscal. El año ${nombre} ya está en uso.` });
 
-    const fechaFinal = moment(baseFechaFinal, 'MM/DD/YYYY');
-    fechaFinal.add(1, 'day');
-    fechaFinal.subtract(1, 'millisecond');
+    const fechaInicio = moment(baseFechaInicio).startOf('day');
+    const fechaFinal = moment(baseFechaFinal).endOf('day');
     
     //Crear objeto de actualizacion
     const updateYear = new Year({
