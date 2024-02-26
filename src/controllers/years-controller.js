@@ -204,6 +204,9 @@ export async function createYear(header, response, nombre, baseFechaInicio, base
       fechaFinal = moment.utc(baseFechaFinal).endOf('day').add(zonaHoraria, 'minutes');
     }
 
+    fechaInicio = new Date(fechaInicio)
+    fechaFinal = new Date(fechaFinal)
+
     const baseYear = new Year({
       //Propiedades de objeto
       nombre,
