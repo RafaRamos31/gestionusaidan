@@ -190,8 +190,19 @@ export async function createYear(header, response, nombre, baseFechaInicio, base
     const existentName = await validateUniquesYear({nombre})
     if(existentName) return response.status(400).json({ error: `Error al crear el año fiscal. El año ${nombre} ya está en uso.` });
 
-    const fechaInicio = moment(baseFechaInicio).startOf('day');
-    const fechaFinal = moment(baseFechaFinal).endOf('day');
+    const zonaHoraria = moment(baseFechaInicio).utcOffset();
+
+    let fechaInicio;
+    let fechaFinal;
+
+    if(zonaHoraria < 0){
+      fechaInicio = moment.utc(baseFechaInicio).startOf('day').subtract(zonaHoraria, 'minutes');
+      fechaFinal = moment.utc(baseFechaFinal).endOf('day').subtract(zonaHoraria, 'minutes');
+    }
+    else{
+      fechaInicio = moment.utc(baseFechaInicio).startOf('day').add(zonaHoraria, 'minutes');
+      fechaFinal = moment.utc(baseFechaFinal).endOf('day').add(zonaHoraria, 'minutes');
+    }
 
     const baseYear = new Year({
       //Propiedades de objeto
