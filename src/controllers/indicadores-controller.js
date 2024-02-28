@@ -31,7 +31,9 @@ const progresosModel = {
       'SEP': 0,
       'Total': 0
     },
-    'Total': 0
+    'Total': {
+      'Total': 0
+    }
   },
   'AF25': {
     'T1': {
@@ -58,7 +60,9 @@ const progresosModel = {
       'SEP': 0,
       'Total': 0
     },
-    'Total': 0
+    'Total': {
+      'Total': 0
+    }
   },
   'AF26': {
     'T1': {
@@ -85,7 +89,9 @@ const progresosModel = {
       'SEP': 0,
       'Total': 0
     },
-    'Total': 0
+    'Total': {
+      'Total': 0
+    }
   },
   'AF27': {
     'T1': {
@@ -112,7 +118,9 @@ const progresosModel = {
       'SEP': 0,
       'Total': 0
     },
-    'Total': 0
+    'Total': {
+      'Total': 0
+    }
   },
   'AF28': {
     'T1': {
@@ -139,7 +147,9 @@ const progresosModel = {
       'SEP': 0,
       'Total': 0
     },
-    'Total': 0
+    'Total': {
+      'Total': 0
+    }
   },
   'LOP': {
     'T1': {
@@ -166,7 +176,9 @@ const progresosModel = {
       'SEP': 0,
       'Total': 0
     },
-    'Total': 0
+    'Total': {
+      'Total': 0
+    }
   },
 }
 
@@ -197,7 +209,9 @@ const addMonthsMetas = (metas) => {
         'SEP': metas['AF24']['T4'],
         'Total': metas['AF24']['T4'],
       },
-      'Total': metas['AF24']['Total']
+      'Total': {
+        'Total': metas['AF24']['Total']
+      } 
     },
     'AF25': {
       'T1': {
@@ -224,7 +238,9 @@ const addMonthsMetas = (metas) => {
         'SEP': metas['AF25']['T4'],
         'Total': metas['AF25']['T4'],
       },
-      'Total': metas['AF25']['Total']
+      'Total': {
+        'Total': metas['AF25']['Total']
+      } 
     },
     'AF26': {
       'T1': {
@@ -251,7 +267,9 @@ const addMonthsMetas = (metas) => {
         'SEP': metas['AF26']['T4'],
         'Total': metas['AF26']['T4'],
       },
-      'Total': metas['AF26']['Total']
+      'Total': {
+        'Total': metas['AF26']['Total']
+      } 
     },
     'AF27': {
       'T1': {
@@ -278,7 +296,9 @@ const addMonthsMetas = (metas) => {
         'SEP': metas['AF27']['T4'],
         'Total': metas['AF27']['T4'],
       },
-      'Total': metas['AF27']['Total']
+      'Total': {
+        'Total': metas['AF27']['Total']
+      } 
     },
     'AF28': {
       'T1': {
@@ -305,7 +325,9 @@ const addMonthsMetas = (metas) => {
         'SEP': metas['AF28']['T4'],
         'Total': metas['AF28']['T4'],
       },
-      'Total': metas['AF28']['Total']
+      'Total': {
+        'Total': metas['AF28']['Total']
+      } 
     },
     'LOP': {
       'T1': {
@@ -332,7 +354,9 @@ const addMonthsMetas = (metas) => {
         'SEP': metas['LOP']['T4'],
         'Total': metas['LOP']['T4'],
       },
-      'Total': metas['LOP']['Total']
+      'Total': {
+        'Total': metas['LOP']['Total']
+      } 
     }
   }
 }
