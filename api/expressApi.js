@@ -23,6 +23,7 @@ import { getSubActividadesEndpoints } from "../src/endpoints/subactividades.js";
 import { getIndicadoresEndpoints } from "../src/endpoints/indicadores.js";
 import { getTareasEndpoints } from "../src/endpoints/tareas.js";
 import { getAreasTematicasEndpoints } from "../src/endpoints/areasTematicas.js";
+import { getGeneralConfigEndpoints } from "../src/endpoints/generalConfig.js";
 
 /**
  * Separa la logica de definicion de rutas y su respuesta a peticiones REST
@@ -34,6 +35,7 @@ export function addRestDirections(app) {
   //Middleware para la recepcion de archivos desde un formulario del Frontend
   const upload = new multer();
 
+  app = getGeneralConfigEndpoints(app, upload);
   app = getRolesEndpoints(app, upload);
   app = getComponentesEndpoints(app, upload);
   app = getOrgTypesEndpoints(app, upload);
