@@ -171,8 +171,8 @@ export async function getRevisionesYear(header, response, idYear){
   }
 }
 
-//Crear depto
-export async function createYear(header, response, nombre, baseFechaInicio, baseFechaFinal, aprobar=false){
+//Crear
+export async function createYear(header, response, nombre, baseFechaInicio, baseFechaFinal, timezone, aprobar=false){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el año fiscal. ' + auth.payload });
@@ -189,21 +189,11 @@ export async function createYear(header, response, nombre, baseFechaInicio, base
     const existentName = await validateUniquesYear({nombre})
     if(existentName) return response.status(400).json({ error: `Error al crear el año fiscal. El año ${nombre} ya está en uso.` });
 
-    const stringZonaHoraria = baseFechaInicio.split(' ').pop();
-
-    const zonaHoraria = moment(baseFechaInicio).utcOffset();
-
     let fechaInicio;
     let fechaFinal;
 
-    if(zonaHoraria < 0){
-      fechaInicio = moment.utc(baseFechaInicio).startOf('day').add(zonaHoraria*-1, 'minutes');
-      fechaFinal = moment.utc(baseFechaFinal).endOf('day').add(zonaHoraria*-1, 'minutes');
-    }
-    else{
-      fechaInicio = moment.utc(baseFechaInicio).startOf('day').add(zonaHoraria, 'minutes');
-      fechaFinal = moment.utc(baseFechaFinal).endOf('day').add(zonaHoraria, 'minutes');
-    }
+    fechaInicio = moment(baseFechaInicio).startOf('day').utcOffset(timezone);
+    fechaFinal = moment(baseFechaFinal).endOf('day').utcOffset(timezone);
 
     const baseYear = new Year({
       //Propiedades de objeto
@@ -259,7 +249,7 @@ export async function createYear(header, response, nombre, baseFechaInicio, base
       await year.save();
     }
 
-    response.json({baseYear, stringZonaHoraria});
+    response.json(baseYear);
     return response;
   } catch (error) {
     throw error;
