@@ -249,7 +249,7 @@ export async function createYear(header, response, nombre, baseFechaInicio, base
       await year.save();
     }
 
-    response.json({baseYear, timezone});
+    response.json(baseYear);
     return response;
   } catch (error) {
     throw error;
@@ -277,8 +277,8 @@ export async function editYear(header, response, idYear, nombre, baseFechaInicio
     const existentName = await validateUniquesYear({nombre, id: idYear})
     if(existentName) return response.status(400).json({ error: `Error al editar el año fiscal. El año ${nombre} ya está en uso.` });
 
-    const fechaInicio = moment(baseFechaInicio).startOf('day');
-    const fechaFinal = moment(baseFechaFinal).endOf('day');
+    fechaInicio = moment(baseFechaInicio).startOf('day').utcOffset(timezone, true);
+    fechaFinal = moment(baseFechaFinal).endOf('day').utcOffset(timezone, true);
     
     //Crear objeto de actualizacion
     const updateYear = new Year({
