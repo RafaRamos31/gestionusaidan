@@ -104,6 +104,7 @@ export const getYearsEndpoints = (app, upload) => {
         request.body.nombre,
         request.body.fechaInicio,
         request.body.fechaFinal,
+        request.body.timezone,
         JSON.parse(request.body.aprobar)
       );
       

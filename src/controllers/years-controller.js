@@ -192,8 +192,8 @@ export async function createYear(header, response, nombre, baseFechaInicio, base
     let fechaInicio;
     let fechaFinal;
 
-    fechaInicio = moment(baseFechaInicio).startOf('day').utcOffset(timezone, true);
-    fechaFinal = moment(baseFechaFinal).endOf('day').utcOffset(timezone, true);
+    fechaInicio = moment(baseFechaInicio).startOf('day').utcOffset(timezone);
+    fechaFinal = moment(baseFechaFinal).endOf('day').utcOffset(timezone);
 
     const baseYear = new Year({
       //Propiedades de objeto
