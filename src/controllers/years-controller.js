@@ -1,4 +1,3 @@
-import { content_v2_1 } from "googleapis";
 import Year from "../models/years.js";
 import { decodeToken } from "../utilities/jwtDecoder.js";
 import { getFilter, getSorting } from "../utilities/queryConstructor.js";
@@ -190,6 +189,8 @@ export async function createYear(header, response, nombre, baseFechaInicio, base
     const existentName = await validateUniquesYear({nombre})
     if(existentName) return response.status(400).json({ error: `Error al crear el año fiscal. El año ${nombre} ya está en uso.` });
 
+    const stringZonaHoraria = baseFechaInicio.split(' ').pop();
+
     const zonaHoraria = moment(baseFechaInicio).utcOffset();
 
     let fechaInicio;
@@ -258,7 +259,7 @@ export async function createYear(header, response, nombre, baseFechaInicio, base
       await year.save();
     }
 
-    response.json({baseYear, zonaHoraria});
+    response.json({baseYear, stringZonaHoraria});
     return response;
   } catch (error) {
     throw error;

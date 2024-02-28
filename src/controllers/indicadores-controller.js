@@ -7,47 +7,334 @@ import { privateGetUsuarioById } from "./usuarios-controller.js";
 
 const progresosModel = {
   'AF24': {
-    'T1': 0,
-    'T2': 0,
-    'T3': 0,
-    'T4': 0,
+    'T1': {
+      'OCT': 0,
+      'NOV': 0,
+      'DIC': 0,
+      'Total': 0
+    },
+    'T2': {
+      'ENE': 0,
+      'FEB': 0,
+      'MAR': 0,
+      'Total': 0
+    },
+    'T3': {
+      'ABR': 0,
+      'MAY': 0,
+      'JUN': 0,
+      'Total': 0
+    },
+    'T4': {
+      'JUL': 0,
+      'AGO': 0,
+      'SEP': 0,
+      'Total': 0
+    },
     'Total': 0
   },
   'AF25': {
-    'T1': 0,
-    'T2': 0,
-    'T3': 0,
-    'T4': 0,
+    'T1': {
+      'OCT': 0,
+      'NOV': 0,
+      'DIC': 0,
+      'Total': 0
+    },
+    'T2': {
+      'ENE': 0,
+      'FEB': 0,
+      'MAR': 0,
+      'Total': 0
+    },
+    'T3': {
+      'ABR': 0,
+      'MAY': 0,
+      'JUN': 0,
+      'Total': 0
+    },
+    'T4': {
+      'JUL': 0,
+      'AGO': 0,
+      'SEP': 0,
+      'Total': 0
+    },
     'Total': 0
   },
   'AF26': {
-    'T1': 0,
-    'T2': 0,
-    'T3': 0,
-    'T4': 0,
+    'T1': {
+      'OCT': 0,
+      'NOV': 0,
+      'DIC': 0,
+      'Total': 0
+    },
+    'T2': {
+      'ENE': 0,
+      'FEB': 0,
+      'MAR': 0,
+      'Total': 0
+    },
+    'T3': {
+      'ABR': 0,
+      'MAY': 0,
+      'JUN': 0,
+      'Total': 0
+    },
+    'T4': {
+      'JUL': 0,
+      'AGO': 0,
+      'SEP': 0,
+      'Total': 0
+    },
     'Total': 0
   },
   'AF27': {
-    'T1': 0,
-    'T2': 0,
-    'T3': 0,
-    'T4': 0,
+    'T1': {
+      'OCT': 0,
+      'NOV': 0,
+      'DIC': 0,
+      'Total': 0
+    },
+    'T2': {
+      'ENE': 0,
+      'FEB': 0,
+      'MAR': 0,
+      'Total': 0
+    },
+    'T3': {
+      'ABR': 0,
+      'MAY': 0,
+      'JUN': 0,
+      'Total': 0
+    },
+    'T4': {
+      'JUL': 0,
+      'AGO': 0,
+      'SEP': 0,
+      'Total': 0
+    },
     'Total': 0
   },
   'AF28': {
-    'T1': 0,
-    'T2': 0,
-    'T3': 0,
-    'T4': 0,
+    'T1': {
+      'OCT': 0,
+      'NOV': 0,
+      'DIC': 0,
+      'Total': 0
+    },
+    'T2': {
+      'ENE': 0,
+      'FEB': 0,
+      'MAR': 0,
+      'Total': 0
+    },
+    'T3': {
+      'ABR': 0,
+      'MAY': 0,
+      'JUN': 0,
+      'Total': 0
+    },
+    'T4': {
+      'JUL': 0,
+      'AGO': 0,
+      'SEP': 0,
+      'Total': 0
+    },
     'Total': 0
   },
   'LOP': {
-    'T1': 0,
-    'T2': 0,
-    'T3': 0,
-    'T4': 0,
+    'T1': {
+      'OCT': 0,
+      'NOV': 0,
+      'DIC': 0,
+      'Total': 0
+    },
+    'T2': {
+      'ENE': 0,
+      'FEB': 0,
+      'MAR': 0,
+      'Total': 0
+    },
+    'T3': {
+      'ABR': 0,
+      'MAY': 0,
+      'JUN': 0,
+      'Total': 0
+    },
+    'T4': {
+      'JUL': 0,
+      'AGO': 0,
+      'SEP': 0,
+      'Total': 0
+    },
     'Total': 0
   },
+}
+
+const addMonthsMetas = (metas) => {
+  return {
+    'AF24': {
+      'T1': {
+        'OCT': metas['AF24']['T1'],
+        'NOV': metas['AF24']['T1'],
+        'DIC': metas['AF24']['T1'],
+        'Total': metas['AF24']['T1'],
+      },
+      'T2': {
+        'ENE': metas['AF24']['T2'],
+        'FEB': metas['AF24']['T2'],
+        'MAR': metas['AF24']['T2'],
+        'Total': metas['AF24']['T2'],
+      },
+      'T3': {
+        'ABR': metas['AF24']['T3'],
+        'MAY': metas['AF24']['T3'],
+        'JUN': metas['AF24']['T3'],
+        'Total': metas['AF24']['T3'],
+      },
+      'T4': {
+        'JUL': metas['AF24']['T4'],
+        'AGO': metas['AF24']['T4'],
+        'SEP': metas['AF24']['T4'],
+        'Total': metas['AF24']['T4'],
+      },
+      'Total': metas['AF24']['Total']
+    },
+    'AF25': {
+      'T1': {
+        'OCT': metas['AF25']['T1'],
+        'NOV': metas['AF25']['T1'],
+        'DIC': metas['AF25']['T1'],
+        'Total': metas['AF25']['T1'],
+      },
+      'T2': {
+        'ENE': metas['AF25']['T2'],
+        'FEB': metas['AF25']['T2'],
+        'MAR': metas['AF25']['T2'],
+        'Total': metas['AF25']['T2'],
+      },
+      'T3': {
+        'ABR': metas['AF25']['T3'],
+        'MAY': metas['AF25']['T3'],
+        'JUN': metas['AF25']['T3'],
+        'Total': metas['AF25']['T3'],
+      },
+      'T4': {
+        'JUL': metas['AF25']['T4'],
+        'AGO': metas['AF25']['T4'],
+        'SEP': metas['AF25']['T4'],
+        'Total': metas['AF25']['T4'],
+      },
+      'Total': metas['AF25']['Total']
+    },
+    'AF26': {
+      'T1': {
+        'OCT': metas['AF26']['T1'],
+        'NOV': metas['AF26']['T1'],
+        'DIC': metas['AF26']['T1'],
+        'Total': metas['AF26']['T1'],
+      },
+      'T2': {
+        'ENE': metas['AF26']['T2'],
+        'FEB': metas['AF26']['T2'],
+        'MAR': metas['AF26']['T2'],
+        'Total': metas['AF26']['T2'],
+      },
+      'T3': {
+        'ABR': metas['AF26']['T3'],
+        'MAY': metas['AF26']['T3'],
+        'JUN': metas['AF26']['T3'],
+        'Total': metas['AF26']['T3'],
+      },
+      'T4': {
+        'JUL': metas['AF26']['T4'],
+        'AGO': metas['AF26']['T4'],
+        'SEP': metas['AF26']['T4'],
+        'Total': metas['AF26']['T4'],
+      },
+      'Total': metas['AF26']['Total']
+    },
+    'AF27': {
+      'T1': {
+        'OCT': metas['AF27']['T1'],
+        'NOV': metas['AF27']['T1'],
+        'DIC': metas['AF27']['T1'],
+        'Total': metas['AF27']['T1'],
+      },
+      'T2': {
+        'ENE': metas['AF27']['T2'],
+        'FEB': metas['AF27']['T2'],
+        'MAR': metas['AF27']['T2'],
+        'Total': metas['AF27']['T2'],
+      },
+      'T3': {
+        'ABR': metas['AF27']['T3'],
+        'MAY': metas['AF27']['T3'],
+        'JUN': metas['AF27']['T3'],
+        'Total': metas['AF27']['T3'],
+      },
+      'T4': {
+        'JUL': metas['AF27']['T4'],
+        'AGO': metas['AF27']['T4'],
+        'SEP': metas['AF27']['T4'],
+        'Total': metas['AF27']['T4'],
+      },
+      'Total': metas['AF27']['Total']
+    },
+    'AF28': {
+      'T1': {
+        'OCT': metas['AF28']['T1'],
+        'NOV': metas['AF28']['T1'],
+        'DIC': metas['AF28']['T1'],
+        'Total': metas['AF28']['T1'],
+      },
+      'T2': {
+        'ENE': metas['AF28']['T2'],
+        'FEB': metas['AF28']['T2'],
+        'MAR': metas['AF28']['T2'],
+        'Total': metas['AF28']['T2'],
+      },
+      'T3': {
+        'ABR': metas['AF28']['T3'],
+        'MAY': metas['AF28']['T3'],
+        'JUN': metas['AF28']['T3'],
+        'Total': metas['AF28']['T3'],
+      },
+      'T4': {
+        'JUL': metas['AF28']['T4'],
+        'AGO': metas['AF28']['T4'],
+        'SEP': metas['AF28']['T4'],
+        'Total': metas['AF28']['T4'],
+      },
+      'Total': metas['AF28']['Total']
+    },
+    'LOP': {
+      'T1': {
+        'OCT': metas['LOP']['T1'],
+        'NOV': metas['LOP']['T1'],
+        'DIC': metas['LOP']['T1'],
+        'Total': metas['LOP']['T1'],
+      },
+      'T2': {
+        'ENE': metas['LOP']['T2'],
+        'FEB': metas['LOP']['T2'],
+        'MAR': metas['LOP']['T2'],
+        'Total': metas['LOP']['T2'],
+      },
+      'T3': {
+        'ABR': metas['LOP']['T3'],
+        'MAY': metas['LOP']['T3'],
+        'JUN': metas['LOP']['T3'],
+        'Total': metas['LOP']['T3'],
+      },
+      'T4': {
+        'JUL': metas['LOP']['T4'],
+        'AGO': metas['LOP']['T4'],
+        'SEP': metas['LOP']['T4'],
+        'Total': metas['LOP']['T4'],
+      },
+      'Total': metas['LOP']['Total']
+    }
+  }
 }
 
 //Internos para validacion de claves unicas
@@ -244,7 +531,7 @@ export async function createIndicador({header, response, nombre, descripcion, me
       medida,
       tipoIndicador,
       frecuencia,
-      metas,
+      metas: addMonthsMetas(metas),
       progresos: progresosModel,
       //Propiedades de control
       original: null,
@@ -271,7 +558,7 @@ export async function createIndicador({header, response, nombre, descripcion, me
         medida,
         tipoIndicador,
         frecuencia,
-        metas,
+        metas: addMonthsMetas(metas),
         progresos: progresosModel,
         //Propiedades de control
         original: null,
@@ -335,7 +622,7 @@ export async function editIndicador({header, response, idIndicador, nombre, desc
       medida,
       tipoIndicador,
       frecuencia,
-      metas,
+      metas: addMonthsMetas(metas),
       progresos: progresosModel,
       //Propiedades de control
       original: indicador._id,
@@ -359,7 +646,7 @@ export async function editIndicador({header, response, idIndicador, nombre, desc
       indicador.medida = medida
       indicador.tipoIndicador = tipoIndicador
       indicador.frecuencia = frecuencia
-      indicador.metas = metas
+      indicador.metas = addMonthsMetas(metas)
       //Propiedades de control
       indicador.version = updateVersion(indicador.version, aprobar);
       indicador.ultimaRevision = indicador.version;
