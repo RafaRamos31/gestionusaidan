@@ -76,11 +76,11 @@ export async function getPagedTareas({header, response, page, pageSize, sort, fi
 
     const tareas = await Tarea.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate([
     {
-      path: 'editor revisor eliminador componente',
+      path: 'editor revisor eliminador',
       select: '_id nombre',
     },
     {
-      path: 'resultado subresultado actividad subactividad',
+      path: 'resultado subresultado actividad subactividad componente',
       select: '_id nombre descripcion',
     },
     {
@@ -134,11 +134,11 @@ export async function getTareaById(header, response, idTarea){
     }
 
     const tarea = await Tarea.findById(idTarea).populate([{
-      path: 'editor revisor eliminador componente',
+      path: 'editor revisor eliminador',
       select: '_id nombre',
     },
     {
-      path: 'resultado subresultado actividad subactividad',
+      path: 'resultado subresultado actividad subactividad componente',
       select: '_id nombre descripcion',
     },
     {
@@ -168,11 +168,11 @@ export async function getRevisionesTarea(header, response, idTarea){
     }
 
     const revisiones = await Tarea.find({original: {_id: idTarea}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
-      path: 'editor revisor eliminador componente',
+      path: 'editor revisor eliminador',
       select: '_id nombre',
     },
     {
-      path: 'resultado subresultado actividad subactividad',
+      path: 'resultado subresultado actividad subactividad componente',
       select: '_id nombre descripcion',
     },
     {
@@ -190,8 +190,8 @@ export async function getRevisionesTarea(header, response, idTarea){
 }
 
 //Crear tarea
-export async function createTarea({header, response, nombre, descripcion, idResultado, idSubresultado, idActividad, idSubActividad, medida, 
-  cantidadProgramada, idIndicadorPrincipal, indicadoresSecundarios, aprobar=false}){
+export async function createTarea({header, response, idComponente, idSubActividad, nombre, descripcion, idYear, idQuarter, lugar, unidadMedida, gastosEstimados, 
+  cantidadProgramada, aprobar=false}){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear la tarea. ' + auth.payload });
@@ -205,25 +205,27 @@ export async function createTarea({header, response, nombre, descripcion, idResu
     const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al crear la tarea. Usuario no encontrado.' });
 
-    const resultado = await privateGetResultadoById(idResultado)
-    const subresultado = await privateGetSubresultadoById(idSubresultado)
-    const actividad = await privateGetActividadById(idActividad)
     const subactividad = await privateGetSubActividadById(idSubActividad)
-
-    const indicadorPrincipal = await privateGetIndicadorById(idIndicadorPrincipal)
-
+    const actividad = await privateGetActividadById(subactividad?.actividad)
+    const subresultado = await privateGetSubresultadoById(actividad?.subresultado)
+    const resultado = await privateGetResultadoById(subresultado?.resultado)
+    
     const baseTarea = new Tarea({
       //Propiedades de objeto
-      nombre,
+      componente: idComponente,
       resultado,
       subresultado,
       actividad,
       subactividad,
-      medida,
+      nombre,
+      descripcion,
+      year: idYear,
+      trimestre: idQuarter,
+      lugar,
+      unidadMedida,
+      gastosEstimados,
       cantidadProgramada,
       cantidadRealizada: 0,
-      indicadorPrincipal,
-      indicadoresSecundarios,
       //Propiedades de control
       original: null,
       version: '0.1',
@@ -244,16 +246,20 @@ export async function createTarea({header, response, nombre, descripcion, idResu
     if(aprobar){
       const tarea = new Tarea({
         //Propiedades de objeto
-        nombre,
+        componente: idComponente,
         resultado,
         subresultado,
         actividad,
         subactividad,
-        medida,
+        nombre,
+        descripcion,
+        year: idYear,
+        trimestre: idQuarter,
+        lugar,
+        unidadMedida,
+        gastosEstimados,
         cantidadProgramada,
         cantidadRealizada: 0,
-        indicadorPrincipal,
-        indicadoresSecundarios,
         //Propiedades de control
         original: null,
         version: '1.0',
@@ -288,8 +294,8 @@ export async function createTarea({header, response, nombre, descripcion, idResu
 }
 
 //Edit info
-export async function editTarea({header, response, nombre, idTarea, idResultado, idSubresultado, idActividad, idSubActividad, medida, 
-  cantidadProgramada, idIndicadorPrincipal, indicadoresSecundarios, aprobar=false}){
+export async function editTarea({header, response, idTarea, idComponente, idSubActividad, nombre, descripcion, idYear, idQuarter, lugar, unidadMedida, 
+  gastosEstimados, cantidadProgramada, aprobar=false}){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar la tarea. ' + auth.payload });
@@ -306,26 +312,28 @@ export async function editTarea({header, response, nombre, idTarea, idResultado,
     const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al editar la tarea. Usuario no encontrado' });
 
-    const resultado = await privateGetResultadoById(idResultado);
-    const subresultado = await privateGetSubresultadoById(idSubresultado);
-    const actividad = await privateGetActividadById(idActividad);
-    const subactividad = await privateGetSubActividadById(idSubActividad);
-
-    const indicadorPrincipal = await privateGetIndicadorById(idIndicadorPrincipal);
+    const subactividad = await privateGetSubActividadById(idSubActividad)
+    const actividad = await privateGetActividadById(subactividad?.actividad)
+    const subresultado = await privateGetSubresultadoById(actividad?.subresultado)
+    const resultado = await privateGetResultadoById(subresultado?.resultado)
 
     //Crear objeto de actualizacion
     const updateTarea = new Tarea({
       //Propiedades de objeto
-      nombre,
+      componente: idComponente,
       resultado,
       subresultado,
       actividad,
       subactividad,
-      medida,
+      nombre,
+      descripcion,
+      year: idYear,
+      trimestre: idQuarter,
+      lugar,
+      unidadMedida,
+      gastosEstimados,
       cantidadProgramada,
       cantidadRealizada: tarea.cantidadRealizada,
-      indicadorPrincipal,
-      indicadoresSecundarios,
       //Propiedades de control
       original: tarea._id,
       version: updateVersion(tarea.ultimaRevision),
@@ -343,15 +351,19 @@ export async function editTarea({header, response, nombre, idTarea, idResultado,
     if(aprobar){
       //Actualizar objeto publico
       //Propiedades de objeto
-      tarea.nombre = nombre;
+      tarea.componente = idComponente;
       tarea.resultado = resultado;
       tarea.subresultado = subresultado;
       tarea.actividad = actividad;
-      tarea.subactividad = resultado;
-      tarea.medida = medida,
+      tarea.subactividad = subactividad;
+      tarea.nombre = nombre;
+      tarea.descripcion = descripcion;
+      tarea.year = idYear;
+      tarea.trimestre = idQuarter;
+      tarea.lugar = lugar;
+      tarea.unidadMedida = unidadMedida;
+      tarea.gastosEstimados = gastosEstimados;
       tarea.cantidadProgramada = cantidadProgramada,
-      tarea.indicadorPrincipal = indicadorPrincipal,
-      tarea.indicadoresSecundarios = indicadoresSecundarios,
       //Propiedades de control
       tarea.version = updateVersion(tarea.version, aprobar);
       tarea.ultimaRevision = tarea.version;
@@ -410,15 +422,19 @@ export async function revisarUpdateTarea(header, response, idTarea, aprobado, ob
       if(original){
         //Actualizar objeto publico
         //Propiedades de objeto
-        original.nombre = updateTarea.nombre;
+        original.componente = updateTarea.componente;
         original.resultado = updateTarea.resultado;
-        original.subresultado = updateTarea.subresultado,
-        original.actividad = updateTarea.actividad,
-        original.subactividad = updateTarea.subactividad,
-        original.medida = updateTarea.medida,
+        original.subresultado = updateTarea.subresultado;
+        original.actividad = updateTarea.actividad;
+        original.subactividad = updateTarea.subactividad;
+        original.nombre = updateTarea.nombre;
+        original.descripcion = updateTarea.descripcion;
+        original.year = updateTarea.year;
+        original.trimestre = updateTarea.trimestre;
+        original.lugar = updateTarea.lugar;
+        original.unidadMedida = updateTarea.unidadMedida;
+        original.gastosEstimados = updateTarea.gastosEstimados;
         original.cantidadProgramada = updateTarea.cantidadProgramada,
-        original.indicadorPrincipal = updateTarea.indicadorPrincipal,
-        original.indicadoresSecundarios = updateTarea.indicadoresSecundarios,
         //Propiedades de control
         original.version = updateVersion(original.version, aprobado);
         original.ultimaRevision = original.version;
@@ -431,16 +447,20 @@ export async function revisarUpdateTarea(header, response, idTarea, aprobado, ob
       else{
         const tarea = new Tarea({
           //Propiedades de objeto
-          nombre: updateTarea.nombre,
+          componente: updateTarea.componente,
           resultado: updateTarea.resultado,
           subresultado: updateTarea.subresultado,
           actividad: updateTarea.actividad,
           subactividad: updateTarea.subactividad,
-          medida: updateTarea.medida,
+          nombre: updateTarea.nombre,
+          descripcion: updateTarea.descripcion,
+          year: updateTarea.year,
+          trimestre: updateTarea.trimestre,
+          lugar: updateTarea.lugar,
+          unidadMedida: updateTarea.unidadMedida,
+          gastosEstimados: updateTarea.gastosEstimados,
           cantidadProgramada: updateTarea.cantidadProgramada,
           cantidadRealizada: 0,
-          indicadorPrincipal: updateTarea.indicadorPrincipal,
-          indicadoresSecundarios: updateTarea.indicadoresSecundarios,
           //Propiedades de control
           original: null,
           version: '1.0',

@@ -106,8 +106,12 @@ export async function getPagedUsuarios({header, response, page, pageSize, sort, 
 
     const usuarios = await Usuario.find(filterQuery, '-password').sort(sortQuery).skip(skip).limit(pageSize).populate([
       {
-      path: 'componente rol editor revisor eliminador',
+      path: 'rol editor revisor eliminador',
       select: '_id nombre',
+      },
+      {
+        path: 'componente',
+        select: '_id nombre descripcion',
       }
     ]);
 

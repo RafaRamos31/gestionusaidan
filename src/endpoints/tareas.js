@@ -1,4 +1,3 @@
-import { createSubActividad, deleteSubActividad, editSubActividad, getCountSubActividades, getListSubActividades, getPagedSubActividades, getRevisionesSubActividades, getSubActividadById, revisarUpdateSubactividad } from "../controllers/subactividades-controller.js";
 import { createTarea, deleteTarea, editTarea, getCountTareas, getListTareas, getPagedTareas, getRevisionesTarea, getTareaById, revisarUpdateTarea } from "../controllers/tareas-controller.js";
 
 export const getTareasEndpoints = (app, upload) => {
@@ -102,15 +101,16 @@ export const getTareasEndpoints = (app, upload) => {
       response = await createTarea({
         header: authorizationHeader,
         response,
-        nombre: request.body.nombre,
-        idResultado: request.body.idResultado,
-        idSubresultado: request.body.idSubresultado,
-        idActividad: request.body.idActividad,
+        idComponente: request.body.idComponente,
         idSubActividad: request.body.idSubActividad,
-        idIndicadorPrincipal: request.body.idIndicadorPrincipal,
+        nombre: request.body.nombre,
+        descripcion: request.body.descripcion,
+        idYear: request.body.idYear,
+        idQuarter: request.body.idQuarter,
+        lugar: request.body.lugar,
+        unidadMedida: request.body.unidadMedida,
+        gastosEstimados: request.body.gastosEstimados,
         cantidadProgramada: request.body.cantidadProgramada,
-        medida: request.body.medida,
-        indicadoresSecundarios: JSON.parse(request.body.indicadoresSecundarios),
         aprobar: JSON.parse(request.body.aprobar)
     });
       
@@ -128,15 +128,16 @@ export const getTareasEndpoints = (app, upload) => {
         header: authorizationHeader,
         response,
         idTarea: request.body.idTarea,
-        nombre: request.body.nombre,
-        idResultado: request.body.idResultado,
-        idSubresultado: request.body.idSubresultado,
-        idActividad: request.body.idActividad,
+        idComponente: request.body.idComponente,
         idSubActividad: request.body.idSubActividad,
-        idIndicadorPrincipal: request.body.idIndicadorPrincipal,
+        nombre: request.body.nombre,
+        descripcion: request.body.descripcion,
+        idYear: request.body.idYear,
+        idQuarter: request.body.idQuarter,
+        lugar: request.body.lugar,
+        unidadMedida: request.body.unidadMedida,
+        gastosEstimados: request.body.gastosEstimados,
         cantidadProgramada: request.body.cantidadProgramada,
-        medida: request.body.medida,
-        indicadoresSecundarios: JSON.parse(request.body.indicadoresSecundarios),
         aprobar: JSON.parse(request.body.aprobar)
     });
 

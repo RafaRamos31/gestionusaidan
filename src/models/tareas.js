@@ -1,20 +1,9 @@
 import mongoose from "mongoose";
 
 const schema = new mongoose.Schema({
-  nombre: {
-    type: String,
-    required: true,
-  },
-  descripcion: {
-    type: String,
-    required: true,
-  },
-  lugar: {
-    type: String,
-    required: true,
-  },
-  unidadMedida: {
-    type: String,
+  componente: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Componente",
     required: true,
   },
   resultado: {
@@ -37,17 +26,13 @@ const schema = new mongoose.Schema({
     ref: "SubActividad",
     required: true,
   },
-  componente: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Componente",
+  nombre: {
+    type: String,
     required: true,
   },
-  cantidadProgramada: {
-    type: Number,
+  descripcion: {
+    type: String,
     required: true,
-  },
-  cantidadRealizada: {
-    type: Number
   },
   year: {
     type: mongoose.Schema.Types.ObjectId,
@@ -58,6 +43,25 @@ const schema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Quarter",
     required: true,
+  },
+  lugar: {
+    type: String,
+    required: true,
+  },
+  unidadMedida: {
+    type: String,
+    required: true,
+  },
+  gastosEstimados: {
+    type: Number,
+    required: true,
+  },
+  cantidadProgramada: {
+    type: Number,
+    required: true,
+  },
+  cantidadRealizada: {
+    type: Number
   },
   original: {
     type: mongoose.Schema.Types.ObjectId,

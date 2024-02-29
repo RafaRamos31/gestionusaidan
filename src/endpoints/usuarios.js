@@ -192,6 +192,7 @@ export const getUsuariosEndpoints = (app, upload) => {
         userId: usuario._id,
         userName: usuario.nombre,
         userEmail: usuario.correo,
+        userComponente: usuario.componente,
         userRolId: usuario.rol?._id,
         userPermisos: usuario.rol?.permisos
       }
@@ -230,6 +231,7 @@ export const getUsuariosEndpoints = (app, upload) => {
         userId: auth.payload.userId,
         userName: auth.payload.userName,
         userEmail: auth.payload.userEmail,
+        userComponente: auth.payload.userComponente,
         userRolId: auth.payload.userRolId,
         userPermisos: auth.payload.userPermisos
       }
