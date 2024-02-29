@@ -159,7 +159,7 @@ export async function getRevisionesQuarter(header, response, idQuarter){
       return response.status(401).json({ error: 'Error al obtener Revisiones de Trimestres. No cuenta con los permisos suficientes.'});
     }
 
-    const revisiones = await Year.find({original: {_id: idQuarter}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
+    const revisiones = await Quarter.find({original: {_id: idQuarter}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
       path: 'editor revisor',
       select: '_id nombre',
     }]);
