@@ -301,7 +301,8 @@ export async function editYear(header, response, idYear, nombre, baseFechaInicio
       //Actualizar objeto publico
       //Propiedades de objeto
       year.nombre = nombre;
-      year.geocode = geocode;
+      year.fechaInicio = fechaInicio;
+      year.fechaFinal = fechaFinal;
       //Propiedades de control
       year.version = updateVersion(year.version, aprobar);
       year.ultimaRevision = year.version;
