@@ -1,5 +1,4 @@
 import { createQuarter, deleteQuarter, editQuarter, getCountQuarter, getListQuarters, getPagedQuarters, getQuarterById, getRevisionesQuarter, revisarUpdateQuarter } from "../controllers/quarters-controller.js";
-import { createYear, deleteYear, editYear, getCountYears, getListYears, getPagedYears, getRevisionesYear, getYearById, revisarUpdateYear } from "../controllers/years-controller.js";
 
 export const getQuartersEndpoints = (app, upload) => {
 
@@ -106,6 +105,7 @@ export const getQuartersEndpoints = (app, upload) => {
         request.body.idYear,
         request.body.fechaInicio,
         request.body.fechaFinal,
+        request.body.timezone,
         JSON.parse(request.body.aprobar)
       );
       
@@ -127,6 +127,7 @@ export const getQuartersEndpoints = (app, upload) => {
         request.body.idYear,
         request.body.fechaInicio,
         request.body.fechaFinal,
+        request.body.timezone,
         JSON.parse(request.body.aprobar)
       );
 

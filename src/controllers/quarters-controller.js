@@ -8,8 +8,8 @@ import { privateGetYearById } from "./years-controller.js";
 import moment from "moment-timezone";
 
 //Internos para validacion de claves unicas
-async function validateUniquesQuarters({id=null, nombre = null, year = null}){
-  let filter = {estado: { $in: ['Publicado', 'Eliminado'] }, year: { _id: year._id }}
+async function validateUniquesQuarters({id=null, nombre = null}){
+  let filter = {estado: { $in: ['Publicado', 'Eliminado'] }}
 
   if(id){
     filter = {...filter, _id: {$nin: [id] }}
@@ -40,7 +40,7 @@ export async function getCountQuarter({header, response, filterParams, reviews=f
 
     //Validaciones de rol
     const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.vistas['Planificación']['Trimestres'] === false){
+    if(rol && rol.permisos.vistas['Indicadores']['Trimestres'] === false){
       return response.status(401).json({ error: 'Error al obtener Trimestres. No cuenta con los permisos suficientes.'});
     }
 
@@ -68,7 +68,7 @@ export async function getPagedQuarters({header, response, page, pageSize, sort, 
 
     //Validaciones de rol
     const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.vistas['Planificación']['Trimestres'] === false){
+    if(rol && rol.permisos.vistas['Indicadores']['Trimestres'] === false){
       return response.status(401).json({ error: 'Error al obtener Trimestres. No cuenta con los permisos suficientes.'});
     }
 
@@ -130,7 +130,7 @@ export async function getQuarterById(header, response, idQuarter){
 
     //Validaciones de rol
     const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && (rol.permisos.vistas['Planificación']['Trimestres'] === false && rol.permisos.acciones['Trimestres']['Revisar'] === false)){
+    if(rol && (rol.permisos.vistas['Indicadores']['Trimestres'] === false && rol.permisos.acciones['Trimestres']['Revisar'] === false)){
       return response.status(401).json({ error: 'Error al obtener Trimestres. No cuenta con los permisos suficientes.'});
     }
 
@@ -173,7 +173,7 @@ export async function getRevisionesQuarter(header, response, idQuarter){
 }
 
 //Crear Quarter
-export async function createQuarter(header, response, nombre, idYear, fechaInicio, baseFechaFinal, aprobar=false){
+export async function createQuarter(header, response, nombre, idYear, baseFechaInicio, baseFechaFinal, timezone, aprobar=false){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el trimestre. ' + auth.payload });
@@ -190,33 +190,28 @@ export async function createQuarter(header, response, nombre, idYear, fechaInici
     const year = await privateGetYearById(idYear);
     if(!year) return response.status(404).json({ error: 'Error al crear el trimestre. Año fiscal no encontrado.' });
 
-    const fechaFinal = moment(baseFechaFinal, 'MM/DD/YYYY');
-    fechaFinal.add(1, 'day');
-    fechaFinal.subtract(1, 'millisecond');
+    const fechaInicioQuarter = moment(baseFechaInicio).startOf('day').utcOffset(timezone, true);
+    const fechaFinalQuarter = moment(baseFechaFinal).endOf('day').utcOffset(timezone, true);
 
-    const fechaInicioYear = new moment.utc(year.fechaInicio);
-    const fechaInicioQuarter = moment(fechaInicio, 'MM/DD/YYYY');
-
+    const fechaInicioYear = new moment(year.fechaInicio);
     if (fechaInicioQuarter < fechaInicioYear) {
       return response.status(400).json({ error: `Error al crear el trimestre. El trimestre no puede empezar antes de: ${year.fechaInicio}.` });
     } 
 
     const fechaFinalYear = new moment.utc(year.fechaFinal);
-    const fechaFinalQuarter = moment(fechaFinal, 'MM/DD/YYYY');
-
     if (fechaFinalQuarter > fechaFinalYear) {
       return response.status(400).json({ error: `Error al crear el trimestre. El trimestre no puede terminar despues de: ${year.fechaFinal}.` });
     } 
 
-    const existentName = await validateUniquesQuarters({nombre, year})
-    if(existentName) return response.status(400).json({ error: `Error al crear el trimestre. El trimestre ${nombre} para el año ${year.nombre} ya está en uso.` });
+    const existentName = await validateUniquesQuarters({nombre})
+    if(existentName) return response.status(400).json({ error: `Error al crear el trimestre. El trimestre ${nombre} ya está en uso.` });
 
     const baseQuarter = new Quarter({
       //Propiedades de objeto
       nombre,
       year,
-      fechaInicio,
-      fechaFinal,
+      fechaInicio: fechaInicioQuarter,
+      fechaFinal: fechaFinalQuarter,
       //Propiedades de control
       original: null,
       version: '0.1',
@@ -239,8 +234,8 @@ export async function createQuarter(header, response, nombre, idYear, fechaInici
         //Propiedades de objeto
         nombre,
         year,
-        fechaInicio,
-        fechaFinal,
+        fechaInicio: fechaInicioQuarter,
+        fechaFinal: fechaFinalQuarter,
         //Propiedades de control
         original: null,
         version: '1.0',
@@ -275,7 +270,7 @@ export async function createQuarter(header, response, nombre, idYear, fechaInici
 }
 
 //Edit info
-export async function editQuarter(header, response, idQuarter, nombre, idYear, fechaInicio, baseFechaFinal, aprobar=false){
+export async function editQuarter(header, response, idQuarter, nombre, idYear, baseFechaInicio, baseFechaFinal, timezone, aprobar=false){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar el año fiscal. ' + auth.payload });
@@ -295,20 +290,29 @@ export async function editQuarter(header, response, idQuarter, nombre, idYear, f
     const year = await privateGetYearById(idYear);
     if(!year) return response.status(404).json({ error: 'Error al editar el año fiscal. Año fiscal no encontrado' });
 
-    const existentName = await validateUniquesQuarters({nombre, id: idQuarter, year})
-    if(existentName) return response.status(400).json({ error: `Error al crear el trimestre. El trimestre ${nombre} para el año ${year.nombre} ya está en uso.` });
+    const existentName = await validateUniquesQuarters({nombre, id: idQuarter})
+    if(existentName) return response.status(400).json({ error: `Error al modificar el trimestre. El trimestre ${nombre} ya está en uso.` });
 
-    const fechaFinal = moment(baseFechaFinal, 'MM/DD/YYYY');
-    fechaFinal.add(1, 'day');
-    fechaFinal.subtract(1, 'millisecond');
+    const fechaInicioQuarter = moment(baseFechaInicio).startOf('day').utcOffset(timezone, true);
+    const fechaFinalQuarter = moment(baseFechaFinal).endOf('day').utcOffset(timezone, true);
+
+    const fechaInicioYear = new moment(year.fechaInicio);
+    if (fechaInicioQuarter < fechaInicioYear) {
+      return response.status(400).json({ error: `Error al modificar el trimestre. El trimestre no puede empezar antes de: ${year.fechaInicio}.` });
+    } 
+
+    const fechaFinalYear = new moment.utc(year.fechaFinal);
+    if (fechaFinalQuarter > fechaFinalYear) {
+      return response.status(400).json({ error: `Error al modificar el trimestre. El trimestre no puede terminar despues de: ${year.fechaFinal}.` });
+    } 
 
     //Crear objeto de actualizacion
     const updateQuarter = new Quarter({
       //Propiedades de objeto
       nombre,
       year,
-      fechaInicio,
-      fechaFinal,
+      fechaInicio: fechaInicioQuarter,
+      fechaFinal: fechaFinalQuarter,
       //Propiedades de control
       original: quarter._id,
       version: updateVersion(quarter.ultimaRevision),
@@ -328,8 +332,8 @@ export async function editQuarter(header, response, idQuarter, nombre, idYear, f
       //Propiedades de objeto
       quarter.nombre = nombre;
       quarter.year = year;
-      quarter.fechaInicio = fechaInicio;
-      quarter.fechaFinal = fechaFinal;
+      quarter.fechaInicio = fechaInicioQuarter;
+      quarter.fechaFinal = fechaFinalQuarter;
       //Propiedades de control
       quarter.version = updateVersion(quarter.version, aprobar);
       quarter.ultimaRevision = quarter.version;

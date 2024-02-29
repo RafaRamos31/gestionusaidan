@@ -39,7 +39,7 @@ export async function getCountYears({header, response, filterParams, reviews=fal
 
     //Validaciones de rol
     const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.vistas['Planificación']['Años Fiscales'] === false){
+    if(rol && rol.permisos.vistas['Indicadores']['Años Fiscales'] === false){
       return response.status(401).json({ error: 'Error al obtener Años Fiscales. No cuenta con los permisos suficientes.'});
     }
 
@@ -67,7 +67,7 @@ export async function getPagedYears({header, response, page, pageSize, sort, fil
 
     //Validaciones de rol
     const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.vistas['Planificación']['Años Fiscales'] === false){
+    if(rol && rol.permisos.vistas['Indicadores']['Años Fiscales'] === false){
       return response.status(401).json({ error: 'Error al obtener Años Fiscales. No cuenta con los permisos suficientes.'});
     }
 
@@ -129,7 +129,7 @@ export async function getYearById(header, response, idYear){
 
     //Validaciones de rol
     const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && (rol.permisos.vistas['Planificación']['Años Fiscales'] === false && rol.permisos.acciones['Años Fiscales']['Revisar'] === false)){
+    if(rol && (rol.permisos.vistas['Indicadores']['Años Fiscales'] === false && rol.permisos.acciones['Años Fiscales']['Revisar'] === false)){
       return response.status(401).json({ error: 'Error al obtener Años Fiscales. No cuenta con los permisos suficientes.'});
     }
 
@@ -189,11 +189,8 @@ export async function createYear(header, response, nombre, baseFechaInicio, base
     const existentName = await validateUniquesYear({nombre})
     if(existentName) return response.status(400).json({ error: `Error al crear el año fiscal. El año ${nombre} ya está en uso.` });
 
-    let fechaInicio;
-    let fechaFinal;
-
-    fechaInicio = moment(baseFechaInicio).startOf('day').utcOffset(timezone, true);
-    fechaFinal = moment(baseFechaFinal).endOf('day').utcOffset(timezone, true);
+    const fechaInicio = moment(baseFechaInicio).startOf('day').utcOffset(timezone, true);
+    const fechaFinal = moment(baseFechaFinal).endOf('day').utcOffset(timezone, true);
 
     const baseYear = new Year({
       //Propiedades de objeto
@@ -277,8 +274,8 @@ export async function editYear(header, response, idYear, nombre, baseFechaInicio
     const existentName = await validateUniquesYear({nombre, id: idYear})
     if(existentName) return response.status(400).json({ error: `Error al editar el año fiscal. El año ${nombre} ya está en uso.` });
 
-    fechaInicio = moment(baseFechaInicio).startOf('day').utcOffset(timezone, true);
-    fechaFinal = moment(baseFechaFinal).endOf('day').utcOffset(timezone, true);
+    const fechaInicio = moment(baseFechaInicio).startOf('day').utcOffset(timezone, true);
+    const fechaFinal = moment(baseFechaFinal).endOf('day').utcOffset(timezone, true);
     
     //Crear objeto de actualizacion
     const updateYear = new Year({
