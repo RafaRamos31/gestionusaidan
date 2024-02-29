@@ -254,7 +254,7 @@ export async function createYear(header, response, nombre, baseFechaInicio, base
 }
 
 //Edit info
-export async function editYear(header, response, idYear, nombre, baseFechaInicio, baseFechaFinal, aprobar=false){
+export async function editYear(header, response, idYear, nombre, baseFechaInicio, baseFechaFinal, timezone, aprobar=false){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al editar el año fiscal. ' + auth.payload });
