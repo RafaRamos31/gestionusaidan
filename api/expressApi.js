@@ -24,6 +24,7 @@ import { getIndicadoresEndpoints } from "../src/endpoints/indicadores.js";
 import { getTareasEndpoints } from "../src/endpoints/tareas.js";
 import { getAreasTematicasEndpoints } from "../src/endpoints/areasTematicas.js";
 import { getGeneralConfigEndpoints } from "../src/endpoints/generalConfig.js";
+import { getFilesEndpoints } from "../src/endpoints/files.js";
 
 /**
  * Separa la logica de definicion de rutas y su respuesta a peticiones REST
@@ -60,6 +61,7 @@ export function addRestDirections(app) {
   app = getIndicadoresEndpoints(app, upload);
   app = getTareasEndpoints(app, upload);
   app = getAreasTematicasEndpoints(app, upload);
+  app = getFilesEndpoints(app, upload);
 
   return app;
 }
