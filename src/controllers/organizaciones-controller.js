@@ -11,21 +11,6 @@ import { privateGetSectorById } from "./sectores-controllers.js";
 import { privateGetTipoOrganizacionById } from "./tiposOrganizaciones-controller.js";
 import { privateGetUsuarioById } from "./usuarios-controller.js";
 
-//Internos para validacion de claves unicas
-async function validateUniquesOrganizaciones({id=null, codigoOrganizacion = null}){
-  let filter = {estado: { $in: ['Publicado', 'Eliminado'] }}
-
-  if(id){
-    filter = {...filter, _id: {$nin: [id] }}
-  }
-
-  if(codigoOrganizacion){
-    filter = {...filter, codigoOrganizacion: codigoOrganizacion}
-  }
-
-  return Organizacion.exists(filter);
-}
-
 //Get internal
 export async function privateGetOrganizacionById(idOrganizacion){
   try {
@@ -202,9 +187,6 @@ export async function createOrganizacion({header, response, nombre, codigoOrgani
     const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al crear la organización. Usuario no encontrado.' });
 
-    const existentCode = await validateUniquesOrganizaciones({codigoOrganizacion})
-    if(existentCode) return response.status(400).json({ error: `Error al crear la organización. El código de organización ${codigoOrganizacion} ya está en uso.` });
-
     const promises = await Promise.all([
       privateGetSectorById(idSector),
       privateGetTipoOrganizacionById(idTipoOrganizacion),
@@ -316,9 +298,6 @@ export async function editOrganizacion({header, response, idOrganizacion, nombre
 
     const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al editar la organización. Usuario no encontrado.' });
-
-    const existentCode = await validateUniquesOrganizaciones({codigoOrganizacion, id: idOrganizacion})
-    if(existentCode) return response.status(400).json({ error: `Error al crear la organización. El código de organización ${codigoOrganizacion} ya está en uso.` });
 
     const promises = await Promise.all([
       privateGetSectorById(idSector),
