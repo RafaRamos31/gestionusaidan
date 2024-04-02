@@ -1,14 +1,14 @@
-import { crearEvento, getKanbanEventos, getPagedEventos } from "../controllers/eventos-controller.js";
-import { createTarea, deleteTarea, editTarea, getCountTareas, getListTareas, getPagedTareas, getRevisionesTarea, getTareaById, revisarUpdateTarea } from "../controllers/tareas-controller.js";
+import { crearEvento, getCountEventos, getKanbanEventos, getPagedEventos } from "../controllers/eventos-controller.js";
+import { deleteTarea, editTarea, getListTareas, getRevisionesTarea, getTareaById, revisarUpdateTarea } from "../controllers/tareas-controller.js";
 
 export const getEventosEndpoints = (app, upload) => {
 
   //GET count
-  app.post("/api/count/tareas", upload.any(), async (request, response) => {
+  app.post("/api/count/eventos", upload.any(), async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
 
-      response = await getCountTareas({
+      response = await getCountEventos({
         header: authorizationHeader,
         response,
         filterParams: JSON.parse(request.body.filter),
@@ -17,7 +17,7 @@ export const getEventosEndpoints = (app, upload) => {
       });
 
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al obtener las tareas: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al obtener los eventos: ' + error });
     }
   })
 
