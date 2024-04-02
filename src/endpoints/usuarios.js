@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import { createUsuario, deleteUsuario, editUsuario, getCountUsuarios, getListUsuarios, getPagedUsuarios, getRevisionesUsuario, getUsuarioById, loginUser, revisarUpdateUsuario } from "../controllers/usuarios-controller.js";
+import { createUsuario, deleteUsuario, editUsuario, getCountUsuarios, getListUsuarios, getListUsuariosComponente, getPagedUsuarios, getRevisionesUsuario, getUsuarioById, loginUser, revisarUpdateUsuario } from "../controllers/usuarios-controller.js";
 import { decodeToken } from '../utilities/jwtDecoder.js';
 
 export const getUsuariosEndpoints = (app, upload) => {
@@ -60,6 +60,20 @@ export const getUsuariosEndpoints = (app, upload) => {
     }
   })
 
+  //POST Get List usuarios
+  app.post("/api/list/usuarioscomp", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getListUsuariosComponente({
+        header: authorizationHeader,
+        response
+      });
+      
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener los usuarios: ' + error });
+    }
+  })
 
   //GET usuario by Id
   app.get("/api/usuario/:idUsuario", upload.any(), async (request, response) => {

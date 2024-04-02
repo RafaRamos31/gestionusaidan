@@ -10,6 +10,20 @@ import { privateGetSubActividadById } from "./subactividades-controller.js";
 import { privateGetSubresultadoById } from "./subresultados-controller.js";
 import { privateGetUsuarioById } from "./usuarios-controller.js";
 
+//Internos para validacion de claves unicas
+async function validateUniquesTarea({id=null, nombre = null}){
+  let filter = {estado: { $in: ['Publicado', 'Eliminado'] }}
+
+  if(id){
+    filter = {...filter, _id: {$nin: [id] }}
+  }
+
+  if(nombre){
+    filter = {...filter, nombre: nombre}
+  }
+
+  return Tarea.exists(filter);
+}
 
 //Get internal
 export async function privateGetTareaById(idTarea){
@@ -190,7 +204,7 @@ export async function getRevisionesTarea(header, response, idTarea){
 }
 
 //Crear tarea
-export async function createTarea({header, response, idComponente, idSubActividad, nombre, descripcion, idYear, idQuarter, lugar, unidadMedida, gastosEstimados, 
+export async function createTarea({header, response, idComponente, idSubActividad, nombre, titulo, descripcion, idYear, idQuarter, lugar, unidadMedida, gastosEstimados, 
   cantidadProgramada, aprobar=false}){
   try {
     const auth = decodeToken(header);
@@ -205,6 +219,9 @@ export async function createTarea({header, response, idComponente, idSubActivida
     const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al crear la tarea. Usuario no encontrado.' });
 
+    const existentNombre = await validateUniquesTarea({nombre})
+    if(existentNombre) return response.status(400).json({ error: `Error al crear la tarea. El código ${nombre} ya está en uso.` });
+
     const subactividad = await privateGetSubActividadById(idSubActividad)
     const actividad = await privateGetActividadById(subactividad?.actividad)
     const subresultado = await privateGetSubresultadoById(actividad?.subresultado)
@@ -218,6 +235,7 @@ export async function createTarea({header, response, idComponente, idSubActivida
       actividad,
       subactividad,
       nombre,
+      titulo,
       descripcion,
       year: idYear,
       trimestre: idQuarter,
@@ -252,6 +270,7 @@ export async function createTarea({header, response, idComponente, idSubActivida
         actividad,
         subactividad,
         nombre,
+        titulo,
         descripcion,
         year: idYear,
         trimestre: idQuarter,
@@ -312,6 +331,9 @@ export async function editTarea({header, response, idTarea, idComponente, idSubA
     const editor = await privateGetUsuarioById(auth.payload.userId);
     if(!editor) return response.status(404).json({ error: 'Error al editar la tarea. Usuario no encontrado' });
 
+    const existentNombre = await validateUniquesTarea({nombre})
+    if(existentNombre) return response.status(400).json({ error: `Error al crear la tarea. El código ${nombre} ya está en uso.` });
+
     const subactividad = await privateGetSubActividadById(idSubActividad)
     const actividad = await privateGetActividadById(subactividad?.actividad)
     const subresultado = await privateGetSubresultadoById(actividad?.subresultado)
@@ -326,6 +348,7 @@ export async function editTarea({header, response, idTarea, idComponente, idSubA
       actividad,
       subactividad,
       nombre,
+      titulo,
       descripcion,
       year: idYear,
       trimestre: idQuarter,
@@ -357,6 +380,7 @@ export async function editTarea({header, response, idTarea, idComponente, idSubA
       tarea.actividad = actividad;
       tarea.subactividad = subactividad;
       tarea.nombre = nombre;
+      tarea.titulo = titulo;
       tarea.descripcion = descripcion;
       tarea.year = idYear;
       tarea.trimestre = idQuarter;
@@ -428,6 +452,7 @@ export async function revisarUpdateTarea(header, response, idTarea, aprobado, ob
         original.actividad = updateTarea.actividad;
         original.subactividad = updateTarea.subactividad;
         original.nombre = updateTarea.nombre;
+        original.titulo = updateTarea.titulo;
         original.descripcion = updateTarea.descripcion;
         original.year = updateTarea.year;
         original.trimestre = updateTarea.trimestre;
@@ -453,6 +478,7 @@ export async function revisarUpdateTarea(header, response, idTarea, aprobado, ob
           actividad: updateTarea.actividad,
           subactividad: updateTarea.subactividad,
           nombre: updateTarea.nombre,
+          titulo: updateTarea.titulo,
           descripcion: updateTarea.descripcion,
           year: updateTarea.year,
           trimestre: updateTarea.trimestre,

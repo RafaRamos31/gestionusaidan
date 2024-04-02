@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 
 const schema = new mongoose.Schema({
-  nombre: {
-    type: String,
-    required: true,
-  },
   tarea: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Tarea",
+    required: true,
+  },
+  nombre: {
+    type: String,
     required: true,
   },
   areaTematica: {
@@ -42,74 +42,124 @@ const schema = new mongoose.Schema({
     ref: "Caserio",
     required: true,
   },
+  organizador: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+    required: true,
+  },
+  componentes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Componente",
+  }],
+  colaboradores: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+  }],
+  estadoPlanificacionMEL: {
+    type: String,
+    required: true,
+  },
+  observacionesPlanificacionMEL: {
+    type: String,
+  },
+  fechaRevisionMEL: {
+    type: Date,
+  },
+  estadoPlanificacionComponente: {
+    type: String,
+    required: true,
+  },
+  observacionesPlanificacionComponente: {
+    type: String,
+  },
+  fechaRevisionComponente: {
+    type: Date,
+  },
+  numeroFormulario: {
+    type: String,
+  },
+  participantesHombres: {
+    type: Number,
+  },
+  participantesMujeres: {
+    type: Number,
+  },
+  participantesComunitarios: {
+    type: Number,
+  },
+  participantesInstitucionales: {
+    type: Number,
+  },
+  totalDias: {
+    type: Number,
+  },
+  totalHoras: {
+    type: Number,
+  },
   sectores: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Sector",
   }],
   nivel: {
     type: String,
-    required: true,
   },
-  organizador: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Usuario",
-    required: true,
-  },
-  responsables: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Usuario",
-  }],
-  participantes: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Beneficiario",
-  }],
-  enlaceListado: {
+  logros: {
     type: String,
   },
-  enlacesFotografias: [{
+  compromisos: {
+    type: String,
+  },
+  enlaceFormulario: {
+    type: String,
+  },
+  enlaceFotografias: [{
     type: String,
   }],
-  original: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Evento",
-  },
-  version: {
+  estadoRealizacion: {
     type: String,
   },
-  ultimaRevision: {
+  observacionesRealizacion: {
     type: String,
   },
-  estado: {
+  fechaRevisionRealizacion: {
+    type: Date,
+  },
+  totalPresupuesto: {
+    type: Number,
+  },
+  enlacePresupuesto: {
     type: String,
   },
-  fechaEdicion: {
-    type: Date
-  },
-  editor: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Usuario",
-  },
-  fechaRevision: {
-    type: Date
-  },
-  revisor: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Usuario",
-  },
-  fechaEliminacion: {
-    type: Date
-  },
-  eliminador: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Usuario",
-  },
-  observaciones: {
+  estadoPresupuesto: {
     type: String,
   },
-  pendientes: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Usuario",
-  }]
+  fechaPresupuesto: {
+    type: Date,
+  },
+  participantes: {
+    type: Array
+  },
+  estadoDigitacion: {
+    type: String,
+  },
+  fechaDigitacion: {
+    type: Date,
+  },
+  observacionesDigitacion: {
+    type: String,
+  },
+  fechaRevisionDigitacion: {
+    type: Date,
+  },
+  totalIndicadores: {
+    type: Object,
+  },
+  estadoConsolidado: {
+    type: String,
+  },
+  fechaConsolidado: {
+    type: Date,
+  },
 });
 
 /**

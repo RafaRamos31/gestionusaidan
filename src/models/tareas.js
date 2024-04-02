@@ -30,6 +30,10 @@ const schema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  titulo: {
+    type: String,
+    required: true,
+  },
   descripcion: {
     type: String,
     required: true,

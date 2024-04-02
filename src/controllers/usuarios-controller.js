@@ -147,6 +147,36 @@ export async function getListUsuarios({header, response, filter}){
 }
 
 
+//Get Info List Componente
+export async function getListUsuariosComponente({header, response}){
+  try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Usuarios. ' + auth.payload });
+
+    const usuarios = await Usuario.aggregate([
+      {
+        $match: {
+          estado: 'Publicado',
+        }
+      },
+      {
+      $group: {
+        _id: '$componente', 
+        usuarios: { $push: { 
+          _id: '$_id', 
+          nombre: '$nombre'
+        }}
+      }
+    }]);
+
+    response.json(usuarios);
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
 //Get individual 
 export async function getUsuarioById(header, response, idUsuario){
   try {
