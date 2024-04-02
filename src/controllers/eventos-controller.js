@@ -57,46 +57,36 @@ export async function getCountTareas({header, response, filterParams, reviews=fa
 }
 
 //Get Info Paged
-export async function getPagedTareas({header, response, page, pageSize, sort, filter, reviews=false, deleteds=false}){
+export async function getPagedEventos({header, response, filter}){
   try {
     const auth = decodeToken(header);
-    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Tareas. ' + auth.payload });
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Eventos. ' + auth.payload });
 
     //Validaciones de rol
-    const rol = await privateGetRolById(auth.payload.userRolId);
+    /*const rol = await privateGetRolById(auth.payload.userRolId);
     if(rol && rol.permisos.vistas['Planificación']['Tareas'] === false){
       return response.status(401).json({ error: 'Error al obtener Tareas. No cuenta con los permisos suficientes.'});
     }
 
     if(rol && rol.permisos.acciones['Tareas']['Ver Eliminados'] === false){
       deleteds = false;
-    }
-
-    //Paginacion
-    const skip = (page) * pageSize
-
-    //Sort
-    const sortQuery = getSorting({sort, reviews, defaultSort: { nombre: 1 }})
+    }*/
 
     //Filter
-    const filterQuery = getFilter({filterParams: filter, reviews, deleteds})
+    const filterQuery = getFilter({filterParams: filter})
 
-    const tareas = await Tarea.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate([
+    const eventos = await Evento.find(filterQuery).populate([
     {
-      path: 'editor revisor eliminador',
+      path: 'organizador colaboradores',
       select: '_id nombre',
     },
     {
-      path: 'resultado subresultado actividad subactividad componente',
-      select: '_id nombre descripcion',
-    },
-    {
-      path: 'year trimestre',
-      select: '_id nombre fechaInicio fechaFinal',
-    },
+      path: 'tarea areaTematica componentes',
+      select: '_id nombre titulo descripcion',
+    }
   ]);
 
-    response.json(tareas);
+    response.json(eventos);
     return response;
 
   } catch (error) {
@@ -209,15 +199,15 @@ export async function crearEvento({header, response, idTarea, nombre, idAreaTema
       return response.status(401).json({ error: 'Error al crear Tarea. No cuenta con los permisos suficientes.'});
     }*/
 
-    const fechaInicio = moment(baseFechaInicio)
-    const fechaFinal = moment(baseFechaFinal)
-    
+    const fechaInicioQuarter = moment(baseFechaInicio)
+    const fechaFinalQuarter = moment(baseFechaFinal)
+
     const evento = new Evento({
       tarea: idTarea,
       nombre,
       areaTematica: idAreaTematica,
-      fechaInicio,
-      fechaFinal,
+      fechaInicio: fechaInicioQuarter,
+      fechaFinal: fechaFinalQuarter,
       departamento: idDepartamento,
       municipio: idMunicipio,
       aldea: idAldea,
