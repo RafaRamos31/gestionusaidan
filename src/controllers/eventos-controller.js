@@ -209,8 +209,8 @@ export async function crearEvento({header, response, idTarea, nombre, idAreaTema
       return response.status(401).json({ error: 'Error al crear Tarea. No cuenta con los permisos suficientes.'});
     }*/
 
-    const fechaInicio = moment(baseFechaInicio).utcOffset(timezone, true);
-    const fechaFinal = moment(baseFechaFinal).utcOffset(timezone, true);
+    const fechaInicio = moment(baseFechaInicio)
+    const fechaFinal = moment(baseFechaFinal)
     
     const evento = new Evento({
       tarea: idTarea,

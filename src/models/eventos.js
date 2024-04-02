@@ -112,9 +112,9 @@ const schema = new mongoose.Schema({
   enlaceFormulario: {
     type: String,
   },
-  enlaceFotografias: [{
+  enlaceFotografias: {
     type: String,
-  }],
+  },
   estadoRealizacion: {
     type: String,
   },
