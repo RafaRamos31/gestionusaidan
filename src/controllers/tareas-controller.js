@@ -124,7 +124,7 @@ export async function getListTareas({header, response, filter}){
     //Filter
     const filterQuery = getFilter({filterParams: filter})
 
-    const tareas = await Tarea.find(filterQuery, '_id nombre').sort(sortQuery);
+    const tareas = await Tarea.find(filterQuery, '_id nombre titulo').sort(sortQuery);
 
     response.json(tareas);
     return response;
