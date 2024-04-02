@@ -3,11 +3,17 @@ import { decodeToken } from "../utilities/jwtDecoder.js";
 import { getFilter, getSorting } from "../utilities/queryConstructor.js";
 import { updateVersion } from "../utilities/versionHelper.js";
 import { privateGetActividadById } from "./actividades-controller.js";
+import { privateGetAldeaById } from "./aldeas-controller.js";
+import { privateGetAreaTematicaById } from "./areasTematicas-controller.js";
+import { privateGetCaserioById } from "./caserios-controller.js";
+import { privateGetDepartamentoById } from "./departamentos-controller.js";
 import { privateGetIndicadorById } from "./indicadores-controller.js";
+import { privateGetMunicipioById } from "./municipios-controller.js";
 import { privateGetResultadoById } from "./resultados-controller.js";
 import { privateGetRolById } from "./roles-controller.js";
 import { privateGetSubActividadById } from "./subactividades-controller.js";
 import { privateGetSubresultadoById } from "./subresultados-controller.js";
+import { privateGetTareaById } from "./tareas-controller.js";
 import { privateGetUsuarioById } from "./usuarios-controller.js";
 
 
@@ -189,104 +195,42 @@ export async function getRevisionesTarea(header, response, idTarea){
   }
 }
 
-//Crear tarea
-export async function createTarea({header, response, idComponente, idSubActividad, nombre, descripcion, idYear, idQuarter, lugar, unidadMedida, gastosEstimados, 
-  cantidadProgramada, aprobar=false}){
+//Crear evento
+export async function crearEvento({header, response, idTarea, titulo, idAreaTematica,  baseFechaInicio, baseFechaFinal, timezone, idDepartamento, idMunicipio, 
+  idAldea, idCaserio, idOrganizador, componentes, colaboradores, aprobarComponente=false}){
   try {
     const auth = decodeToken(header);
-    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear la tarea. ' + auth.payload });
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el evento. ' + auth.payload });
 
     //Validaciones de rol
-    const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Tareas']['Crear'] === false){
+    /*const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['']['Crear'] === false){
       return response.status(401).json({ error: 'Error al crear Tarea. No cuenta con los permisos suficientes.'});
-    }
+    }*/
 
-    const editor = await privateGetUsuarioById(auth.payload.userId);
-    if(!editor) return response.status(404).json({ error: 'Error al crear la tarea. Usuario no encontrado.' });
-
-    const subactividad = await privateGetSubActividadById(idSubActividad)
-    const actividad = await privateGetActividadById(subactividad?.actividad)
-    const subresultado = await privateGetSubresultadoById(actividad?.subresultado)
-    const resultado = await privateGetResultadoById(subresultado?.resultado)
+    const fechaInicio = moment(baseFechaInicio).utcOffset(timezone, true);
+    const fechaFinal = moment(baseFechaFinal).utcOffset(timezone, true);
     
-    const baseTarea = new Tarea({
-      //Propiedades de objeto
-      componente: idComponente,
-      resultado,
-      subresultado,
-      actividad,
-      subactividad,
-      nombre,
-      descripcion,
-      year: idYear,
-      trimestre: idQuarter,
-      lugar,
-      unidadMedida,
-      gastosEstimados,
-      cantidadProgramada,
-      cantidadRealizada: 0,
-      //Propiedades de control
-      original: null,
-      version: '0.1',
-      ultimaRevision: '0.1',
-      estado: 'En revisión',
-      fechaEdicion: new Date(),
-      editor,
-      fechaRevision: null,
-      revisor: null,
-      fechaEliminacion: null,
-      eliminador: null,
-      observaciones: null,
-      pendientes: []
+    const evento = new Evento({
+      tarea: idTarea,
+      titulo,
+      areaTematica: idAreaTematica,
+      fechaInicio,
+      fechaFinal,
+      departamento: idDepartamento,
+      municipio: idMunicipio,
+      aldea: idAldea,
+      caserio: idCaserio,
+      organizador: idOrganizador,
+      componentes,
+      colaboradores,
+      estadoPlanificacionComponente: aprobarComponente ? 'Aprobado' : 'Pendiente',
+      estadoPlanificacionMEL: 'Pendiente'
     })
 
-    await baseTarea.save();
+    await evento.save();
 
-    if(aprobar){
-      const tarea = new Tarea({
-        //Propiedades de objeto
-        componente: idComponente,
-        resultado,
-        subresultado,
-        actividad,
-        subactividad,
-        nombre,
-        descripcion,
-        year: idYear,
-        trimestre: idQuarter,
-        lugar,
-        unidadMedida,
-        gastosEstimados,
-        cantidadProgramada,
-        cantidadRealizada: 0,
-        //Propiedades de control
-        original: null,
-        version: '1.0',
-        ultimaRevision: '1.0',
-        estado: 'Publicado',
-        fechaEdicion: new Date(),
-        editor,
-        fechaRevision: new Date(),
-        revisor: editor,
-        fechaEliminacion: null,
-        eliminador: null,
-        observaciones: null,
-        pendientes: []
-      })
-      
-      baseTarea.original = tarea._id;
-      baseTarea.estado = 'Validado';
-      baseTarea.fechaRevision = new Date();
-      baseTarea.revisor = editor;
-
-      await baseTarea.save();
-
-      tarea.original = tarea._id;
-      await tarea.save();
-    }
-
-    response.json(baseTarea);
+    response.json(evento);
     return response;
   } catch (error) {
     throw error;
