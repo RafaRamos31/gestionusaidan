@@ -103,7 +103,7 @@ export const getEventosEndpoints = (app, upload) => {
         header: authorizationHeader,
         response,
         idTarea: request.body.idTarea,
-        titulo: request.body.titulo,
+        nombre: request.body.nombre,
         idAreaTematica: request.body.idAreaTematica,
         baseFechaInicio: request.body.fechaInicio,
         baseFechaFinal: request.body.fechaFinal,

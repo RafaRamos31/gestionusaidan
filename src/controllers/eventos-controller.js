@@ -197,7 +197,7 @@ export async function getRevisionesTarea(header, response, idTarea){
 }
 
 //Crear evento
-export async function crearEvento({header, response, idTarea, titulo, idAreaTematica,  baseFechaInicio, baseFechaFinal, timezone, idDepartamento, idMunicipio, 
+export async function crearEvento({header, response, idTarea, nombre, idAreaTematica,  baseFechaInicio, baseFechaFinal, timezone, idDepartamento, idMunicipio, 
   idAldea, idCaserio, idOrganizador, componentes, colaboradores, aprobarComponente=false}){
   try {
     const auth = decodeToken(header);
@@ -214,7 +214,7 @@ export async function crearEvento({header, response, idTarea, titulo, idAreaTema
     
     const evento = new Evento({
       tarea: idTarea,
-      titulo,
+      nombre,
       areaTematica: idAreaTematica,
       fechaInicio,
       fechaFinal,
