@@ -216,7 +216,8 @@ export async function crearEvento({header, response, idTarea, nombre, idAreaTema
       componentes,
       colaboradores,
       estadoPlanificacionComponente: aprobarComponente ? 'Aprobado' : 'Pendiente',
-      estadoPlanificacionMEL: 'Pendiente'
+      estadoPlanificacionMEL: 'Pendiente',
+      estadoRealizacion: 'Pendiente'
     })
 
     await evento.save();
