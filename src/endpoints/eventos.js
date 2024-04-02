@@ -1,4 +1,4 @@
-import { crearEvento, getPagedEventos } from "../controllers/eventos-controller.js";
+import { crearEvento, getKanbanEventos, getPagedEventos } from "../controllers/eventos-controller.js";
 import { createTarea, deleteTarea, editTarea, getCountTareas, getListTareas, getPagedTareas, getRevisionesTarea, getTareaById, revisarUpdateTarea } from "../controllers/tareas-controller.js";
 
 export const getEventosEndpoints = (app, upload) => {
@@ -27,6 +27,27 @@ export const getEventosEndpoints = (app, upload) => {
       const authorizationHeader = request.headers['authorization'];
 
       response = await getPagedEventos({
+        header: authorizationHeader,
+        response,
+        page: request.body.page,
+        pageSize: request.body.pageSize,
+        filter: JSON.parse(request.body.filter),
+        sort: JSON.parse(request.body.sort),
+        reviews: JSON.parse(request.body.reviews),
+        deleteds: JSON.parse(request.body.deleteds)
+      });
+      
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener los eventos: ' + error });
+    }
+  })
+
+   //POST Get Kanban
+  app.post("/api/kanban/eventos", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getKanbanEventos({
         header: authorizationHeader,
         response,
         filter: JSON.parse(request.body.filter),

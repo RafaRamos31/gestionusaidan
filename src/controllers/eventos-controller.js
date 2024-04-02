@@ -29,24 +29,24 @@ export async function privateGetEventoById(idEvento){
 
 
 //Get Count
-export async function getCountTareas({header, response, filterParams, reviews=false, deleteds=false}){
+export async function getCountEventos({header, response, filterParams, reviews=false, deleteds=false}){
   try {
     const auth = decodeToken(header);
-    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener las tareas. ' + auth.payload });
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener los eventos. ' + auth.payload });
 
     //Validaciones de rol
-    const rol = await privateGetRolById(auth.payload.userRolId);
+    /*const rol = await privateGetRolById(auth.payload.userRolId);
     if(rol && rol.permisos.vistas['Planificación']['Tareas'] === false){
       return response.status(401).json({ error: 'Error al obtener Tareas. No cuenta con los permisos suficientes.'});
     }
 
     if(rol && rol.permisos.acciones['Tareas']['Ver Eliminados'] === false){
       deleteds = false;
-    }
+    }*/
 
     const filter = getFilter({filterParams, reviews, deleteds})
 
-    const count = await Tarea.count(filter);
+    const count = await Evento.count(filter);
 
     response.json({ count });
     return response;
@@ -56,8 +56,51 @@ export async function getCountTareas({header, response, filterParams, reviews=fa
   }
 }
 
+
 //Get Info Paged
-export async function getPagedEventos({header, response, filter}){
+export async function getPagedEventos({header, response, page, pageSize, sort, filter, reviews=false, deleteds=false}){
+  try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Eventos. ' + auth.payload });
+
+    //Validaciones de rol
+    /* const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.vistas['Indicadores']['Trimestres'] === false){
+      return response.status(401).json({ error: 'Error al obtener Trimestres. No cuenta con los permisos suficientes.'});
+    }
+
+    if(rol && rol.permisos.acciones['Trimestres']['Ver Eliminados'] === false){
+      deleteds = false;
+    }*/
+
+    //Paginacion
+    const skip = (page) * pageSize
+
+    //Sort
+    const sortQuery = getSorting({sort, reviews, defaultSort: { estadoPlanificacionComponente: 1 }})
+
+    //Filter
+    const filterQuery = getFilter({filterParams: filter, reviews, deleteds})
+
+    const eventos = await Evento.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate([{
+      path: 'organizador colaboradores',
+      select: '_id nombre',
+    },
+    {
+      path: 'tarea areaTematica componentes',
+      select: '_id nombre titulo descripcion',
+    }]);
+
+    response.json(eventos);
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+//Get Info Paged
+export async function getKanbanEventos({header, response, filter}){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Eventos. ' + auth.payload });
