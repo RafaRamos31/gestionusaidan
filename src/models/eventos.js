@@ -55,12 +55,25 @@ const schema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Usuario",
   }],
+  responsableCreacion: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+    required: true,
+  },
+  fechaCreacion: {
+    type: Date,
+    required: true,
+  },
   estadoPlanificacionMEL: {
     type: String,
     required: true,
   },
   observacionesPlanificacionMEL: {
     type: String,
+  },
+  revisorPlanificacionMEL: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
   },
   fechaRevisionMEL: {
     type: Date,
@@ -71,6 +84,10 @@ const schema = new mongoose.Schema({
   },
   observacionesPlanificacionComponente: {
     type: String,
+  },
+  revisorPlanificacionComponente: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
   },
   fechaRevisionComponente: {
     type: Date,
@@ -118,8 +135,19 @@ const schema = new mongoose.Schema({
   estadoRealizacion: {
     type: String,
   },
+  responsableFinalizacion: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+  },
+  fechaFinalizacionEvento: {
+    type: Date,
+  },
   observacionesRealizacion: {
     type: String,
+  },
+  revisorRealizacion: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
   },
   fechaRevisionRealizacion: {
     type: Date,
@@ -133,6 +161,10 @@ const schema = new mongoose.Schema({
   estadoPresupuesto: {
     type: String,
   },
+  responsablePresupuesto: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+  },
   fechaPresupuesto: {
     type: Date,
   },
@@ -142,11 +174,19 @@ const schema = new mongoose.Schema({
   estadoDigitacion: {
     type: String,
   },
+  responsableDigitacion: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
+  },
   fechaDigitacion: {
     type: Date,
   },
   observacionesDigitacion: {
     type: String,
+  },
+  revisorDigitacion: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
   },
   fechaRevisionDigitacion: {
     type: Date,
@@ -156,6 +196,10 @@ const schema = new mongoose.Schema({
   },
   estadoConsolidado: {
     type: String,
+  },
+  responsableConsolidado: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario",
   },
   fechaConsolidado: {
     type: Date,

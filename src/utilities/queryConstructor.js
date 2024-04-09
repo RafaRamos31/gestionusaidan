@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-export const getFilter = ({filterParams, reviews=false, deleteds=false}) => {
+export const getFilter = ({filterParams, reviews=false, deleteds=false, eventComponente=null, eventCrear=false, eventTerminar=false, eventDigitar=false, eventPresupuestar=false, eventConsolidar=false}) => {
 
   let filter = {}
   if(reviews){
@@ -8,6 +8,21 @@ export const getFilter = ({filterParams, reviews=false, deleteds=false}) => {
   }
   else if(deleteds){
     filter = {estado: { $in: ['Publicado', 'Eliminado']}}
+  }
+  else if(eventCrear){
+    filter = {estadoPlanificacionComponente: { $in: ['Pendiente', 'Rechazado', 'Aprobado']}}
+  }
+  else if(eventTerminar){
+    filter = {estadoRealizacion: { $in: ['En Ejecución', 'Finalizado', 'Rechazado']}}
+  }
+  else if(eventDigitar){
+    filter = {estadoDigitacion: { $in: ['Pendiente', 'Digitando', 'Digitalizado', 'Rechazado']}}
+  }
+  else if(eventPresupuestar){
+    filter = {estadoPresupuesto: { $in: ['Pendiente', 'Presupuestado']}}
+  }
+  else if(eventConsolidar){
+    filter = {estadoConsolidado: { $in: ['Pendiente', 'Consolidado']}}
   }
   else{
     filter = {estado: { $in: ['Publicado']}}
@@ -29,10 +44,15 @@ export const getFilter = ({filterParams, reviews=false, deleteds=false}) => {
       }
     }
   }
+
+  if(eventComponente){
+    filter = {...filter, componente: eventComponente}
+  }
+  
   return filter;
 }
 
-export const getSorting = ({sort=null, defaultSort, reviews=false}) => {
+export const getSorting = ({sort=null, defaultSort, reviews=false, eventCrear=false, eventTerminar=false, eventDigitar=false, eventPresupuestar=false, eventConsolidar=false}) => {
   //Sorting
   let sortQuery = {}
   if(sort && sort.field && sort.sort){
@@ -42,6 +62,26 @@ export const getSorting = ({sort=null, defaultSort, reviews=false}) => {
 
   if(reviews){
     return { fechaEdicion: -1 }
+  }
+
+  if(eventCrear){
+    return { estadoPlanificacionComponente: -1 }
+  }
+
+  if(eventTerminar){
+    return { estadoRealizacion: -1 }
+  }
+
+  if(eventDigitar){
+    return { estadoDigitacion: -1 }
+  }
+
+  if(eventPresupuestar){
+    return { estadoPresupuesto: -1 }
+  }
+
+  if(eventConsolidar){
+    return { estadoConsolidado: -1 }
   }
 
   return defaultSort;

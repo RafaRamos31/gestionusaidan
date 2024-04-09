@@ -63,6 +63,9 @@ const schema = new mongoose.Schema({
   geolocacion: {
     type: String
   },
+  indicadores: {
+    type: Object
+  },
   original: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Beneficiario",

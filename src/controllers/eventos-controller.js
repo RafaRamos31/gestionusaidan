@@ -29,7 +29,14 @@ export async function privateGetEventoById(idEvento){
 
 
 //Get Count
-export async function getCountEventos({header, response, filterParams, reviews=false, deleteds=false}){
+export async function getCountEventos({header, response, filterParams, 
+  reviews=false, 
+  deleteds=false, 
+  eventCrear=false, 
+  eventTerminar=false, 
+  eventDigitar=false, 
+  eventPresupuestar=false, 
+  eventConsolidar=false}){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener los eventos. ' + auth.payload });
@@ -44,7 +51,7 @@ export async function getCountEventos({header, response, filterParams, reviews=f
       deleteds = false;
     }*/
 
-    const filter = getFilter({filterParams, reviews, deleteds})
+    const filter = getFilter({filterParams, reviews, deleteds, eventCrear, eventTerminar, eventDigitar, eventPresupuestar, eventConsolidar})
 
     const count = await Evento.count(filter);
 
@@ -58,7 +65,16 @@ export async function getCountEventos({header, response, filterParams, reviews=f
 
 
 //Get Info Paged
-export async function getPagedEventos({header, response, page, pageSize, sort, filter, reviews=false, deleteds=false}){
+export async function getPagedEventos({header, response, page, pageSize, sort, filter,
+  reviews=false, 
+  deleteds=false,
+  eventComponente=null,
+  eventCrear=false, 
+  eventTerminar=false, 
+  eventDigitar=false, 
+  eventPresupuestar=false, 
+  eventConsolidar=false
+}){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Eventos. ' + auth.payload });
@@ -77,13 +93,13 @@ export async function getPagedEventos({header, response, page, pageSize, sort, f
     const skip = (page) * pageSize
 
     //Sort
-    const sortQuery = getSorting({sort, reviews, defaultSort: { estadoPlanificacionComponente: 1 }})
+    const sortQuery = getSorting({sort, reviews, defaultSort: { estadoPlanificacionComponente: 1 }, eventCrear, eventTerminar, eventDigitar, eventPresupuestar, eventConsolidar})
 
     //Filter
-    const filterQuery = getFilter({filterParams: filter, reviews, deleteds})
+    const filterQuery = getFilter({filterParams: filter, reviews, deleteds, eventComponente, eventCrear, eventTerminar, eventDigitar, eventPresupuestar, eventConsolidar})
 
     const eventos = await Evento.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate([{
-      path: 'organizador colaboradores',
+      path: 'organizador',
       select: '_id nombre',
     },
     {
@@ -100,7 +116,7 @@ export async function getPagedEventos({header, response, page, pageSize, sort, f
 }
 
 //Get Info Paged
-export async function getKanbanEventos({header, response, filter}){
+export async function getKanbanEventos({header, response, filter=false}){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Eventos. ' + auth.payload });
@@ -116,7 +132,7 @@ export async function getKanbanEventos({header, response, filter}){
     }*/
 
     //Filter
-    const filterQuery = getFilter({filterParams: filter})
+    const filterQuery = {estadoRealizacion: { $in: ['Pendiente', 'Cancelado', 'En Ejecución', 'Finalizado', 'Rechazado']}}
 
     const eventos = await Evento.find(filterQuery).populate([
     {
@@ -262,6 +278,34 @@ export async function crearEvento({header, response, idTarea, nombre, idAreaTema
       estadoPlanificacionMEL: 'Pendiente',
       estadoRealizacion: 'Pendiente'
     })
+
+    await evento.save();
+
+    response.json(evento);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+//Crear participantes evento
+export async function crearParticipantesEvento({header, response, idEvento, participantes}){
+  try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el evento. ' + auth.payload });
+
+    //Validaciones de rol
+    /*const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['']['Crear'] === false){
+      return response.status(401).json({ error: 'Error al crear Tarea. No cuenta con los permisos suficientes.'});
+    }*/
+
+    const evento = await privateGetEventoById(idEvento)
+
+    evento.participantes = participantes;
+    evento.estadoDigitacion = 'Digitalizado';
+    evento.estadoConsolidado = 'Pendiente';
 
     await evento.save();
 

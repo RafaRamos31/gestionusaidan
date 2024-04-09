@@ -12,8 +12,11 @@ export const getEventosEndpoints = (app, upload) => {
         header: authorizationHeader,
         response,
         filterParams: JSON.parse(request.body.filter),
-        reviews: JSON.parse(request.body.reviews),
-        deleteds: JSON.parse(request.body.deleteds)
+        eventCrear: JSON.parse(request.body.eventCrear),
+        eventTerminar: JSON.parse(request.body.eventTerminar),
+        eventDigitar: JSON.parse(request.body.eventDigitar),
+        eventPresupuestar: JSON.parse(request.body.eventPresupuestar),
+        eventConsolidar: JSON.parse(request.body.eventConsolidar),
       });
 
     } catch (error) {
@@ -33,8 +36,11 @@ export const getEventosEndpoints = (app, upload) => {
         pageSize: request.body.pageSize,
         filter: JSON.parse(request.body.filter),
         sort: JSON.parse(request.body.sort),
-        reviews: JSON.parse(request.body.reviews),
-        deleteds: JSON.parse(request.body.deleteds)
+        eventCrear: JSON.parse(request.body.eventCrear),
+        eventTerminar: JSON.parse(request.body.eventTerminar),
+        eventDigitar: JSON.parse(request.body.eventDigitar),
+        eventPresupuestar: JSON.parse(request.body.eventPresupuestar),
+        eventConsolidar: JSON.parse(request.body.eventConsolidar),
       });
       
     } catch (error) {
