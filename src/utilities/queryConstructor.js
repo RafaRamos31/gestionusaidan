@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-export const getFilter = ({filterParams, reviews=false, deleteds=false, eventComponente=null, eventCrear=false, eventTerminar=false, eventDigitar=false, eventPresupuestar=false, eventConsolidar=false}) => {
+export const getFilter = ({filterParams, reviews=false, deleteds=false, eventComponente=null, eventCrear=false, eventCrearMEL=false, eventTerminar=false, eventDigitar=false, eventPresupuestar=false, eventConsolidar=false}) => {
 
   let filter = {}
   if(reviews){
@@ -11,6 +11,9 @@ export const getFilter = ({filterParams, reviews=false, deleteds=false, eventCom
   }
   else if(eventCrear){
     filter = {estadoPlanificacionComponente: { $in: ['Pendiente', 'Rechazado', 'Aprobado']}}
+  }
+  else if(eventCrearMEL){
+    filter = {estadoPlanificacionMEL: { $in: ['Pendiente', 'Rechazado', 'Aprobado']}}
   }
   else if(eventTerminar){
     filter = {estadoRealizacion: { $in: ['En Ejecución', 'Finalizado', 'Rechazado']}}
@@ -52,7 +55,7 @@ export const getFilter = ({filterParams, reviews=false, deleteds=false, eventCom
   return filter;
 }
 
-export const getSorting = ({sort=null, defaultSort, reviews=false, eventCrear=false, eventTerminar=false, eventDigitar=false, eventPresupuestar=false, eventConsolidar=false}) => {
+export const getSorting = ({sort=null, defaultSort, reviews=false, eventCrear=false, eventCrearMEL=false, eventTerminar=false, eventDigitar=false, eventPresupuestar=false, eventConsolidar=false}) => {
   //Sorting
   let sortQuery = {}
   if(sort && sort.field && sort.sort){
@@ -66,6 +69,10 @@ export const getSorting = ({sort=null, defaultSort, reviews=false, eventCrear=fa
 
   if(eventCrear){
     return { estadoPlanificacionComponente: -1 }
+  }
+
+  if(eventCrearMEL){
+    return { estadoPlanificacionMEL: -1 }
   }
 
   if(eventTerminar){

@@ -34,6 +34,7 @@ export async function getCountEventos({header, response, filterParams,
   deleteds=false, 
   eventComponente=null,
   eventCrear=false, 
+  eventCrearMEL=false, 
   eventTerminar=false, 
   eventDigitar=false, 
   eventPresupuestar=false, 
@@ -52,7 +53,7 @@ export async function getCountEventos({header, response, filterParams,
       deleteds = false;
     }*/
 
-    const filter = getFilter({filterParams, reviews, deleteds, eventComponente, eventCrear, eventTerminar, eventDigitar, eventPresupuestar, eventConsolidar})
+    const filter = getFilter({filterParams, reviews, deleteds, eventComponente, eventCrear, eventCrearMEL, eventTerminar, eventDigitar, eventPresupuestar, eventConsolidar})
 
     const count = await Evento.count(filter);
 
@@ -72,6 +73,7 @@ export async function getPagedEventos({header, response, page, pageSize, sort, f
   deleteds=false,
   eventComponente=null,
   eventCrear=false, 
+  eventCrearMEL=false, 
   eventTerminar=false, 
   eventDigitar=false, 
   eventPresupuestar=false, 
@@ -95,10 +97,10 @@ export async function getPagedEventos({header, response, page, pageSize, sort, f
     const skip = (page) * pageSize
 
     //Sort
-    const sortQuery = getSorting({sort, reviews, defaultSort: { estadoPlanificacionComponente: 1 }, eventCrear, eventTerminar, eventDigitar, eventPresupuestar, eventConsolidar})
+    const sortQuery = getSorting({sort, reviews, defaultSort: { estadoPlanificacionComponente: 1 }, eventCrear, eventCrearMEL, eventTerminar, eventDigitar, eventPresupuestar, eventConsolidar})
 
     //Filter
-    const filterQuery = getFilter({filterParams: filter, reviews, deleteds, eventComponente, eventCrear, eventTerminar, eventDigitar, eventPresupuestar, eventConsolidar})
+    const filterQuery = getFilter({filterParams: filter, reviews, deleteds, eventComponente, eventCrear, eventCrearMEL, eventTerminar, eventDigitar, eventPresupuestar, eventConsolidar})
 
     const eventos = await Evento.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate([{
       path: 'organizador responsableCreacion revisorPlanificacionMEL revisorPlanificacionComponente',
@@ -363,126 +365,67 @@ export async function editTarea({header, response, idTarea, idComponente, idSubA
 }
 
 
-//Review
-export async function revisarUpdateTarea(header, response, idTarea, aprobado, observaciones){
+//Review Creacion componente
+export async function revisarEventoCreacionComp(header, response, idEvento, aprobado, observaciones){
   try {
     const auth = decodeToken(header);
-    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar la tarea. ' + auth.payload });
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el evento. ' + auth.payload });
 
     //Validaciones de rol
-    const rol = await privateGetResultadoById(auth.payload.userRolId);
+    /*const rol = await privateGetResultadoById(auth.payload.userRolId);
     if(rol && rol.permisos.acciones['Tareas']['Revisar'] === false){
       return response.status(401).json({ error: 'Error al revisar Tarea. No cuenta con los permisos suficientes.'});
-    }
+    }*/
 
-    const updateTarea = await privateGetTareaById(idTarea);
-    if(!updateTarea) return response.status(404).json({ error: 'Error al revisar la tarea. Revisión no encontrada.' });
+    const evento = await privateGetEventoById(idEvento);
+    if(!evento) return response.status(404).json({ error: 'Error al revisar el evento. Evento no encontrado.' });
 
-    const original = await privateGetTareaById(updateTarea.original);
-    if(!original && updateTarea.version !== '0.1') return response.status(404).json({ error: 'Error al revisar la tarea. Tarea no encontrada.' });
+    evento.estadoPlanificacionComponente = aprobado
+    evento.observacionesPlanificacionComponente = observaciones;
+    evento.fechaRevisionComponente = new Date();
+    evento.revisorPlanificacionComponente = auth.payload.userId;
 
-    const revisor = await privateGetUsuarioById(auth.payload.userId);
-    if(!revisor) return response.status(404).json({ error: 'Error al revisar la tarea. Usuario no encontrado' });
-
-    if(aprobado){
-      //Actualizar objeto de actualizacion
-      //Propiedades de control 
-      updateTarea.estado = 'Validado'
-      updateTarea.fechaRevision = new Date();
-      updateTarea.revisor = revisor;
-      updateTarea.observaciones = observaciones;
-
-      if(original){
-        //Actualizar objeto publico
-        //Propiedades de objeto
-        original.componente = updateTarea.componente;
-        original.resultado = updateTarea.resultado;
-        original.subresultado = updateTarea.subresultado;
-        original.actividad = updateTarea.actividad;
-        original.subactividad = updateTarea.subactividad;
-        original.nombre = updateTarea.nombre;
-        original.descripcion = updateTarea.descripcion;
-        original.year = updateTarea.year;
-        original.trimestre = updateTarea.trimestre;
-        original.lugar = updateTarea.lugar;
-        original.unidadMedida = updateTarea.unidadMedida;
-        original.gastosEstimados = updateTarea.gastosEstimados;
-        original.cantidadProgramada = updateTarea.cantidadProgramada,
-        //Propiedades de control
-        original.version = updateVersion(original.version, aprobado);
-        original.ultimaRevision = original.version;
-        original.fechaEdicion = updateTarea.fechaEdicion;
-        original.editor = updateTarea.editor;
-        original.fechaRevision = new Date();
-        original.revisor = revisor;
-        original.observaciones = null;
-      }
-      else{
-        const tarea = new Tarea({
-          //Propiedades de objeto
-          componente: updateTarea.componente,
-          resultado: updateTarea.resultado,
-          subresultado: updateTarea.subresultado,
-          actividad: updateTarea.actividad,
-          subactividad: updateTarea.subactividad,
-          nombre: updateTarea.nombre,
-          descripcion: updateTarea.descripcion,
-          year: updateTarea.year,
-          trimestre: updateTarea.trimestre,
-          lugar: updateTarea.lugar,
-          unidadMedida: updateTarea.unidadMedida,
-          gastosEstimados: updateTarea.gastosEstimados,
-          cantidadProgramada: updateTarea.cantidadProgramada,
-          cantidadRealizada: 0,
-          //Propiedades de control
-          original: null,
-          version: '1.0',
-          ultimaRevision: '1.0',
-          estado: 'Publicado',
-          fechaEdicion: updateTarea.fechaEdicion,
-          editor: updateTarea.editor,
-          fechaRevision: new Date(),
-          revisor: revisor,
-          fechaEliminacion: null,
-          eliminador: null,
-          observaciones: null,
-          pendientes: []
-        })
-        
-        updateTarea.original = tarea._id;
-  
-        await updateTarea.save();
-  
-        tarea.original = tarea._id;
-        await tarea.save();
-      }
-      
-    }
-    else{
-      //Actualizar objeto de actualizacion
-      //Propiedades de control 
-      updateTarea.estado = 'Rechazado'
-      updateTarea.fechaRevision = new Date();
-      updateTarea.revisor = revisor;
-      updateTarea.observaciones = observaciones;
-    }
-
-    if(original){
-      let newPendientes = []
-
-      original.pendientes.map(elemento => {
-        if(!updateTarea.editor._id.equals(elemento._id)){
-          newPendientes = newPendientes.concat(elemento);
-        }
-      })
-
-      original.pendientes = newPendientes;
-      await original.save();
+    if(evento.estadoPlanificacionComponente === 'Aprobado' && evento.estadoPlanificacionMEL === 'Aprobado'){
+      evento.estadoRealizacion = 'En ejecución'
     }
     
-    await updateTarea.save();
+    await evento.save();
 
-    response.json(updateTarea);
+    response.json(evento);
+    return response;
+    
+  } catch (error) {
+    throw error;
+  }
+}
+
+//Review Creacion componente
+export async function revisarEventoCreacionMEL(header, response, idEvento, aprobado, observaciones){
+  try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el evento. ' + auth.payload });
+
+    //Validaciones de rol
+    /*const rol = await privateGetResultadoById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Tareas']['Revisar'] === false){
+      return response.status(401).json({ error: 'Error al revisar Tarea. No cuenta con los permisos suficientes.'});
+    }*/
+
+    const evento = await privateGetEventoById(idEvento);
+    if(!evento) return response.status(404).json({ error: 'Error al revisar el evento. Evento no encontrado.' });
+
+    evento.estadoPlanificacionMEL = aprobado
+    evento.observacionesPlanificacionMEL = observaciones;
+    evento.fechaRevisionMEL = new Date();
+    evento.revisorPlanificacionMEL = auth.payload.userId;
+
+    if(evento.estadoPlanificacionComponente === 'Aprobado' && evento.estadoPlanificacionMEL === 'Aprobado'){
+      evento.estadoRealizacion = 'En ejecución'
+    }
+    
+    await evento.save();
+
+    response.json(evento);
     return response;
     
   } catch (error) {

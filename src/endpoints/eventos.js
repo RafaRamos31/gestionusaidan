@@ -1,4 +1,4 @@
-import { crearEvento, getCountEventos, getEventoById, getKanbanEventos, getPagedEventos } from "../controllers/eventos-controller.js";
+import { crearEvento, getCountEventos, getEventoById, getKanbanEventos, getPagedEventos, revisarEventoCreacionComp, revisarEventoCreacionMEL } from "../controllers/eventos-controller.js";
 import { deleteTarea, editTarea, getListTareas, getRevisionesTarea, getTareaById, revisarUpdateTarea } from "../controllers/tareas-controller.js";
 
 export const getEventosEndpoints = (app, upload) => {
@@ -14,6 +14,7 @@ export const getEventosEndpoints = (app, upload) => {
         filterParams: JSON.parse(request.body.filter),
         eventComponente: request.body.eventComponente,
         eventCrear: JSON.parse(request.body.eventCrear),
+        eventCrearMEL: JSON.parse(request.body.eventCrearMEL),
         eventTerminar: JSON.parse(request.body.eventTerminar),
         eventDigitar: JSON.parse(request.body.eventDigitar),
         eventPresupuestar: JSON.parse(request.body.eventPresupuestar),
@@ -39,6 +40,7 @@ export const getEventosEndpoints = (app, upload) => {
         sort: JSON.parse(request.body.sort),
         eventComponente: request.body.eventComponente,
         eventCrear: JSON.parse(request.body.eventCrear),
+        eventCrearMEL: JSON.parse(request.body.eventCrearMEL),
         eventTerminar: JSON.parse(request.body.eventTerminar),
         eventDigitar: JSON.parse(request.body.eventDigitar),
         eventPresupuestar: JSON.parse(request.body.eventPresupuestar),
@@ -139,21 +141,40 @@ export const getEventosEndpoints = (app, upload) => {
     }
   })
 
-  //PUT revisar tarea
-  app.put("/api/revisiones/tareas", upload.any(), async (request, response) => {
+  //PUT revisar evento comp
+  app.put("/api/revisiones/eventos/crear/componente", upload.any(), async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
 
-      response = await revisarUpdateTarea(
+      response = await revisarEventoCreacionComp(
         authorizationHeader,
         response,
         request.body.id,
-        JSON.parse(request.body.aprobado),
+        request.body.aprobado,
         request.body.observaciones,
       );
 
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al revisar la tarea: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al revisar el evento: ' + error });
+    }
+  })
+
+
+  //PUT revisar evento MEL
+  app.put("/api/revisiones/eventos/crear/mel", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await revisarEventoCreacionMEL(
+        authorizationHeader,
+        response,
+        request.body.id,
+        request.body.aprobado,
+        request.body.observaciones,
+      );
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al revisar el evento: ' + error });
     }
   })
 
