@@ -65,6 +65,7 @@ export async function getCountEventos({header, response, filterParams,
 }
 
 
+
 //Get Info Paged
 export async function getPagedEventos({header, response, page, pageSize, sort, filter,
   reviews=false, 
@@ -116,7 +117,8 @@ export async function getPagedEventos({header, response, page, pageSize, sort, f
   }
 }
 
-//Get Info Paged
+
+//Get Info Kanban
 export async function getKanbanEventos({header, response, filter=false}){
   try {
     const auth = decodeToken(header);
@@ -155,56 +157,29 @@ export async function getKanbanEventos({header, response, filter=false}){
 }
 
 
-//Get Info List
-export async function getListTareas({header, response, filter}){
-  try {
-    const auth = decodeToken(header);
-    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener las tareas. ' + auth.payload });
-
-    //Sort
-    const sortQuery = getSorting({defaultSort: { nombre: 1 }})
-
-    //Filter
-    const filterQuery = getFilter({filterParams: filter})
-
-    const tareas = await Tarea.find(filterQuery, '_id nombre').sort(sortQuery);
-
-    response.json(tareas);
-    return response;
-
-  } catch (error) {
-    throw error;
-  }
-}
-
-
 //Get individual 
-export async function getTareaById(header, response, idTarea){
+export async function getEventoById(header, response, idEvento){
   try {
     const auth = decodeToken(header);
-    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener la Tarea. ' + auth.payload });
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener el Evento. ' + auth.payload });
 
     //Validaciones de rol
-    const rol = await privateGetRolById(auth.payload.userRolId);
+    /*const rol = await privateGetRolById(auth.payload.userRolId);
     if(rol && (rol.permisos.vistas['Planificación']['Tareas'] === false && rol.permisos.acciones['Tareas']['Revisar'] === false)){
       return response.status(401).json({ error: 'Error al obtener Tareas. No cuenta con los permisos suficientes.'});
-    }
+    }*/
 
-    const tarea = await Tarea.findById(idTarea).populate([{
-      path: 'editor revisor eliminador',
+    const evento = await Evento.findById(idEvento).populate([{
+      path: 'organizador responsableCreacion revisorPlanificacionMEL revisorPlanificacionComponente',
       select: '_id nombre',
     },
     {
-      path: 'resultado subresultado actividad subactividad componente',
-      select: '_id nombre descripcion',
-    },
-    {
-      path: 'year trimestre',
-      select: '_id nombre fechaInicio fechaFinal',
+      path: 'tarea areaTematica componentes',
+      select: '_id nombre titulo descripcion',
     },
   ]);
 
-    response.json(tarea);
+    response.json(evento);
     return response;
 
   } catch (error) {
@@ -212,39 +187,6 @@ export async function getTareaById(header, response, idTarea){
   }
 }
 
-//Get revisiones 
-export async function getRevisionesTarea(header, response, idTarea){
-  try {
-    const auth = decodeToken(header);
-    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener Revisiones de la Tarea. ' + auth.payload });
-    
-    //Validaciones de rol
-    const rol = await privateGetRolById(auth.payload.userRolId);
-    if(rol && rol.permisos.acciones['Tareas']['Ver Historial'] === false){
-      return response.status(401).json({ error: 'Error al obtener Revisiones de Tareas. No cuenta con los permisos suficientes.'});
-    }
-
-    const revisiones = await Tarea.find({original: {_id: idTarea}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
-      path: 'editor revisor eliminador',
-      select: '_id nombre',
-    },
-    {
-      path: 'resultado subresultado actividad subactividad componente',
-      select: '_id nombre descripcion',
-    },
-    {
-      path: 'year trimestre',
-      select: '_id nombre fechaInicio fechaFinal',
-    },
-  ]);
-
-    response.json(revisiones);
-    return response; 
-
-  } catch (error) {
-    throw error;
-  }
-}
 
 //Crear evento
 export async function crearEvento({header, response, idTarea, nombre, idAreaTematica,  baseFechaInicio, baseFechaFinal, timezone, idDepartamento, idMunicipio, 
@@ -322,6 +264,7 @@ export async function crearParticipantesEvento({header, response, idEvento, part
     throw error;
   }
 }
+
 
 //Edit info
 export async function editTarea({header, response, idTarea, idComponente, idSubActividad, nombre, descripcion, idYear, idQuarter, lugar, unidadMedida, 

@@ -1,4 +1,4 @@
-import { crearEvento, getCountEventos, getKanbanEventos, getPagedEventos } from "../controllers/eventos-controller.js";
+import { crearEvento, getCountEventos, getEventoById, getKanbanEventos, getPagedEventos } from "../controllers/eventos-controller.js";
 import { deleteTarea, editTarea, getListTareas, getRevisionesTarea, getTareaById, revisarUpdateTarea } from "../controllers/tareas-controller.js";
 
 export const getEventosEndpoints = (app, upload) => {
@@ -66,54 +66,19 @@ export const getEventosEndpoints = (app, upload) => {
     }
   })
 
-
-  //POST Get List 
-  app.post("/api/list/tareas", upload.any(), async (request, response) => {
+  //GET evento by Id
+  app.get("/api/evento/:idEvento", upload.any(), async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
 
-      response = await getListTareas({
-        header: authorizationHeader,
-        response,
-        filter: JSON.parse(request.body.filter)
-      });
-      
-    } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al obtener las tareas: ' + error });
-    }
-  })
-
-
-  //GET tarea by Id
-  app.get("/api/tarea/:idTarea", upload.any(), async (request, response) => {
-    try {
-      const authorizationHeader = request.headers['authorization'];
-
-      response = await getTareaById(
+      response = await getEventoById(
         authorizationHeader,
         response,
-        request.params.idTarea
+        request.params.idEvento
       );
 
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al obtener la tarea: ' + error });
-    }
-  })
-  
-
-  //GET revisiones 
-  app.get("/api/revisiones/tarea/:idTarea", upload.any(), async (request, response) => {
-    try {
-      const authorizationHeader = request.headers['authorization'];
-
-      response = await getRevisionesTarea(
-        authorizationHeader,
-        response,
-        request.params.idTarea
-      );
-
-    } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al obtener las revisiones de la tarea: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al obtener el evento: ' + error });
     }
   })
 
