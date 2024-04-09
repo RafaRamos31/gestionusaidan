@@ -137,7 +137,7 @@ export async function getKanbanEventos({header, response, filter=false}){
 
     const eventos = await Evento.find(filterQuery).populate([
     {
-      path: 'organizador colaboradores',
+      path: 'organizador colaboradores responsableCreacion revisorPlanificacionMEL revisorPlanificacionComponente',
       select: '_id nombre',
     },
     {
