@@ -6,6 +6,11 @@ const schema = new mongoose.Schema({
     ref: "Tarea",
     required: true,
   },
+  componenteEncargado: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Componente",
+    required: true,
+  },
   nombre: {
     type: String,
     required: true,

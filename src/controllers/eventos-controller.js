@@ -261,9 +261,11 @@ export async function crearEvento({header, response, idTarea, nombre, idAreaTema
 
     const fechaInicioQuarter = moment(baseFechaInicio)
     const fechaFinalQuarter = moment(baseFechaFinal)
+    const tarea = await privateGetTareaById(idTarea)
 
     const evento = new Evento({
-      tarea: idTarea,
+      tarea: tarea,
+      componenteEncargado: tarea.componente,
       nombre,
       areaTematica: idAreaTematica,
       fechaInicio: fechaInicioQuarter,
@@ -275,7 +277,11 @@ export async function crearEvento({header, response, idTarea, nombre, idAreaTema
       organizador: idOrganizador,
       componentes,
       colaboradores,
+      fechaCreacion: new Date(),
+      responsableCreacion: auth.payload.userId,
       estadoPlanificacionComponente: aprobarComponente ? 'Aprobado' : 'Pendiente',
+      fechaRevisionComponente: aprobarComponente ? new Date() : null,
+      revisorPlanificacionComponente: auth.payload.userId,
       estadoPlanificacionMEL: 'Pendiente',
       estadoRealizacion: 'Pendiente'
     })

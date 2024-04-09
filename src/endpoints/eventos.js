@@ -37,7 +37,7 @@ export const getEventosEndpoints = (app, upload) => {
         pageSize: request.body.pageSize,
         filter: JSON.parse(request.body.filter),
         sort: JSON.parse(request.body.sort),
-        eventComponente: JSON.parse(request.body.eventComponente),
+        eventComponente: request.body.eventComponente,
         eventCrear: JSON.parse(request.body.eventCrear),
         eventTerminar: JSON.parse(request.body.eventTerminar),
         eventDigitar: JSON.parse(request.body.eventDigitar),
