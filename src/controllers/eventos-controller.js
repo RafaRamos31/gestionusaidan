@@ -32,6 +32,7 @@ export async function privateGetEventoById(idEvento){
 export async function getCountEventos({header, response, filterParams, 
   reviews=false, 
   deleteds=false, 
+  eventComponente=null,
   eventCrear=false, 
   eventTerminar=false, 
   eventDigitar=false, 
@@ -51,7 +52,7 @@ export async function getCountEventos({header, response, filterParams,
       deleteds = false;
     }*/
 
-    const filter = getFilter({filterParams, reviews, deleteds, eventCrear, eventTerminar, eventDigitar, eventPresupuestar, eventConsolidar})
+    const filter = getFilter({filterParams, reviews, deleteds, eventComponente, eventCrear, eventTerminar, eventDigitar, eventPresupuestar, eventConsolidar})
 
     const count = await Evento.count(filter);
 

@@ -46,9 +46,9 @@ export const getFilter = ({filterParams, reviews=false, deleteds=false, eventCom
   }
 
   if(eventComponente){
-    filter = {...filter, componente: eventComponente}
+    filter = {...filter, componentes: eventComponente}
   }
-  
+
   return filter;
 }
 
