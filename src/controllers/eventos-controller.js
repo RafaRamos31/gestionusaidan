@@ -100,7 +100,7 @@ export async function getPagedEventos({header, response, page, pageSize, sort, f
     const filterQuery = getFilter({filterParams: filter, reviews, deleteds, eventComponente, eventCrear, eventTerminar, eventDigitar, eventPresupuestar, eventConsolidar})
 
     const eventos = await Evento.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate([{
-      path: 'organizador',
+      path: 'organizador responsableCreacion revisorPlanificacionMEL revisorPlanificacionComponente',
       select: '_id nombre',
     },
     {
@@ -137,7 +137,7 @@ export async function getKanbanEventos({header, response, filter=false}){
 
     const eventos = await Evento.find(filterQuery).populate([
     {
-      path: 'organizador colaboradores responsableCreacion revisorPlanificacionMEL revisorPlanificacionComponente',
+      path: 'organizador colaboradores',
       select: '_id nombre',
     },
     {
