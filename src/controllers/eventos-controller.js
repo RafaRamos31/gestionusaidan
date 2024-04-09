@@ -170,7 +170,7 @@ export async function getEventoById(header, response, idEvento){
     }*/
 
     const evento = await Evento.findById(idEvento).populate([{
-      path: 'organizador responsableCreacion revisorPlanificacionMEL revisorPlanificacionComponente',
+      path: 'organizador colaboradores departamento municipio aldea caserio responsableCreacion revisorPlanificacionMEL revisorPlanificacionComponente',
       select: '_id nombre',
     },
     {

@@ -12,7 +12,7 @@ export const getEventosEndpoints = (app, upload) => {
         header: authorizationHeader,
         response,
         filterParams: JSON.parse(request.body.filter),
-        eventComponente: JSON.parse(request.body.eventComponente),
+        eventComponente: request.body.eventComponente,
         eventCrear: JSON.parse(request.body.eventCrear),
         eventTerminar: JSON.parse(request.body.eventTerminar),
         eventDigitar: JSON.parse(request.body.eventDigitar),
