@@ -165,7 +165,7 @@ export async function getEventoById(header, response, idEvento){
       select: '_id nombre',
     },
     {
-      path: 'tarea areaTematica componentes',
+      path: 'tarea areaTematica componentes componenteEncargado',
       select: '_id nombre titulo descripcion',
     },
   ]);
