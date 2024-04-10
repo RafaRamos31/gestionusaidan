@@ -147,14 +147,17 @@ const schema = new mongoose.Schema({
   fechaFinalizacionEvento: {
     type: Date,
   },
-  observacionesRealizacion: {
+  estadoRevisionFinalizacion: {
     type: String,
   },
-  revisorRealizacion: {
+  observacionesFinalizacion: {
+    type: String,
+  },
+  revisorFinalizacion: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Usuario",
   },
-  fechaRevisionRealizacion: {
+  fechaRevisionFinalizacion: {
     type: Date,
   },
   totalPresupuesto: {

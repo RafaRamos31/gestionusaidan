@@ -67,28 +67,8 @@ export const getSorting = ({sort=null, defaultSort, reviews=false, eventCrear=fa
     return { fechaEdicion: -1 }
   }
 
-  if(eventCrear){
-    return { estadoPlanificacionComponente: -1 }
-  }
-
-  if(eventCrearMEL){
-    return { estadoPlanificacionMEL: -1 }
-  }
-
-  if(eventTerminar){
-    return { estadoRealizacion: -1 }
-  }
-
-  if(eventDigitar){
-    return { estadoDigitacion: -1 }
-  }
-
-  if(eventPresupuestar){
-    return { estadoPresupuesto: -1 }
-  }
-
-  if(eventConsolidar){
-    return { estadoConsolidado: -1 }
+  if(eventCrear || eventCrearMEL || eventTerminar || eventDigitar || eventPresupuestar || eventConsolidar){
+    return { fechaCreacion: -1 }
   }
 
   return defaultSort;

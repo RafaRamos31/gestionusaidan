@@ -1,4 +1,4 @@
-import { crearEvento, editEventoCrear, getCountEventos, getEventoById, getKanbanEventos, getPagedEventos, revisarEventoCreacionComp, revisarEventoCreacionMEL } from "../controllers/eventos-controller.js";
+import { crearEvento, crearEventoFinalizar, editEventoCrear, getCountEventos, getEventoById, getKanbanEventos, getPagedEventos, revisarEventoCreacionComp, revisarEventoCreacionMEL, revisarEventoFinalizacion } from "../controllers/eventos-controller.js";
 
 export const getEventosEndpoints = (app, upload) => {
 
@@ -166,6 +166,56 @@ export const getEventosEndpoints = (app, upload) => {
       const authorizationHeader = request.headers['authorization'];
 
       response = await revisarEventoCreacionMEL(
+        authorizationHeader,
+        response,
+        request.body.id,
+        request.body.aprobado,
+        request.body.observaciones,
+      );
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al revisar el evento: ' + error });
+    }
+  })
+
+
+  //POST evento finalizar
+  app.post("/api/eventos/finalizar", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await crearEventoFinalizar({
+        header: authorizationHeader,
+        response,
+        idEvento: request.body.idEvento,
+        numeroFormulario:  request.body.numeroFormulario,
+        participantesHombres:  request.body.participantesHombres,
+        participantesMujeres:  request.body.participantesMujeres,
+        participantesComunitarios:  request.body.participantesComunitarios,
+        participantesInstitucionales:  request.body.participantesInstitucionales,
+        totalDias:  request.body.totalDias,
+        totalHoras:  request.body.totalHoras,
+        sectores: JSON.parse(request.body.sectores)?.data,
+        nivel:  request.body.nivel,
+        logros:  request.body.logros,
+        compromisos:  request.body.compromisos,
+        enlaceFormulario:  request.body.enlaceFormulario,
+        enlaceFotografias:  request.body.enlaceFotografias,
+        aprobar: JSON.parse(request.body.aprobar)
+    });
+      
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al finalizar el Evento: ' + error });
+    }
+  })
+
+
+  //PUT revisar evento finalizar 
+  app.put("/api/revisiones/eventos/finalizar", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await revisarEventoFinalizacion(
         authorizationHeader,
         response,
         request.body.id,

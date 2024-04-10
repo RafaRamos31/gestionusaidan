@@ -348,6 +348,92 @@ export async function revisarEventoCreacionMEL(header, response, idEvento, aprob
 }
 
 
+//Crear evento finalizado
+export async function crearEventoFinalizar({header, response, idEvento, numeroFormulario,  participantesHombres, participantesMujeres, participantesComunitarios, participantesInstitucionales, 
+  totalDias, totalHoras, sectores, nivel, logros, compromisos, enlaceFormulario, enlaceFotografias, aprobar=false}){
+  try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al finalizar el evento. ' + auth.payload });
+
+    //Validaciones de rol
+    /*const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['']['Crear'] === false){
+      return response.status(401).json({ error: 'Error al crear Tarea. No cuenta con los permisos suficientes.'});
+    }*/
+
+    const evento = await privateGetEventoById(idEvento);
+    if(!evento) return response.status(404).json({ error: 'Error al finalizar el evento. Evento no encontrado.' });
+
+    evento.numeroFormulario = numeroFormulario;
+    evento.participantesHombres = participantesHombres;
+    evento.participantesMujeres = participantesMujeres;
+    evento.participantesComunitarios = participantesComunitarios;
+    evento.participantesInstitucionales = participantesInstitucionales;
+    evento.totalDias = totalDias;
+    evento.totalHoras = totalHoras;
+    evento.sectores = sectores;
+    evento.nivel = nivel;
+    evento.logros = logros;
+    evento.compromisos = compromisos;
+    evento.enlaceFormulario = enlaceFormulario;
+    evento.enlaceFotografias = enlaceFotografias;
+    evento.estadoRealizacion = 'Finalizado';
+    evento.fechaFinalizacionEvento = new Date();
+    evento.responsableFinalizacion = auth.payload.userId;
+    evento.revisorFinalizacion = aprobar ? auth.payload.userId : null;
+    evento.estadoRevisionFinalizacion = aprobar ? 'Aprobado' : 'Pendiente';
+    evento.fechaRevisionFinalizacion = aprobar ? new Date() : null;
+
+    if(evento.estadoRevisionFinalizacion === 'Aprobado'){
+      evento.estadoDigitacion = 'Pendiente'
+      evento.estadoPresupuesto = 'Pendiente'
+    }
+
+    await evento.save();
+
+    response.json(evento);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
+//Review Finalizacion
+export async function revisarEventoFinalizacion(header, response, idEvento, aprobado, observaciones){
+  try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el evento. ' + auth.payload });
+
+    //Validaciones de rol
+    /*const rol = await privateGetResultadoById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Tareas']['Revisar'] === false){
+      return response.status(401).json({ error: 'Error al revisar Tarea. No cuenta con los permisos suficientes.'});
+    }*/
+
+    const evento = await privateGetEventoById(idEvento);
+    if(!evento) return response.status(404).json({ error: 'Error al revisar el evento. Evento no encontrado.' });
+
+    evento.estadoRevisionFinalizacion = aprobado
+    evento.observacionesFinalizacion = observaciones;
+    evento.fechaRevisionFinalizacion = new Date();
+    evento.revisorFinalizacion = auth.payload.userId;
+
+    if(evento.estadoRevisionFinalizacion === 'Aprobado'){
+      evento.estadoDigitacion = 'Pendiente'
+      evento.estadoPresupuesto = 'Pendiente'
+    }
+    
+    await evento.save();
+
+    response.json(evento);
+    return response;
+    
+  } catch (error) {
+    throw error;
+  }
+}
+
+
 //Crear participantes evento
 export async function crearParticipantesEvento({header, response, idEvento, participantes}){
   try {
