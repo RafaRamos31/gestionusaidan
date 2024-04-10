@@ -1,5 +1,4 @@
-import { crearEvento, getCountEventos, getEventoById, getKanbanEventos, getPagedEventos, revisarEventoCreacionComp, revisarEventoCreacionMEL } from "../controllers/eventos-controller.js";
-import { deleteTarea, editTarea, getListTareas, getRevisionesTarea, getTareaById, revisarUpdateTarea } from "../controllers/tareas-controller.js";
+import { crearEvento, editEventoCrear, getCountEventos, getEventoById, getKanbanEventos, getPagedEventos, revisarEventoCreacionComp, revisarEventoCreacionMEL } from "../controllers/eventos-controller.js";
 
 export const getEventosEndpoints = (app, upload) => {
 
@@ -85,8 +84,8 @@ export const getEventosEndpoints = (app, upload) => {
   })
 
 
-  //POST evento
-  app.post("/api/eventos", upload.any(), async (request, response) => {
+  //POST evento crear
+  app.post("/api/eventos/crear", upload.any(), async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
 
@@ -113,31 +112,32 @@ export const getEventosEndpoints = (app, upload) => {
     }
   })
 
-  //PUT modificar tarea
-  app.put("/api/tareas", upload.any(), async (request, response) => {
+  //PUT modificar evento crear
+  app.put("/api/eventos/crear", upload.any(), async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
 
-      response = await editTarea({
+      response = await editEventoCrear({
         header: authorizationHeader,
         response,
+        idEvento: request.body.idEvento, 
         idTarea: request.body.idTarea,
-        idComponente: request.body.idComponente,
-        idSubActividad: request.body.idSubActividad,
         nombre: request.body.nombre,
-        titulo: request.body.titulo,
-        descripcion: request.body.descripcion,
-        idYear: request.body.idYear,
-        idQuarter: request.body.idQuarter,
-        lugar: request.body.lugar,
-        unidadMedida: request.body.unidadMedida,
-        gastosEstimados: request.body.gastosEstimados,
-        cantidadProgramada: request.body.cantidadProgramada,
-        aprobar: JSON.parse(request.body.aprobar)
+        idAreaTematica: request.body.idAreaTematica,
+        baseFechaInicio: request.body.fechaInicio,
+        baseFechaFinal: request.body.fechaFinal,
+        idDepartamento: request.body.idDepartamento,
+        idMunicipio: request.body.idMunicipio,
+        idAldea: request.body.idAldea,
+        idCaserio: request.body.idCaserio,
+        idOrganizador: request.body.idOrganizador,
+        componentes: JSON.parse(request.body.componentes)?.data,
+        colaboradores: JSON.parse(request.body.colaboradores)?.data,
+        aprobarComponente: JSON.parse(request.body.aprobarComponente)
     });
 
     } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al modificar la tarea: ' + error });
+      response.status(500).json({ error: 'Ocurrió un error al modificar el evento: ' + error });
     }
   })
 
@@ -175,24 +175,6 @@ export const getEventosEndpoints = (app, upload) => {
 
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al revisar el evento: ' + error });
-    }
-  })
-
-
-  //DELETE eliminar resultado
-  app.delete("/api/tareas", upload.any(), async (request, response) => {
-    try {
-      const authorizationHeader = request.headers['authorization'];
-
-      response = await deleteTarea(
-        authorizationHeader,
-        response,
-        request.body.id,
-        request.body.observaciones,
-      );
-
-    } catch (error) {
-      response.status(500).json({ error: 'Ocurrió un error al eliminar la tarea: ' + error });
     }
   })
 
