@@ -19,13 +19,13 @@ export const getFilter = ({filterParams, reviews=false, deleteds=false, eventCom
     filter = {estadoRealizacion: { $in: ['En Ejecución', 'Finalizado', 'Rechazado']}}
   }
   else if(eventDigitar){
-    filter = {estadoDigitacion: { $in: ['Pendiente', 'Digitando', 'Digitalizado', 'Rechazado']}}
+    filter = {estadoDigitacion: { $in: ['Pendiente', 'En Curso', 'Finalizado']}}
   }
   else if(eventPresupuestar){
-    filter = {estadoPresupuesto: { $in: ['Pendiente', 'Presupuestado']}}
+    filter = {estadoPresupuesto: { $in: ['Pendiente', 'Finalizado']}}
   }
   else if(eventConsolidar){
-    filter = {estadoConsolidado: { $in: ['Pendiente', 'Consolidado']}}
+    filter = {estadoConsolidado: { $in: ['Pendiente', 'Finalizado']}}
   }
   else{
     filter = {estado: { $in: ['Publicado']}}
