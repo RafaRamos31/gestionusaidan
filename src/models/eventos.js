@@ -189,6 +189,9 @@ const schema = new mongoose.Schema({
   fechaDigitacion: {
     type: Date,
   },
+  estadoRevisionDigitacion: {
+    type: String,
+  },
   observacionesDigitacion: {
     type: String,
   },

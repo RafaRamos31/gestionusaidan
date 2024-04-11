@@ -1,4 +1,4 @@
-import { crearEvento, crearEventoFinalizar, editEventoCrear, getCountEventos, getEventoById, getKanbanEventos, getPagedEventos, revisarEventoCreacionComp, revisarEventoCreacionMEL, revisarEventoFinalizacion } from "../controllers/eventos-controller.js";
+import { crearEvento, crearEventoFinalizar, editEventoCrear, getCountEventos, getEventoById, getKanbanEventos, getPagedEventos, revisarEventoCreacionComp, revisarEventoCreacionMEL, revisarEventoFinalizacion, toggleDigitandoEvento } from "../controllers/eventos-controller.js";
 
 export const getEventosEndpoints = (app, upload) => {
 
@@ -225,6 +225,22 @@ export const getEventosEndpoints = (app, upload) => {
 
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al revisar el evento: ' + error });
+    }
+  })
+
+  //PUT toggle evento digitando
+  app.get("/api/evento/digitalizar/:idEvento", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await toggleDigitandoEvento(
+        authorizationHeader,
+        response,
+        request.params.idEvento
+      );
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener el evento: ' + error });
     }
   })
 
