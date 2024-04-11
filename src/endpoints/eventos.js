@@ -1,4 +1,4 @@
-import { crearEvento, crearEventoFinalizar, editEventoCrear, getCountEventos, getEventoById, getKanbanEventos, getPagedEventos, revisarEventoCreacionComp, revisarEventoCreacionMEL, revisarEventoFinalizacion, toggleDigitandoEvento } from "../controllers/eventos-controller.js";
+import { crearEvento, crearEventoFinalizar, crearParticipantesEvento, editEventoCrear, getCountEventos, getEventoById, getKanbanEventos, getPagedEventos, revisarEventoCreacionComp, revisarEventoCreacionMEL, revisarEventoDigitacion, revisarEventoFinalizacion, toggleDigitandoEvento } from "../controllers/eventos-controller.js";
 
 export const getEventosEndpoints = (app, upload) => {
 
@@ -228,7 +228,7 @@ export const getEventosEndpoints = (app, upload) => {
     }
   })
 
-  //PUT toggle evento digitando
+  //GET toggle evento digitando
   app.get("/api/evento/digitalizar/:idEvento", upload.any(), async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
@@ -241,6 +241,41 @@ export const getEventosEndpoints = (app, upload) => {
 
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al obtener el evento: ' + error });
+    }
+  })
+
+  //POST evento digitalizar
+  app.post("/api/eventos/digitalizar", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await crearParticipantesEvento({
+        header: authorizationHeader,
+        response,
+        idEvento: request.body.idEvento,
+        participantes: JSON.parse(request.body.participantes)?.data
+    });
+      
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al registrar participantes del Evento: ' + error });
+    }
+  })
+
+  //PUT revisar evento digitalizar 
+  app.put("/api/revisiones/eventos/digitalizar", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await revisarEventoDigitacion(
+        authorizationHeader,
+        response,
+        request.body.id,
+        request.body.aprobado,
+        request.body.observaciones,
+      );
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al revisar el evento: ' + error });
     }
   })
 

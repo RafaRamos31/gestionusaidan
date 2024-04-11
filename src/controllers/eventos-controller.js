@@ -449,8 +449,12 @@ export async function crearParticipantesEvento({header, response, idEvento, part
     const evento = await privateGetEventoById(idEvento)
 
     evento.participantes = participantes;
-    evento.estadoDigitacion = 'Digitalizado';
-    evento.estadoConsolidado = 'Pendiente';
+
+    evento.responsableDigitacion = auth.payload.userId;
+    evento.estadoDigitacion = 'Finalizado';
+    evento.fechaDigitacion = new Date();
+
+    evento.estadoRevisionDigitacion = 'Pendiente';
 
     await evento.save();
 
@@ -460,6 +464,42 @@ export async function crearParticipantesEvento({header, response, idEvento, part
     throw error;
   }
 }
+
+
+//Review Creacion MEL
+export async function revisarEventoDigitacion(header, response, idEvento, aprobado, observaciones){
+  try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al revisar el evento. ' + auth.payload });
+
+    //Validaciones de rol
+    /*const rol = await privateGetResultadoById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['Tareas']['Revisar'] === false){
+      return response.status(401).json({ error: 'Error al revisar Tarea. No cuenta con los permisos suficientes.'});
+    }*/
+
+    const evento = await privateGetEventoById(idEvento);
+    if(!evento) return response.status(404).json({ error: 'Error al revisar el evento. Evento no encontrado.' });
+
+    evento.estadoRevisionDigitacion = aprobado
+    evento.observacionesDigitacion = observaciones;
+    evento.fechaRevisionDigitacion = new Date();
+    evento.revisorDigitacion = auth.payload.userId;
+
+    if(evento.estadoRevisionDigitacion === 'Aprobado' && evento.estadoPresupuesto === 'Aprobado'){
+      evento.estadoConsolidado = 'Pendiente'
+    }
+    
+    await evento.save();
+
+    response.json(evento);
+    return response;
+    
+  } catch (error) {
+    throw error;
+  }
+}
+
 
 //Digitacion en curso
 export async function toggleDigitandoEvento(header, response, idEvento){
@@ -476,7 +516,7 @@ export async function toggleDigitandoEvento(header, response, idEvento){
     const evento = await privateGetEventoById(idEvento);
     if(!evento) return response.status(404).json({ error: 'Error al revisar el evento. Evento no encontrado.' });
 
-    evento.estadoDigitacion = 'En curso'
+    evento.estadoDigitacion = 'En Curso'
     evento.fechaDigitacion = new Date();
     evento.responsableDigitacion = auth.payload.userId;
     
