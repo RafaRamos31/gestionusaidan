@@ -280,6 +280,10 @@ export async function getEventoByIdParticipantes(header, response, idEvento){
     {
       path: 'participantes',
       select: '_id nombre sexo fechaNacimiento dni sector tipoOrganizacion organizacion cargo departamento municipio aldea caserio',
+      populate: {
+        path: 'sector tipoOrganizacion organizacion cargo departamento municipio aldea caserio',
+        select: '_id nombre'
+      }
     },
   ]);
 
