@@ -180,9 +180,10 @@ const schema = new mongoose.Schema({
   fechaPresupuesto: {
     type: Date,
   },
-  participantes: {
-    type: Array
-  },
+  participantes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Beneficiario",
+  }],
   estadoDigitacion: {
     type: String,
   },
