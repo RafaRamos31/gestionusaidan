@@ -1,4 +1,4 @@
-import { crearEvento, crearEventoFinalizar, crearParticipantesEvento, editEventoCrear, getCountEventos, getEventoByIdCrear, getEventoByIdTPresupuesto, getEventoByIdTerminar, getKanbanEventos, getPagedEventos, revisarEventoCreacionComp, revisarEventoCreacionMEL, revisarEventoDigitacion, revisarEventoFinalizacion, toggleDigitandoEvento } from "../controllers/eventos-controller.js";
+import { crearEvento, crearEventoFinalizar, crearParticipantesEvento, editEventoCrear, getCountEventos, getEventoByIdCrear, getEventoByIdParticipantes, getEventoByIdTPresupuesto, getEventoByIdTerminar, getKanbanEventos, getPagedEventos, revisarEventoCreacionComp, revisarEventoCreacionMEL, revisarEventoDigitacion, revisarEventoFinalizacion, toggleDigitandoEvento } from "../controllers/eventos-controller.js";
 
 export const getEventosEndpoints = (app, upload) => {
 

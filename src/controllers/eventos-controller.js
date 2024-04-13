@@ -499,6 +499,7 @@ export async function crearEventoFinalizar({header, response, idEvento, numeroFo
     evento.revisorFinalizacion = aprobar ? auth.payload.userId : null;
     evento.estadoRevisionFinalizacion = aprobar ? 'Aprobado' : 'Pendiente';
     evento.fechaRevisionFinalizacion = aprobar ? new Date() : null;
+    evento.observacionesFinalizacion = null;
 
     if(evento.estadoRevisionFinalizacion === 'Aprobado'){
       evento.estadoDigitacion = 'Pendiente'
