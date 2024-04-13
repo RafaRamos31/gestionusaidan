@@ -118,13 +118,17 @@ const schema = new mongoose.Schema({
   totalHoras: {
     type: Number,
   },
+  tipoEvento: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "TipoEvento",
+  }],
   sectores: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Sector",
   }],
-  nivel: {
+  niveles: [{
     type: String,
-  },
+  }],
   logros: {
     type: String,
   },

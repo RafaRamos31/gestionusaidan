@@ -222,7 +222,7 @@ export async function getEventoByIdTerminar(header, response, idEvento){
     }*/
 
     const evento = await Evento.findById(idEvento).populate([{
-      path: 'sectores responsableCreacion responsableFinalizacion revisorFinalizacion',
+      path: 'sectores tipoEvento responsableCreacion responsableFinalizacion revisorFinalizacion',
       select: '_id nombre',
     },
   ]);
@@ -464,8 +464,8 @@ export async function revisarEventoCreacionMEL(header, response, idEvento, aprob
 
 
 //Crear evento finalizado
-export async function crearEventoFinalizar({header, response, idEvento, numeroFormulario,  participantesHombres, participantesMujeres, participantesComunitarios, participantesInstitucionales, 
-  totalDias, totalHoras, sectores, nivel, logros, compromisos, enlaceFormulario, enlaceFotografias, aprobar=false}){
+export async function crearEventoFinalizar({header, response, idEvento, numeroFormulario, participantesHombres, participantesMujeres, participantesComunitarios, participantesInstitucionales, 
+  totalDias, totalHoras, idTipoEvento, sectores, niveles, logros, compromisos, enlaceFormulario, enlaceFotografias, aprobar=false}){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al finalizar el evento. ' + auth.payload });
@@ -486,8 +486,9 @@ export async function crearEventoFinalizar({header, response, idEvento, numeroFo
     evento.participantesInstitucionales = participantesInstitucionales;
     evento.totalDias = totalDias;
     evento.totalHoras = totalHoras;
+    evento.tipoEvento = idTipoEvento;
     evento.sectores = sectores;
-    evento.nivel = nivel;
+    evento.niveles = niveles;
     evento.logros = logros;
     evento.compromisos = compromisos;
     evento.enlaceFormulario = enlaceFormulario;
@@ -502,6 +503,7 @@ export async function crearEventoFinalizar({header, response, idEvento, numeroFo
     if(evento.estadoRevisionFinalizacion === 'Aprobado'){
       evento.estadoDigitacion = 'Pendiente'
       evento.estadoPresupuesto = 'Pendiente'
+      evento.estadoConsolidado = 'Incompleto'
     }
 
     await evento.save();
@@ -536,6 +538,7 @@ export async function revisarEventoFinalizacion(header, response, idEvento, apro
     if(evento.estadoRevisionFinalizacion === 'Aprobado'){
       evento.estadoDigitacion = 'Pendiente'
       evento.estadoPresupuesto = 'Pendiente'
+      evento.estadoConsolidado = 'Incompleto'
     }
     
     await evento.save();
@@ -581,7 +584,7 @@ export async function crearParticipantesEvento({header, response, idEvento, part
 }
 
 
-//Review Creacion MEL
+//Review Digitacion
 export async function revisarEventoDigitacion(header, response, idEvento, aprobado, observaciones){
   try {
     const auth = decodeToken(header);
