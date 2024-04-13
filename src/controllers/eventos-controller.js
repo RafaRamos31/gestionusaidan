@@ -91,14 +91,44 @@ export async function getPagedEventos({header, response, page, pageSize, sort, f
     //Filter
     const filterQuery = getFilter({filterParams: filter, reviews, deleteds, eventComponente, eventCrear, eventCrearMEL, eventTerminar, eventDigitar, eventPresupuestar, eventConsolidar})
 
-    const eventos = await Evento.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate([{
+    let populateQuery = [{
       path: 'organizador responsableCreacion revisorPlanificacionMEL revisorPlanificacionComponente',
       select: '_id nombre',
     },
     {
       path: 'tarea areaTematica componentes',
       select: '_id nombre titulo descripcion',
-    }]);
+    }]
+
+    if(eventTerminar){
+      populateQuery = [{
+        path: 'organizador responsableCreacion responsableFinalizacion revisorFinalizacion',
+        select: '_id nombre',
+      }]
+    }
+
+    if(eventDigitar){
+      populateQuery = [{
+        path: 'organizador responsableCreacion responsableDigitacion revisorDigitacion',
+        select: '_id nombre',
+      }]
+    }
+
+    if(eventPresupuestar){
+      populateQuery = [{
+        path: 'organizador responsableCreacion responsablePresupuesto',
+        select: '_id nombre',
+      }]
+    }
+
+    if(eventConsolidar){
+      populateQuery = [{
+        path: 'organizador responsableCreacion revisorDigitacion responsablePresupuesto',
+        select: '_id nombre',
+      }]
+    }
+
+    const eventos = await Evento.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate(populateQuery);
 
     response.json(eventos);
     return response;
@@ -148,8 +178,8 @@ export async function getKanbanEventos({header, response, filter=false}){
 }
 
 
-//Get individual 
-export async function getEventoById(header, response, idEvento){
+//Get individual crear
+export async function getEventoByIdCrear(header, response, idEvento){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener el Evento. ' + auth.payload });
@@ -167,6 +197,89 @@ export async function getEventoById(header, response, idEvento){
     {
       path: 'tarea areaTematica componentes componenteEncargado',
       select: '_id nombre titulo descripcion',
+    },
+  ]);
+
+    response.json(evento);
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+//Get individual terminar
+export async function getEventoByIdTerminar(header, response, idEvento){
+  try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener el Evento. ' + auth.payload });
+
+    //Validaciones de rol
+    /*const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && (rol.permisos.vistas['Planificación']['Tareas'] === false && rol.permisos.acciones['Tareas']['Revisar'] === false)){
+      return response.status(401).json({ error: 'Error al obtener Tareas. No cuenta con los permisos suficientes.'});
+    }*/
+
+    const evento = await Evento.findById(idEvento).populate([{
+      path: 'sectores responsableCreacion responsableFinalizacion revisorFinalizacion',
+      select: '_id nombre',
+    },
+  ]);
+
+    response.json(evento);
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+//Get individual presupuesto
+export async function getEventoByIdTPresupuesto(header, response, idEvento){
+  try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener el Evento. ' + auth.payload });
+
+    //Validaciones de rol
+    /*const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && (rol.permisos.vistas['Planificación']['Tareas'] === false && rol.permisos.acciones['Tareas']['Revisar'] === false)){
+      return response.status(401).json({ error: 'Error al obtener Tareas. No cuenta con los permisos suficientes.'});
+    }*/
+
+    const evento = await Evento.findById(idEvento).populate([{
+      path: 'sectores responsableCreacion responsablePresupuesto',
+      select: '_id nombre',
+    },
+  ]);
+
+    response.json(evento);
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+//Get individual participantes
+export async function getEventoByIdParticipantes(header, response, idEvento){
+  try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al obtener el Evento. ' + auth.payload });
+
+    //Validaciones de rol
+    /*const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && (rol.permisos.vistas['Planificación']['Tareas'] === false && rol.permisos.acciones['Tareas']['Revisar'] === false)){
+      return response.status(401).json({ error: 'Error al obtener Tareas. No cuenta con los permisos suficientes.'});
+    }*/
+
+    const evento = await Evento.findById(idEvento).populate([{
+      path: 'sectores responsableCreacion responsableDigitacion revisorDigitacion responsableConsolidado',
+      select: '_id nombre',
+    },
+    {
+      path: 'participantes',
+      select: '_id nombre sexo fechaNacimiento dni sector tipoOrganizacion organizacion cargo departamento municipio aldea caserio',
     },
   ]);
 
@@ -266,8 +379,10 @@ export async function editEventoCrear({header, response, idEvento, idTarea, nomb
     evento.observacionesPlanificacionComponente = '';
     evento.revisorPlanificacionComponente = aprobarComponente ? auth.payload.userId : null;
     evento.estadoPlanificacionMEL = 'Pendiente';
-    evento.estadoRealizacion = 'Pendiente';
+    evento.fechaRevisionMEL = null;
+    evento.revisorPlanificacionMEL = null;
     evento.observacionesPlanificacionMEL = '';
+    evento.estadoRealizacion = 'Pendiente';
 
     await evento.save();
 

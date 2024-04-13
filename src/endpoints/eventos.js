@@ -1,4 +1,4 @@
-import { crearEvento, crearEventoFinalizar, crearParticipantesEvento, editEventoCrear, getCountEventos, getEventoById, getKanbanEventos, getPagedEventos, revisarEventoCreacionComp, revisarEventoCreacionMEL, revisarEventoDigitacion, revisarEventoFinalizacion, toggleDigitandoEvento } from "../controllers/eventos-controller.js";
+import { crearEvento, crearEventoFinalizar, crearParticipantesEvento, editEventoCrear, getCountEventos, getEventoByIdCrear, getEventoByIdTPresupuesto, getEventoByIdTerminar, getKanbanEventos, getPagedEventos, revisarEventoCreacionComp, revisarEventoCreacionMEL, revisarEventoDigitacion, revisarEventoFinalizacion, toggleDigitandoEvento } from "../controllers/eventos-controller.js";
 
 export const getEventosEndpoints = (app, upload) => {
 
@@ -67,12 +67,61 @@ export const getEventosEndpoints = (app, upload) => {
     }
   })
 
-  //GET evento by Id
-  app.get("/api/evento/:idEvento", upload.any(), async (request, response) => {
+  //GET evento by Id Crear
+  app.get("/api/evento/crear/:idEvento", upload.any(), async (request, response) => {
     try {
       const authorizationHeader = request.headers['authorization'];
 
-      response = await getEventoById(
+      response = await getEventoByIdCrear(
+        authorizationHeader,
+        response,
+        request.params.idEvento
+      );
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener el evento: ' + error });
+    }
+  })
+
+  //GET evento by Id Crear
+  app.get("/api/evento/finalizar/:idEvento", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getEventoByIdTerminar(
+        authorizationHeader,
+        response,
+        request.params.idEvento
+      );
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener el evento: ' + error });
+    }
+  })
+
+  //GET evento by Id Prespuestar
+  app.get("/api/evento/prespuestar/:idEvento", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getEventoByIdTPresupuesto(
+        authorizationHeader,
+        response,
+        request.params.idEvento
+      );
+
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al obtener el evento: ' + error });
+    }
+  })
+
+
+  //GET evento by Id Participantes
+  app.get("/api/evento/participantes/:idEvento", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await getEventoByIdParticipantes(
         authorizationHeader,
         response,
         request.params.idEvento

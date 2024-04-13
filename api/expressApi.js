@@ -26,6 +26,7 @@ import { getAreasTematicasEndpoints } from "../src/endpoints/areasTematicas.js";
 import { getGeneralConfigEndpoints } from "../src/endpoints/generalConfig.js";
 import { getFilesEndpoints } from "../src/endpoints/files.js";
 import { getEventosEndpoints } from "../src/endpoints/eventos.js";
+import { getTiposEventosEndpoints } from "../src/endpoints/tiposEventos.js";
 
 /**
  * Separa la logica de definicion de rutas y su respuesta a peticiones REST
@@ -64,6 +65,7 @@ export function addRestDirections(app) {
   app = getAreasTematicasEndpoints(app, upload);
   app = getFilesEndpoints(app, upload);
   app = getEventosEndpoints(app, upload);
+  app = getTiposEventosEndpoints(app, upload);
 
   return app;
 }
