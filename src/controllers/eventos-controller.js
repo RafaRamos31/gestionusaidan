@@ -282,12 +282,12 @@ export async function getEventoByIdParticipantes(header, response, idEvento){
       select: '_id nombre descripcion indicadores',
       populate: {
         path: 'indicadores',
-        select: '_id nombre descripcion'
+        select: '_id nombre descripcion medida'
       }
     },
     {
       path: 'participantes',
-      select: '_id nombre sexo fechaNacimiento dni sector tipoOrganizacion organizacion cargo departamento municipio aldea caserio telefono',
+      select: '_id nombre sexo fechaNacimiento dni sector tipoOrganizacion organizacion cargo departamento municipio aldea caserio telefono indicadores',
       populate: {
         path: 'sector tipoOrganizacion organizacion cargo departamento municipio aldea caserio',
         select: '_id nombre'
