@@ -286,6 +286,14 @@ export async function getEventoByIdParticipantes(header, response, idEvento){
       }
     },
     {
+      path: 'tarea',
+      select: '_id year trimestre',
+      populate: {
+        path: 'year trimestre',
+        select: '_id nombre'
+      }
+    },
+    {
       path: 'participantes',
       select: '_id nombre sexo fechaNacimiento dni sector tipoOrganizacion organizacion cargo departamento municipio aldea caserio telefono indicadores',
       populate: {
