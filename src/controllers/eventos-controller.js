@@ -279,7 +279,7 @@ export async function getEventoByIdParticipantes(header, response, idEvento){
     },
     {
       path: 'participantes',
-      select: '_id nombre sexo fechaNacimiento dni sector tipoOrganizacion organizacion cargo departamento municipio aldea caserio',
+      select: '_id nombre sexo fechaNacimiento dni sector tipoOrganizacion organizacion cargo departamento municipio aldea caserio telefono',
       populate: {
         path: 'sector tipoOrganizacion organizacion cargo departamento municipio aldea caserio',
         select: '_id nombre'
@@ -558,7 +558,7 @@ export async function revisarEventoFinalizacion(header, response, idEvento, apro
 
 
 //Crear participantes evento
-export async function crearParticipantesEvento({header, response, idEvento, participantes}){
+export async function crearParticipantesEvento({header, response, idEvento, registradosHombres, registradosMujeres, participantes}){
   try {
     const auth = decodeToken(header);
     if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al crear el evento. ' + auth.payload });
@@ -572,6 +572,8 @@ export async function crearParticipantesEvento({header, response, idEvento, part
     const evento = await privateGetEventoById(idEvento)
 
     evento.participantes = participantes;
+    evento.registradosHombres = registradosHombres;
+    evento.registradosMujeres = registradosMujeres;
 
     evento.responsableDigitacion = auth.payload.userId;
     evento.estadoDigitacion = 'Finalizado';

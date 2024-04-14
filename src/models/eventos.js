@@ -184,6 +184,12 @@ const schema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Beneficiario",
   }],
+  registradosHombres: {
+    type: Number,
+  },
+  registradosMujeres: {
+    type: Number,
+  },
   estadoDigitacion: {
     type: String,
   },

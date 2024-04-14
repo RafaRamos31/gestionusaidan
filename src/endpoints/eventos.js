@@ -303,6 +303,8 @@ export const getEventosEndpoints = (app, upload) => {
         header: authorizationHeader,
         response,
         idEvento: request.body.idEvento,
+        registradosHombres: request.body.registradosHombres,
+        registradosMujeres: request.body.registradosMujeres,
         participantes: JSON.parse(request.body.participantes)?.data
     });
       
