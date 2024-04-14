@@ -278,6 +278,14 @@ export async function getEventoByIdParticipantes(header, response, idEvento){
       select: '_id nombre',
     },
     {
+      path: 'areaTematica',
+      select: '_id nombre descripcion indicadores',
+      populate: {
+        path: 'indicadores',
+        select: '_id nombre descripcion'
+      }
+    },
+    {
       path: 'participantes',
       select: '_id nombre sexo fechaNacimiento dni sector tipoOrganizacion organizacion cargo departamento municipio aldea caserio telefono',
       populate: {
