@@ -260,6 +260,13 @@ export async function createBeneficiario({header, response, nombre, sexo, fechaN
       aldea: promises[6],
       caserio: promises[7],
       geolocacion,
+      indicadores: {
+        'AF24': [],
+        'AF25': [],
+        'AF26': [],
+        'AF27': [],
+        'AF28': [],
+      },
       //Propiedades de control
       original: null,
       version: '0.1',
@@ -294,6 +301,13 @@ export async function createBeneficiario({header, response, nombre, sexo, fechaN
         aldea: promises[6],
         caserio: promises[7],
         geolocacion,
+        indicadores: {
+          'AF24': [],
+          'AF25': [],
+          'AF26': [],
+          'AF27': [],
+          'AF28': [],
+        },
         //Propiedades de control
         original: null,
         version: '1.0',
@@ -508,6 +522,13 @@ export async function revisarUpdateBeneficiario(header, response, idBeneficiario
           aldea: updateBeneficiario.aldea,
           caserio: updateBeneficiario.caserio,
           geolocacion: updateBeneficiario.geolocacion,
+          indicadores: {
+            'AF24': [],
+            'AF25': [],
+            'AF26': [],
+            'AF27': [],
+            'AF28': [],
+          },
           //Propiedades de control
           original: null,
           version: '1.0',
