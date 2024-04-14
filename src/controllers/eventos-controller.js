@@ -580,6 +580,9 @@ export async function crearParticipantesEvento({header, response, idEvento, regi
     evento.fechaDigitacion = new Date();
 
     evento.estadoRevisionDigitacion = 'Pendiente';
+    evento.observacionesDigitacion = null;
+    evento.fechaRevisionDigitacion = null;
+    evento.revisorDigitacion = null;
 
     await evento.save();
 

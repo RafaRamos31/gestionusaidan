@@ -25,7 +25,7 @@ export const getFilter = ({filterParams, reviews=false, deleteds=false, eventCom
     filter = {estadoPresupuesto: { $in: ['Pendiente', 'Finalizado']}}
   }
   else if(eventConsolidar){
-    filter = {estadoConsolidado: { $in: ['Pendiente', 'Finalizado']}}
+    filter = {estadoConsolidado: { $in: ['Incompleto', 'Pendiente', 'Finalizado']}}
   }
   else{
     filter = {estado: { $in: ['Publicado']}}
