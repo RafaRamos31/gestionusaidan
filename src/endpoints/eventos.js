@@ -1,4 +1,4 @@
-import { crearEvento, crearEventoFinalizar, crearParticipantesEvento, editEventoCrear, getCountEventos, getEventoByIdCrear, getEventoByIdParticipantes, getEventoByIdTPresupuesto, getEventoByIdTerminar, getKanbanEventos, getPagedEventos, revisarEventoCreacionComp, revisarEventoCreacionMEL, revisarEventoDigitacion, revisarEventoFinalizacion, toggleDigitandoEvento } from "../controllers/eventos-controller.js";
+import { crearEvento, crearEventoFinalizar, crearParticipantesEvento, crearPresupuestoEvento, editEventoCrear, getCountEventos, getEventoByIdCrear, getEventoByIdParticipantes, getEventoByIdTPresupuesto, getEventoByIdTerminar, getKanbanEventos, getPagedEventos, revisarEventoCreacionComp, revisarEventoCreacionMEL, revisarEventoDigitacion, revisarEventoFinalizacion, toggleDigitandoEvento } from "../controllers/eventos-controller.js";
 
 export const getEventosEndpoints = (app, upload) => {
 
@@ -328,6 +328,24 @@ export const getEventosEndpoints = (app, upload) => {
 
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al revisar el evento: ' + error });
+    }
+  })
+
+  //POST evento presupuestar
+  app.post("/api/eventos/presupuestar", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await crearPresupuestoEvento({
+        header: authorizationHeader,
+        response,
+        idEvento: request.body.idEvento,
+        totalPresupuesto: request.body.totalPresupuesto,
+        enlacePresupuesto: request.body.enlacePresupuesto,
+    });
+      
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al registrar presupuesto del Evento: ' + error });
     }
   })
 

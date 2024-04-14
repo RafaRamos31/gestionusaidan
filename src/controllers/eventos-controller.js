@@ -614,7 +614,7 @@ export async function revisarEventoDigitacion(header, response, idEvento, aproba
     evento.fechaRevisionDigitacion = new Date();
     evento.revisorDigitacion = auth.payload.userId;
 
-    if(evento.estadoRevisionDigitacion === 'Aprobado' && evento.estadoPresupuesto === 'Aprobado'){
+    if(evento.estadoRevisionDigitacion === 'Aprobado' && evento.estadoPresupuesto === 'Finalizado'){
       evento.estadoConsolidado = 'Pendiente'
     }
     
@@ -653,6 +653,41 @@ export async function toggleDigitandoEvento(header, response, idEvento){
     response.json(evento);
     return response;
     
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+//Crear presupuesto evento
+export async function crearPresupuestoEvento({header, response, idEvento, totalPresupuesto, enlacePresupuesto}){
+  try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al presupuestar el evento. ' + auth.payload });
+
+    //Validaciones de rol
+    /*const rol = await privateGetRolById(auth.payload.userRolId);
+    if(rol && rol.permisos.acciones['']['Crear'] === false){
+      return response.status(401).json({ error: 'Error al crear Tarea. No cuenta con los permisos suficientes.'});
+    }*/
+
+    const evento = await privateGetEventoById(idEvento)
+
+    evento.totalPresupuesto = totalPresupuesto;
+    evento.enlacePresupuesto = enlacePresupuesto;
+
+    evento.responsablePresupuesto = auth.payload.userId;
+    evento.estadoPresupuesto = 'Finalizado';
+    evento.fechaPresupuesto = new Date();
+
+    if(evento.estadoRevisionDigitacion === 'Aprobado' && evento.estadoPresupuesto === 'Finalizado'){
+      evento.estadoConsolidado = 'Pendiente'
+    }
+
+    await evento.save();
+
+    response.json(evento);
+    return response;
   } catch (error) {
     throw error;
   }
