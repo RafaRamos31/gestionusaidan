@@ -561,6 +561,7 @@ export async function revisarEventoFinalizacion(header, response, idEvento, apro
 
     if(evento.estadoRevisionFinalizacion === 'Aprobado'){
       evento.estadoDigitacion = 'Pendiente'
+      evento.estadoRevisionDigitacion = 'Incompleto'
       evento.estadoPresupuesto = 'Pendiente'
       evento.estadoConsolidado = 'Incompleto'
     }
