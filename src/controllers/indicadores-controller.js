@@ -538,3 +538,29 @@ export async function deleteIndicador(header, response, idIndicador, observacion
   response.json(indicador);
   return response;
 }
+
+
+//Sumar datos a indicador
+export async function increaseIndicador(idIndicador, year, trimestre, cantidad){
+
+  let indicador = await privateGetIndicadorById(idIndicador);
+
+  const newProgresos = {
+    ...indicador.progresos
+  }
+
+  newProgresos[year][trimestre] = newProgresos[year][trimestre] + cantidad
+  newProgresos[year]['Total'] = newProgresos[year]['Total'] + cantidad
+  newProgresos['LOP']['T1'] = newProgresos['LOP']['T1'] + cantidad
+  newProgresos['LOP']['T2'] = newProgresos['LOP']['T2'] + cantidad
+  newProgresos['LOP']['T3'] = newProgresos['LOP']['T3'] + cantidad
+  newProgresos['LOP']['T4'] = newProgresos['LOP']['T4'] + cantidad
+  newProgresos['LOP']['Total'] = newProgresos['LOP']['Total'] + cantidad
+
+  indicador.metas = newProgresos;
+  indicador.progresos = newProgresos;
+
+  await indicador.save()
+
+  return indicador;
+}

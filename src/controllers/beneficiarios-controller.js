@@ -624,3 +624,26 @@ export async function deleteBeneficiario(header, response, idBeneficiario, obser
   response.json(beneficario);
   return response;
 }
+
+
+//Sumar datos indicador
+export async function actualizarIndicadoresBeneficiario(idBeneficiario, year, idIndicador){
+
+  const beneficario = await privateGetBeneficiarioById(idBeneficiario);
+
+  let newIndicadores = beneficario.indicadores
+  
+  if(!newIndicadores[year]){
+    newIndicadores[year] = [idIndicador]
+  }
+  else{
+    if(!newIndicadores[year].includes(idIndicador)){
+      newIndicadores[year] = newIndicadores[year].concat(idIndicador)
+    }
+  }
+
+  beneficario.indicadores = newIndicadores
+  console.log(beneficario.indicadores)
+
+  return beneficario.save();
+}

@@ -1,4 +1,4 @@
-import { crearEvento, crearEventoFinalizar, crearParticipantesEvento, crearPresupuestoEvento, editEventoCrear, getCountEventos, getEventoByIdCrear, getEventoByIdParticipantes, getEventoByIdTPresupuesto, getEventoByIdTerminar, getKanbanEventos, getPagedEventos, revisarEventoCreacionComp, revisarEventoCreacionMEL, revisarEventoDigitacion, revisarEventoFinalizacion, toggleDigitandoEvento } from "../controllers/eventos-controller.js";
+import { crearEvento, crearEventoConsolidar, crearEventoFinalizar, crearParticipantesEvento, crearPresupuestoEvento, editEventoCrear, getCountEventos, getEventoByIdCrear, getEventoByIdParticipantes, getEventoByIdTPresupuesto, getEventoByIdTerminar, getKanbanEventos, getPagedEventos, revisarEventoCreacionComp, revisarEventoCreacionMEL, revisarEventoDigitacion, revisarEventoFinalizacion, toggleDigitandoEvento } from "../controllers/eventos-controller.js";
 
 export const getEventosEndpoints = (app, upload) => {
 
@@ -346,6 +346,28 @@ export const getEventosEndpoints = (app, upload) => {
       
     } catch (error) {
       response.status(500).json({ error: 'Ocurrió un error al registrar presupuesto del Evento: ' + error });
+    }
+  })
+
+
+  //POST evento presupuestar
+  app.post("/api/eventos/consolidar", upload.any(), async (request, response) => {
+    try {
+      const authorizationHeader = request.headers['authorization'];
+
+      response = await crearEventoConsolidar({
+        header: authorizationHeader,
+        response,
+        idEvento: request.body.idEvento,
+        conteo: JSON.parse(request.body.conteo),
+        idTrimestre: request.body.idTrimestre,
+        presupuesto: Number(request.body.presupuesto),
+        indPresupuesto: request.body.indPresupuesto,
+        indParticipantes: JSON.parse(request.body.indParticipantes)?.data
+    });
+      
+    } catch (error) {
+      response.status(500).json({ error: 'Ocurrió un error al consolidar el Evento: ' + error });
     }
   })
 

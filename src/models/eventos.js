@@ -216,6 +216,9 @@ const schema = new mongoose.Schema({
   totalIndicadores: {
     type: Object,
   },
+  indParticipantes: {
+    type: Array,
+  },
   estadoConsolidado: {
     type: String,
   },

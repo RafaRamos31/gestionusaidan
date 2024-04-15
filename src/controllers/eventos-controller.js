@@ -5,6 +5,9 @@ import { getFilter, getSorting } from "../utilities/queryConstructor.js";
 import { privateGetRolById } from "./roles-controller.js";
 import { privateGetTareaById } from "./tareas-controller.js";
 import { privateGetUsuarioById } from "./usuarios-controller.js";
+import { privateGetQuarterById } from "./quarters-controller.js";
+import { increaseIndicador } from "./indicadores-controller.js";
+import { actualizarIndicadoresBeneficiario } from "./beneficiarios-controller.js";
 
 
 //Get internal
@@ -156,7 +159,7 @@ export async function getKanbanEventos({header, response, filter=false}){
     }*/
 
     //Filter
-    const filterQuery = {estadoRealizacion: { $in: ['Pendiente', 'Cancelado', 'En Ejecución', 'Finalizado', 'Rechazado']}}
+    const filterQuery = getFilter(filter)
 
     const eventos = await Evento.find(filterQuery).populate([
     {
@@ -710,39 +713,52 @@ export async function crearPresupuestoEvento({header, response, idEvento, totalP
 }
 
 
-//Delete undelete
-export async function deleteTarea(header, response, idTarea, observaciones=null){
-  const auth = decodeToken(header);
-  if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al eliminar la tarea. ' + auth.payload });
+//Crear evento finalizado
+export async function crearEventoConsolidar({header, response, idEvento, conteo, presupuesto, indPresupuesto, indParticipantes, idTrimestre}){
+  try {
+    const auth = decodeToken(header);
+    if(auth.code !== 200) return response.status(auth.code).json({ error: 'Error al consolidar el evento. ' + auth.payload });
 
-  //Validaciones de rol
-  const rol = await privateGetRolById(auth.payload.userRolId);
-  if(rol && rol.permisos.acciones['Tareas']['Eliminar'] === false){
-    return response.status(401).json({ error: 'Error al eliminar Tarea. No cuenta con los permisos suficientes.'});
+    const evento = await privateGetEventoById(idEvento);
+    if(!evento) return response.status(404).json({ error: 'Error al consolidar el evento. Evento no encontrado.' });
+
+    //Trimestre al que hay que cargar los indicadores
+    const trimestre = await privateGetQuarterById(idTrimestre);
+    const yearName = trimestre.nombre.split('-')[0]
+    const trimestreName = trimestre.nombre.split('-')[1]
+
+    //Presupuesto
+   /* if(presupuesto > 0){
+      increaseIndicador(indPresupuesto, yearName, trimestreName, presupuesto)
+    }
+
+    //Participantes Sumar Indicadores
+    for (let indicador in conteo) {
+      increaseIndicador(indicador, yearName, trimestreName, conteo[indicador]['Valid'])
+    }*/
+
+    //Participantes Registrar Indicador en Beneficiario
+    indParticipantes.forEach(participante => {
+      if(participante.estadoIndicador === 'Valid'){
+        actualizarIndicadoresBeneficiario(participante._id, yearName, participante.valueIndicador)
+      }
+    })
+
+    evento.totalIndicadores = {
+      conteo,
+      presupuesto,
+      indPresupuesto
+    }
+    evento.indParticipantes = indParticipantes;
+    evento.responsableConsolidado = auth.payload.userId;
+    evento.estadoConsolidado = 'Finalizado';
+    evento.fechaConsolidado = new Date();
+
+    await evento.save();
+
+    response.json(evento);
+    return response;
+  } catch (error) {
+    throw error;
   }
-
-  const tarea = await privateGetTareaById(idTarea);
-  if(!tarea) return response.status(404).json({ error: 'Error al eliminar la tarea. Tarea no encontrada.' });
-
-  const eliminador = await privateGetUsuarioById(auth.payload.userId);
-  if(!eliminador) return response.status(404).json({ error: 'Error al eliminar la tarea. Usuario no encontrado.' });
-
-  if(tarea.estado !== 'Eliminado'){
-    tarea.estado = 'Eliminado'
-    tarea.fechaEliminacion = new Date();
-    tarea.eliminador = eliminador;
-    tarea.observaciones = observaciones;
-  }
-
-  else{
-    tarea.estado = 'Publicado'
-    tarea.fechaEliminacion = null;
-    tarea.eliminador = null;
-    tarea.observaciones = null;
-  }
-
-  await tarea.save();
-
-  response.json(tarea);
-  return response;
 }
