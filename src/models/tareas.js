@@ -53,7 +53,8 @@ const schema = new mongoose.Schema({
     required: true,
   },
   unidadMedida: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "TipoEvento",
     required: true,
   },
   gastosEstimados: {

@@ -90,7 +90,7 @@ export async function getPagedTareas({header, response, page, pageSize, sort, fi
 
     const tareas = await Tarea.find(filterQuery).sort(sortQuery).skip(skip).limit(pageSize).populate([
     {
-      path: 'editor revisor eliminador',
+      path: 'editor revisor eliminador unidadMedida',
       select: '_id nombre',
     },
     {
@@ -148,7 +148,7 @@ export async function getTareaById(header, response, idTarea){
     }
 
     const tarea = await Tarea.findById(idTarea).populate([{
-      path: 'editor revisor eliminador',
+      path: 'editor revisor eliminador unidadMedida',
       select: '_id nombre',
     },
     {
@@ -182,7 +182,7 @@ export async function getRevisionesTarea(header, response, idTarea){
     }
 
     const revisiones = await Tarea.find({original: {_id: idTarea}, estado: { $nin: ['Publicado', 'Eliminado'] }}).sort({version: -1}).populate([{
-      path: 'editor revisor eliminador',
+      path: 'editor revisor eliminador unidadMedida',
       select: '_id nombre',
     },
     {
