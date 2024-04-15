@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-export const getFilter = ({filterParams, reviews=false, deleteds=false, eventComponente=null, eventCrear=false, eventCrearMEL=false, eventTerminar=false, eventDigitar=false, eventPresupuestar=false, eventConsolidar=false}) => {
+export const getFilter = ({filterParams, reviews=false, deleteds=false, eventComponente=null, eventKanban=false, eventCrear=false, eventCrearMEL=false, eventTerminar=false, eventDigitar=false, eventPresupuestar=false, eventConsolidar=false}) => {
 
   let filter = {}
   if(reviews){
@@ -11,6 +11,9 @@ export const getFilter = ({filterParams, reviews=false, deleteds=false, eventCom
   }
   else if(eventCrear){
     filter = {estadoPlanificacionComponente: { $in: ['Pendiente', 'Rechazado', 'Aprobado']}}
+  }
+  else if(eventKanban){
+    filter = {estadoRealizacion: { $in: ['Pendiente', 'En Ejecución', 'Finalizado']}}
   }
   else if(eventCrearMEL){
     filter = {estadoPlanificacionMEL: { $in: ['Pendiente', 'Rechazado', 'Aprobado']}}

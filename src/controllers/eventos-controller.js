@@ -159,7 +159,7 @@ export async function getKanbanEventos({header, response, filter=false}){
     }*/
 
     //Filter
-    const filterQuery = getFilter(filter)
+    const filterQuery = getFilter({filterParams: filter, eventKanban:true})
 
     const eventos = await Evento.find(filterQuery).populate([
     {
